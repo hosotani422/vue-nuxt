@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "ms-ceintl.vscode-language-pack-ja",
+    "editorconfig.editorconfig",
+    "stylelint.vscode-stylelint",
+    "vue.vscode-typescript-vue-plugin",
+    "dbaeumer.vscode-eslint",
+    "vue.volar",
+  ]
+}

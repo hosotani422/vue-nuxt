@@ -1,0 +1,28 @@
+// back
+$color-back-light: #fafafa;
+$color-back-dark: #303030;
+// grad
+$color-grad-light: gradient(scale-color($color-back-light, $lightness: -17%), 145deg, 50%);
+$color-grad-dark: gradient(scale-color($color-back-dark, $lightness: 10%), 145deg, 20%);
+// mask
+$color-mask-light: rgba(#000, 0.3);
+$color-mask-dark: rgba(#fff, 0.3);
+// font
+$color-font-light: #383838;
+$color-font-dark: #efefff;
+$color-font-half: mix($color-font-light, $color-font-dark, 50%);
+// line
+$color-line-light: mix($color-back-light, $color-back-dark, 50%);
+// state
+$color-state-fine: #18d;
+$color-state-warn: #f80;
+$color-state-error: #ff0800;
+// shadow
+$shadow-normal-light: 4px 4px 8px 0 rgba(#000, 0.5);
+$shadow-normal-dark: 4px 4px 8px 0 rgba(#fff, 0.5);
+$shadow-reverse-light: -4px -4px 8px 0 rgba(#000, 0.5);
+$shadow-reverse-dark: -4px -4px 8px 0 rgba(#fff, 0.5);
+$shadow-inner-light: 2px 2px 4px 3px rgba(#000, 0.5) inset;
+$shadow-inner-dark: 2px 2px 4px 3px rgba(#fff, 0.5) inset;
+$shadow-outer-light: 4px 4px 20px 2px rgba(#000, 0.5);
+$shadow-outer-dark: 4px 4px 20px 2px rgba(#fff, 0.5);

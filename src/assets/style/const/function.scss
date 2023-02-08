@@ -1,0 +1,11 @@
+@function zindex($key) {
+  @return map-get((
+    loading: 90,
+    modeless: 80,
+    modal: 70,
+    page: 10,
+  ), $key);
+}
+@function gradient($color: #fff, $angle: 0deg, $rate: 0%) {
+  @return linear-gradient($angle, $color, scale-color($color, $lightness: $rate));
+}
