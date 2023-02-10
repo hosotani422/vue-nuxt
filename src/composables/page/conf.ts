@@ -1,5 +1,6 @@
 import * as Util from '@/utils/base/util';
 import constant from '@/utils/const';
+import * as Api from '@/api/api';
 import * as Cordova from '@/utils/cordova/cordova';
 import * as app from '@/composables/page/app';
 import * as list from '@/composables/page/list';
@@ -28,13 +29,17 @@ export const state: {
     vibrate: `on` | `off`;
     theme: `light` | `dark`;
     lang: `jp` | `en`;
+    save: `local` | `network`;
   };
 } = reactive({
   data: constant.init.conf,
 });
 
 export const action = {
-  initPage: (): void => {
+  initPage: async(): Promise<void> => {
+    await action.loadItem();
+  },
+  actPage: (): void => {
     watch(
       () => app.lib.lodash.cloneDeep(state.data),
       () => {
@@ -48,13 +53,12 @@ export const action = {
         action.reactSound();
       },
     );
-    action.loadItem();
   },
-  loadItem: (): void => {
-    state.data = JSON.parse(localStorage.getItem(`conf`)!) ?? constant.init.conf;
+  loadItem: async(): Promise<void> => {
+    state.data = await Api.readConf() ?? constant.init.conf;
   },
   saveItem: (): void => {
-    localStorage.setItem(`conf`, JSON.stringify(state.data));
+    Api.writeConf(state.data);
   },
   reactSound: (): void => {
     constant.sound.volume(state.data.volume / 3);

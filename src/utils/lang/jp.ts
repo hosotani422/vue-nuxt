@@ -104,13 +104,20 @@ const jp: typeof lang[`jp`] = {
         jp: `日本語`,
       },
     },
+    save: {
+      title: `自動保存`,
+      value: {
+        local: `ローカル`,
+        network: `ネットワーク`,
+      },
+    },
     backup: {
-      title: `バックアップ`,
+      title: `保存ファイル`,
       download: `保存`,
       upload: `復元`,
     },
     reset: {
-      title: `リセット`,
+      title: `初期化`,
       conf: `設定`,
       list: `メモ`,
     },

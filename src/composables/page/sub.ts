@@ -1,6 +1,7 @@
 import * as Vue from 'vue';
 import * as Dom from '@/utils/base/dom';
 import constant from '@/utils/const';
+import * as Api from '@/api/api';
 import * as app from '@/composables/page/app';
 import * as main from '@/composables/page/main';
 import * as conf from '@/composables/page/conf';
@@ -100,7 +101,10 @@ export const getter = reactive({
 });
 
 export const action = {
-  initPage: (): void => {
+  initPage: async(): Promise<void> => {
+    await action.loadItem();
+  },
+  actPage: (): void => {
     watch(
       () => app.lib.lodash.cloneDeep(state.data),
       () => {
@@ -108,13 +112,12 @@ export const action = {
       },
       {deep: true},
     );
-    action.loadItem();
   },
-  loadItem: (): void => {
-    state.data = JSON.parse(localStorage.getItem(`sub`)!) ?? constant.init.sub;
+  loadItem: async(): Promise<void> => {
+    state.data = await Api.readSub() ?? constant.init.sub;
   },
   saveItem: (): void => {
-    localStorage.setItem(`sub`, JSON.stringify(state.data));
+    Api.writeSub(state.data);
   },
   inputItem: (payload: {event: Event; subId: string;}): void => {
     getter.stateUnit(``, ``, payload.subId).title = (payload.event.target as HTMLInputElement).value;

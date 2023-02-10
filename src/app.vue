@@ -1,9 +1,9 @@
 <script setup lang='ts'>
 import * as Cordova from '@/utils/cordova/cordova';
 import * as app from '@/composables/page/app';
+await app.action.initPage();
 onBeforeMount(() => {
   Cordova.Admob.mountBanner();
-  app.action.initPage();
 });
 onMounted(() => {
   Cordova.Splash.hideMount();

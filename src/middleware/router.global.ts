@@ -1,10 +1,11 @@
 import constant from '@/utils/const/index';
+import * as Api from '@/api/api';
 import * as app from '@/composables/page/app';
 
-export default defineNuxtRouteMiddleware(() => {
+export default defineNuxtRouteMiddleware(async() => {
   if (!app.state.init) {
-    useRouter().push(`/${localStorage.getItem(`route`) ?? constant.init.listId}`);
     app.state.init = true;
+    useRouter().push(`/${await Api.readRoute() ?? constant.init.listId}`);
   } else if (app.state.listId) {
     useRouter().replace(`/${app.state.listId}`);
     app.state.listId = ``;

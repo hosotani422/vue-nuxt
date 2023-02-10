@@ -104,8 +104,15 @@ const en: typeof lang[`en`] = {
         jp: `Japanese`,
       },
     },
+    save: {
+      title: `AutoSave`,
+      value: {
+        local: `Local`,
+        network: `Network`,
+      },
+    },
     backup: {
-      title: `Backup`,
+      title: `SaveFile`,
       download: `Download`,
       upload: `Upload`,
     },
