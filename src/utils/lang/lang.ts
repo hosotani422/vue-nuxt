@@ -74,7 +74,7 @@ const lang: {
       };
       save: {
         title: string;
-        value: {[L in `local` | `network`]: string;};
+        value: {[L in `local` | `rest` | `gql`]: string;};
       };
       backup: {
         title: string;

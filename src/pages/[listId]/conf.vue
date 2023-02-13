@@ -56,8 +56,10 @@ import * as conf from '@/composables/page/conf';
         <PartText class="even">{{app.getter.lang().conf.save.title}}</PartText>
         <InputRadio class="auto" value="local"
           v-model="conf.state.data.save">{{app.getter.lang().conf.save.value.local}}</InputRadio>
-        <InputRadio class="auto" value="network"
-          v-model="conf.state.data.save">{{app.getter.lang().conf.save.value.network}}</InputRadio>
+        <InputRadio class="auto" value="rest"
+          v-model="conf.state.data.save">{{app.getter.lang().conf.save.value.rest}}</InputRadio>
+        <InputRadio class="auto" value="gql"
+          v-model="conf.state.data.save">{{app.getter.lang().conf.save.value.gql}}</InputRadio>
       </PartLayout>
       <PartLayout class="item flex align-center padding-l gap-2l border-bottom-m">
         <PartText class="even">{{app.getter.lang().conf.backup.title}}</PartText>

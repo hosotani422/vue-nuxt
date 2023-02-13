@@ -107,8 +107,9 @@ const jp: typeof lang[`jp`] = {
     save: {
       title: `自動保存`,
       value: {
-        local: `ローカル`,
-        network: `ネットワーク`,
+        local: `LOCAL`,
+        rest: `REST`,
+        gql: `GQL`,
       },
     },
     backup: {

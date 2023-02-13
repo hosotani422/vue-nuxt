@@ -107,8 +107,9 @@ const en: typeof lang[`en`] = {
     save: {
       title: `AutoSave`,
       value: {
-        local: `Local`,
-        network: `Network`,
+        local: `LOCAL`,
+        rest: `REST`,
+        gql: `GQL`,
       },
     },
     backup: {

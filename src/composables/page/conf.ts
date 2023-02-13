@@ -29,7 +29,7 @@ export const state: {
     vibrate: `on` | `off`;
     theme: `light` | `dark`;
     lang: `jp` | `en`;
-    save: `local` | `network`;
+    save: `local` | `rest` | `gql`;
   };
 } = reactive({
   data: constant.init.conf,
