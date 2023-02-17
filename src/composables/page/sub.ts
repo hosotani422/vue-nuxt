@@ -114,7 +114,7 @@ export const action = {
     );
   },
   loadItem: async(): Promise<void> => {
-    state.data = await Api.readSub() ?? constant.init.sub;
+    state.data = await Api.readSub();
   },
   saveItem: (): void => {
     Api.writeSub(state.data);

@@ -1,3 +1,4 @@
+import constant from '@/utils/const';
 import * as list from '@/composables/page/list';
 import * as main from '@/composables/page/main';
 import * as sub from '@/composables/page/sub';
@@ -5,23 +6,25 @@ import * as conf from '@/composables/page/conf';
 
 export const readList = async(): Promise<any> => {
   if (conf.state.data.save === `rest`) {
-    const data = await useFetch<string>(`/read`, {
+    const response = await useFetch<string>(`/read`, {
       baseURL: `http://localhost:3001`,
       headers: {'Content-Type': `text/plain`},
       method: `GET`,
       query: {name: `list`},
     });
-    return JSON.parse(data.data.value!);
+    return JSON.parse(response.data.value!);
   } else if (conf.state.data.save === `gql`) {
-    const response = await fetch(`http://localhost:3001/gql`, {
-      method: `POST`,
+    const response = await $fetch<{data: {readList: string;};}>(`/gql`, {
+      baseURL: `http://localhost:3001`,
       headers: {'Content-Type': `application/json`},
+      method: `POST`,
       body: JSON.stringify({query: `query {readList}`}),
     });
-    const result = await response.json();
-    return JSON.parse(result.data.readList);
+    return JSON.parse(response.data.readList);
+  } else if (process.client) {
+    return JSON.parse(localStorage.getItem(`list`)!);
   }
-  return JSON.parse(localStorage.getItem(`list`)!);
+  return constant.init.list;
 };
 
 export const writeList = (data: typeof list.state.data): void => {
@@ -34,7 +37,7 @@ export const writeList = (data: typeof list.state.data): void => {
       body: data,
     });
   } else if (conf.state.data.save === `gql`) {
-    fetch(`http://localhost:3001/gql`, {
+    useFetch(`http://localhost:3001/gql`, {
       method: `POST`,
       headers: {'Content-Type': `application/json`},
       body: JSON.stringify({
@@ -42,29 +45,32 @@ export const writeList = (data: typeof list.state.data): void => {
         variables: {data: JSON.stringify(data)},
       }),
     });
+  } else if (process.client) {
+    localStorage.setItem(`list`, JSON.stringify(data));
   }
-  localStorage.setItem(`list`, JSON.stringify(data));
 };
 
 export const readMain = async(): Promise<any> => {
   if (conf.state.data.save === `rest`) {
-    const data = await useFetch<string>(`/read`, {
+    const response = await useFetch<string>(`/read`, {
       baseURL: `http://localhost:3001`,
       headers: {'Content-Type': `text/plain`},
       method: `GET`,
       query: {name: `main`},
     });
-    return JSON.parse(data.data.value!);
+    return JSON.parse(response.data.value!);
   } else if (conf.state.data.save === `gql`) {
-    const response = await fetch(`http://localhost:3001/gql`, {
-      method: `POST`,
+    const response = await $fetch<{data: {readMain: string;};}>(`/gql`, {
+      baseURL: `http://localhost:3001`,
       headers: {'Content-Type': `application/json`},
+      method: `POST`,
       body: JSON.stringify({query: `query {readMain}`}),
     });
-    const result = await response.json();
-    return JSON.parse(result.data.readMain);
+    return JSON.parse(response.data.readMain);
+  } else if (process.client) {
+    return JSON.parse(localStorage.getItem(`main`)!);
   }
-  return JSON.parse(localStorage.getItem(`main`)!);
+  return constant.init.main;
 };
 
 export const writeMain = (data: typeof main.state.data): void => {
@@ -77,7 +83,7 @@ export const writeMain = (data: typeof main.state.data): void => {
       body: data,
     });
   } else if (conf.state.data.save === `gql`) {
-    fetch(`http://localhost:3001/gql`, {
+    useFetch(`http://localhost:3001/gql`, {
       method: `POST`,
       headers: {'Content-Type': `application/json`},
       body: JSON.stringify({
@@ -85,29 +91,32 @@ export const writeMain = (data: typeof main.state.data): void => {
         variables: {data: JSON.stringify(data)},
       }),
     });
+  } else if (process.client) {
+    localStorage.setItem(`main`, JSON.stringify(data));
   }
-  localStorage.setItem(`main`, JSON.stringify(data));
 };
 
 export const readSub = async(): Promise<any> => {
   if (conf.state.data.save === `rest`) {
-    const data = await useFetch<string>(`/read`, {
+    const response = await useFetch<string>(`/read`, {
       baseURL: `http://localhost:3001`,
       headers: {'Content-Type': `text/plain`},
       method: `GET`,
       query: {name: `sub`},
     });
-    return JSON.parse(data.data.value!);
+    return JSON.parse(response.data.value!);
   } else if (conf.state.data.save === `gql`) {
-    const response = await fetch(`http://localhost:3001/gql`, {
-      method: `POST`,
+    const response = await $fetch<{data: {readSub: string;};}>(`/gql`, {
+      baseURL: `http://localhost:3001`,
       headers: {'Content-Type': `application/json`},
+      method: `POST`,
       body: JSON.stringify({query: `query {readSub}`}),
     });
-    const result = await response.json();
-    return JSON.parse(result.data.readSub);
+    return JSON.parse(response.data.readSub);
+  } else if (process.client) {
+    return JSON.parse(localStorage.getItem(`sub`)!);
   }
-  return JSON.parse(localStorage.getItem(`sub`)!);
+  return constant.init.sub;
 };
 
 export const writeSub = (data: typeof sub.state.data): void => {
@@ -120,7 +129,7 @@ export const writeSub = (data: typeof sub.state.data): void => {
       body: data,
     });
   } else if (conf.state.data.save === `gql`) {
-    fetch(`http://localhost:3001/gql`, {
+    useFetch(`http://localhost:3001/gql`, {
       method: `POST`,
       headers: {'Content-Type': `application/json`},
       body: JSON.stringify({
@@ -128,29 +137,32 @@ export const writeSub = (data: typeof sub.state.data): void => {
         variables: {data: JSON.stringify(data)},
       }),
     });
+  } else if (process.client) {
+    localStorage.setItem(`sub`, JSON.stringify(data));
   }
-  localStorage.setItem(`sub`, JSON.stringify(data));
 };
 
 export const readConf = async(): Promise<any> => {
   if (conf.state.data.save === `rest`) {
-    const data = await useFetch<string>(`/read`, {
+    const response = await useFetch<string>(`/read`, {
       baseURL: `http://localhost:3001`,
       headers: {'Content-Type': `text/plain`},
       method: `GET`,
       query: {name: `conf`},
     });
-    return JSON.parse(data.data.value!);
+    return JSON.parse(response.data.value!);
   } else if (conf.state.data.save === `gql`) {
-    const response = await fetch(`http://localhost:3001/gql`, {
-      method: `POST`,
+    const response = await $fetch<{data: {readConf: string;};}>(`/gql`, {
+      baseURL: `http://localhost:3001`,
       headers: {'Content-Type': `application/json`},
+      method: `POST`,
       body: JSON.stringify({query: `query {readConf}`}),
     });
-    const result = await response.json();
-    return JSON.parse(result.data.readConf);
+    return JSON.parse(response.data.readConf);
+  } else if (process.client) {
+    return JSON.parse(localStorage.getItem(`conf`)!);
   }
-  return JSON.parse(localStorage.getItem(`conf`)!);
+  return constant.init.conf;
 };
 
 export const writeConf = (data: typeof conf.state.data): void => {
@@ -163,7 +175,7 @@ export const writeConf = (data: typeof conf.state.data): void => {
       body: data,
     });
   } else if (conf.state.data.save === `gql`) {
-    fetch(`http://localhost:3001/gql`, {
+    useFetch(`http://localhost:3001/gql`, {
       method: `POST`,
       headers: {'Content-Type': `application/json`},
       body: JSON.stringify({
@@ -171,29 +183,32 @@ export const writeConf = (data: typeof conf.state.data): void => {
         variables: {data: JSON.stringify(data)},
       }),
     });
+  } else if (process.client) {
+    localStorage.setItem(`conf`, JSON.stringify(data));
   }
-  localStorage.setItem(`conf`, JSON.stringify(data));
 };
 
 export const readRoute = async(): Promise<string> => {
   if (conf.state.data.save === `rest`) {
-    const data = await useFetch<string>(`read`, {
+    const response = await useFetch<string>(`read`, {
       baseURL: `http://localhost:3001`,
       headers: {'Content-Type': `text/plain`},
       method: `GET`,
       query: {name: `route`},
     });
-    return data.data.value!;
+    return response.data.value!;
   } else if (conf.state.data.save === `gql`) {
-    const response = await fetch(`http://localhost:3001/gql`, {
-      method: `POST`,
+    const response = await $fetch<{data: {readRoute: string;};}>(`/gql`, {
+      baseURL: `http://localhost:3001`,
       headers: {'Content-Type': `application/json`},
+      method: `POST`,
       body: JSON.stringify({query: `query {readRoute}`}),
     });
-    const result = await response.json();
-    return JSON.parse(result.data.readRoute);
+    return JSON.parse(response.data.readRoute);
+  } else if (process.client) {
+    return localStorage.getItem(`route`)!;
   }
-  return localStorage.getItem(`route`)!;
+  return constant.init.listId;
 };
 
 export const writeRoute = (data: string): void => {
@@ -206,7 +221,7 @@ export const writeRoute = (data: string): void => {
       body: data,
     });
   } else if (conf.state.data.save === `gql`) {
-    fetch(`http://localhost:3001/gql`, {
+    useFetch(`http://localhost:3001/gql`, {
       method: `POST`,
       headers: {'Content-Type': `application/json`},
       body: JSON.stringify({
@@ -214,6 +229,7 @@ export const writeRoute = (data: string): void => {
         variables: {data: JSON.stringify(data)},
       }),
     });
+  } else if (process.client) {
+    localStorage.setItem(`route`, data);
   }
-  localStorage.setItem(`route`, data);
 };

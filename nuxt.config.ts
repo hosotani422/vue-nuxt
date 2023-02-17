@@ -2,7 +2,7 @@ import * as path from 'pathe';
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
   rootDir: `src`,
   buildDir: `../.nuxt`,
   css: [`@/assets/style/base/index.scss`],

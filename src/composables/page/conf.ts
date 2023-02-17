@@ -55,7 +55,7 @@ export const action = {
     );
   },
   loadItem: async(): Promise<void> => {
-    state.data = await Api.readConf() ?? constant.init.conf;
+    state.data = await Api.readConf();
   },
   saveItem: (): void => {
     Api.writeConf(state.data);
@@ -64,19 +64,21 @@ export const action = {
     constant.sound.volume(state.data.volume / 3);
   },
   reactAlarm: (): void => {
-    Cordova.Notice.removeAll();
-    for (const listId of list.getter.stateFull().sort) {
-      for (const mainId of main.getter.stateFull(listId).sort) {
-        const mainUnit = main.getter.stateUnit(listId, mainId);
-        if (mainUnit.date) {
-          for (const alarmId of mainUnit.alarm) {
-            Cordova.Notice.insert({
-              title: app.getter.lang().dialog.title.alarm,
-              message: `${list.getter.stateUnit(listId).title} ⇒ ${mainUnit.title}`,
-              date: app.lib.dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`)
-                .minute(app.lib.dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`).minute() -
-                app.getter.lang().dialog.alarm.data[alarmId]!.value).toDate(),
-            });
+    if (process.client) {
+      Cordova.Notice.removeAll();
+      for (const listId of list.getter.stateFull().sort) {
+        for (const mainId of main.getter.stateFull(listId).sort) {
+          const mainUnit = main.getter.stateUnit(listId, mainId);
+          if (mainUnit.date) {
+            for (const alarmId of mainUnit.alarm) {
+              Cordova.Notice.insert({
+                title: app.getter.lang().dialog.title.alarm,
+                message: `${list.getter.stateUnit(listId).title} ⇒ ${mainUnit.title}`,
+                date: app.lib.dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`)
+                  .minute(app.lib.dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`).minute() -
+                  app.getter.lang().dialog.alarm.data[alarmId]!.value).toDate(),
+              });
+            }
           }
         }
       }

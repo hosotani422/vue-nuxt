@@ -21,10 +21,12 @@ export const lib: {
 };
 
 export const state: {
-  init: boolean;
+  initServer: boolean;
+  initClient: boolean;
   listId: string;
 } = reactive({
-  init: false,
+  initServer: false,
+  initClient: false,
   listId: ``,
 });
 
@@ -47,14 +49,11 @@ export const getter = reactive({
     }
     return `font-size: 16px;`;
   }),
-  classTop: computed(() => (): string[] => [
-    `speed${conf.state.data.speed}`,
-    conf.state.data.theme,
-  ]),
+  classTop: computed(() => (): string => `speed${conf.state.data.speed} ${conf.state.data.theme}`),
   classFoot: computed(() => (): string => {
-    if (window.outerHeight <= 400) {
+    if (process.client && window.outerHeight <= 400) {
       return `small`;
-    } else if (window.outerHeight >= 720) {
+    } else if (process.client && window.outerHeight >= 720) {
       return `large`;
     }
     return `middle`;

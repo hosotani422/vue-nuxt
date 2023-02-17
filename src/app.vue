@@ -11,7 +11,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Html :style="app.getter.styleHtml()">
+  <Html :style="app.getter.styleHtml()" :class="app.getter.classTop()">
     <Head>
       <Title>Memotea</Title>
       <Meta charset="utf-8" />
@@ -21,7 +21,7 @@ onMounted(() => {
       <NoScript>JavaScript is required</NoScript>
     </Head>
     <Body>
-      <PartLayout class="pageRoot flex column" :class="app.getter.classTop()">
+      <PartLayout class="pageRoot flex column">
         <PartLayout class="even">
           <NuxtPage pageKey="pageKey" />
           <PopupCalendar />

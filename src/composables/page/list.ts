@@ -102,7 +102,7 @@ export const action = {
     );
   },
   loadItem: async(): Promise<void> => {
-    state.data = await Api.readList() ?? constant.init.list;
+    state.data = await Api.readList();
   },
   saveItem: (): void => {
     Api.writeList(state.data);

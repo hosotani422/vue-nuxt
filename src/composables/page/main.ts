@@ -96,7 +96,7 @@ export const action = {
     );
   },
   loadItem: async(): Promise<void> => {
-    state.data = await Api.readMain() ?? constant.init.main;
+    state.data = await Api.readMain();
   },
   saveItem: (): void => {
     Api.writeMain(state.data);
