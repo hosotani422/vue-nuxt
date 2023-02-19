@@ -1,5 +1,6 @@
 import * as Vue from 'vue';
 import constant from '@/utils/const';
+import * as Api from '@/api/api';
 import * as app from '@/composables/page/app';
 import * as main from '@/composables/page/main';
 import * as sub from '@/composables/page/sub';
@@ -88,7 +89,10 @@ export const getter = reactive({
 });
 
 export const action = {
-  initPage: (): void => {
+  initPage: async(): Promise<void> => {
+    await action.loadItem();
+  },
+  actPage: (): void => {
     watch(
       () => app.lib.lodash.cloneDeep(state.data),
       () => {
@@ -96,13 +100,12 @@ export const action = {
       },
       {deep: true},
     );
-    action.loadItem();
   },
-  loadItem: (): void => {
-    state.data = JSON.parse(localStorage.getItem(`list`)!) ?? constant.init.list;
+  loadItem: async(): Promise<void> => {
+    state.data = await Api.readList();
   },
   saveItem: (): void => {
-    localStorage.setItem(`list`, JSON.stringify(state.data));
+    Api.writeList(state.data);
   },
   insertItem: (): void => {
     dialog.action.open({

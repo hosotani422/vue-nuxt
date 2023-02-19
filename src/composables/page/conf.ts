@@ -1,5 +1,6 @@
 import * as Util from '@/utils/base/util';
 import constant from '@/utils/const';
+import * as Api from '@/api/api';
 import * as Cordova from '@/utils/cordova/cordova';
 import * as app from '@/composables/page/app';
 import * as list from '@/composables/page/list';
@@ -28,13 +29,17 @@ export const state: {
     vibrate: `on` | `off`;
     theme: `light` | `dark`;
     lang: `jp` | `en`;
+    save: `local` | `rest` | `gql`;
   };
 } = reactive({
   data: constant.init.conf,
 });
 
 export const action = {
-  initPage: (): void => {
+  initPage: async(): Promise<void> => {
+    await action.loadItem();
+  },
+  actPage: (): void => {
     watch(
       () => app.lib.lodash.cloneDeep(state.data),
       () => {
@@ -48,31 +53,32 @@ export const action = {
         action.reactSound();
       },
     );
-    action.loadItem();
   },
-  loadItem: (): void => {
-    state.data = JSON.parse(localStorage.getItem(`conf`)!) ?? constant.init.conf;
+  loadItem: async(): Promise<void> => {
+    state.data = await Api.readConf();
   },
   saveItem: (): void => {
-    localStorage.setItem(`conf`, JSON.stringify(state.data));
+    Api.writeConf(state.data);
   },
   reactSound: (): void => {
     constant.sound.volume(state.data.volume / 3);
   },
   reactAlarm: (): void => {
-    Cordova.Notice.removeAll();
-    for (const listId of list.getter.stateFull().sort) {
-      for (const mainId of main.getter.stateFull(listId).sort) {
-        const mainUnit = main.getter.stateUnit(listId, mainId);
-        if (mainUnit.date) {
-          for (const alarmId of mainUnit.alarm) {
-            Cordova.Notice.insert({
-              title: app.getter.lang().dialog.title.alarm,
-              message: `${list.getter.stateUnit(listId).title} ⇒ ${mainUnit.title}`,
-              date: app.lib.dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`)
-                .minute(app.lib.dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`).minute() -
-                app.getter.lang().dialog.alarm.data[alarmId]!.value).toDate(),
-            });
+    if (process.client) {
+      Cordova.Notice.removeAll();
+      for (const listId of list.getter.stateFull().sort) {
+        for (const mainId of main.getter.stateFull(listId).sort) {
+          const mainUnit = main.getter.stateUnit(listId, mainId);
+          if (mainUnit.date) {
+            for (const alarmId of mainUnit.alarm) {
+              Cordova.Notice.insert({
+                title: app.getter.lang().dialog.title.alarm,
+                message: `${list.getter.stateUnit(listId).title} ⇒ ${mainUnit.title}`,
+                date: app.lib.dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`)
+                  .minute(app.lib.dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`).minute() -
+                  app.getter.lang().dialog.alarm.data[alarmId]!.value).toDate(),
+              });
+            }
           }
         }
       }

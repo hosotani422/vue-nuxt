@@ -22,9 +22,9 @@ export const action = {
     state.button = payload.button;
     variable.callback = payload.callback;
     clearTimeout(variable.timeoutId);
-    variable.timeoutId = window.setTimeout(() => {
+    variable.timeoutId = setTimeout(() => {
       action.close();
-    }, 3000);
+    }, 3000) as unknown as number;
   },
   close: (): void => {
     state.open = false;

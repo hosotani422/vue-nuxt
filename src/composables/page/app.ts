@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
 import lang from '@/utils/lang/lang';
 import constant from '@/utils/const/index';
+import * as Api from '@/api/api';
 import * as list from '@/composables/page/list';
 import * as main from '@/composables/page/main';
 import * as sub from '@/composables/page/sub';
@@ -20,10 +21,12 @@ export const lib: {
 };
 
 export const state: {
-  init: boolean;
+  initServer: boolean;
+  initClient: boolean;
   listId: string;
 } = reactive({
-  init: false,
+  initServer: false,
+  initClient: false,
   listId: ``,
 });
 
@@ -46,14 +49,11 @@ export const getter = reactive({
     }
     return `font-size: 16px;`;
   }),
-  classTop: computed(() => (): string[] => [
-    `speed${conf.state.data.speed}`,
-    conf.state.data.theme,
-  ]),
+  classTop: computed(() => (): string => `speed${conf.state.data.speed} ${conf.state.data.theme}`),
   classFoot: computed(() => (): string => {
-    if (window.outerHeight <= 400) {
+    if (process.client && window.outerHeight <= 400) {
       return `small`;
-    } else if (window.outerHeight >= 720) {
+    } else if (process.client && window.outerHeight >= 720) {
       return `large`;
     }
     return `middle`;
@@ -61,15 +61,19 @@ export const getter = reactive({
 });
 
 export const action = {
-  initPage: (): void => {
-    list.action.initPage();
-    main.action.initPage();
-    sub.action.initPage();
-    conf.action.initPage();
+  initPage: async(): Promise<void> => {
+    await conf.action.initPage();
+    await sub.action.initPage();
+    await main.action.initPage();
+    await list.action.initPage();
     action.clearTrash();
+    list.action.actPage();
+    main.action.actPage();
+    sub.action.actPage();
+    conf.action.actPage();
   },
   saveRoute: (payload: {listId: string;}): void => {
-    localStorage.setItem(`route`, payload.listId);
+    Api.writeRoute(payload.listId);
   },
   routerList: (): void => {
     useRouter().push(`/${getter.listId()}/list`);

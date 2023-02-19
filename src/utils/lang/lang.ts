@@ -72,6 +72,10 @@ const lang: {
         title: string;
         value: {[L in `en` | `jp`]: string;};
       };
+      save: {
+        title: string;
+        value: {[L in `local` | `rest` | `gql`]: string;};
+      };
       backup: {
         title: string;
         download: string;

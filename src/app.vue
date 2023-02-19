@@ -1,9 +1,9 @@
 <script setup lang='ts'>
 import * as Cordova from '@/utils/cordova/cordova';
 import * as app from '@/composables/page/app';
+await app.action.initPage();
 onBeforeMount(() => {
   Cordova.Admob.mountBanner();
-  app.action.initPage();
 });
 onMounted(() => {
   Cordova.Splash.hideMount();
@@ -11,7 +11,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Html :style="app.getter.styleHtml()">
+  <Html :style="app.getter.styleHtml()" :class="app.getter.classTop()">
     <Head>
       <Title>Memotea</Title>
       <Meta charset="utf-8" />
@@ -21,7 +21,7 @@ onMounted(() => {
       <NoScript>JavaScript is required</NoScript>
     </Head>
     <Body>
-      <PartLayout class="pageRoot flex column" :class="app.getter.classTop()">
+      <PartLayout class="pageRoot flex column">
         <PartLayout class="even">
           <NuxtPage pageKey="pageKey" />
           <PopupCalendar />

@@ -31,10 +31,11 @@ export const sub: typeof subs.state.data = {
 export const conf: typeof confs.state.data = {
   size: 2,
   speed: 2,
-  volume: 2,
+  volume: 1,
   vibrate: `on`,
   theme: `light`,
   lang: `jp`,
+  save: `local`,
 };
 
 export const calendar: typeof calendars.state = {

@@ -15,38 +15,42 @@ main.ref.items = items;
   @touchend="main.action.dragEnd()">
   <PartLayout class="head auto flex align-center padding-l gap-l">
     <IconList class="auto" @click="app.action.routerList()" />
-    <InputTextbox class="even font-l"
-      :placeholder="app.getter.lang().placeholder.list" v-model="list.getter.stateUnit().title" />
+    <ClientOnly>
+      <InputTextbox class="even font-l"
+        :placeholder="app.getter.lang().placeholder.list" v-model="list.getter.stateUnit().title" />
+    </ClientOnly>
     <IconConf class="auto" @click="app.action.routerConf()" />
     <IconPlus class="auto" @click="main.action.insertItem()" />
   </PartLayout>
   <PartLayout tag="ul" ref="wrap" class="even padding-l scrollXY select-none">
-    <transition-group appear>
-      <PartLayout tag="li"
-        :ref="(el: Vue.ComponentPublicInstance<HTMLElement>) => {if (el) {items[mainId] = el;}}"
-        :key="`list${app.getter.listId()}main${mainId}`" v-for="mainId of main.getter.stateFull().sort"
-        class="itemMain flex align-center padding-l gap-l border-bottom-m scale-up"
-        :class="main.getter.classItem(mainId)" @contextmenu.prevent
-        @click="main.state.status[mainId] !== `edit` && app.action.routerSub({mainId})"
-        @touchlong="main.action.switchEdit({mainId}), main.action.dragInit({event: $event, mainId})">
-        <InputCheck class="auto" :modelValue="main.getter.stateUnit(``, mainId).check"
-          @change="main.action.checkItem({event: $event, mainId})" @click.stop />
-        <PartText class="even ellipsis" :class="main.getter.classLimit(mainId)">
-          {{main.getter.stateUnit(``, mainId).title}}</PartText>
-        <PartText class="auto" :class="main.getter.classLimit(mainId)">
-          {{main.getter.textCount(mainId)}}</PartText>
-        <transition>
-          <PartLayout class="option flex gap-l slide-right" v-show="main.getter.classItem(mainId).edit">
-            <IconClone class="auto" :class="main.getter.classLimit(mainId)"
-              @click="main.action.copyItem({event: $event, mainId})" />
-            <IconMove class="auto" :class="main.getter.classLimit(mainId)"
-              @click="main.action.moveItem({event: $event, mainId})" />
-            <IconTrash class="auto" :class="main.getter.classLimit(mainId)"
-              @click="main.action.deleteItem({event: $event, mainId})" />
-          </PartLayout>
-        </transition>
-      </PartLayout>
-    </transition-group>
+    <ClientOnly>
+      <transition-group appear>
+        <PartLayout tag="li"
+          :ref="(el: Vue.ComponentPublicInstance<HTMLElement>) => {if (el) {items[mainId] = el;}}"
+          :key="`list${app.getter.listId()}main${mainId}`" v-for="mainId of main.getter.stateFull().sort"
+          class="itemMain flex align-center padding-l gap-l border-bottom-m scale-up"
+          :class="main.getter.classItem(mainId)" @contextmenu.prevent
+          @click="main.state.status[mainId] !== `edit` && app.action.routerSub({mainId})"
+          @touchlong="main.action.switchEdit({mainId}), main.action.dragInit({event: $event, mainId})">
+          <InputCheck class="auto" :modelValue="main.getter.stateUnit(``, mainId).check"
+            @change="main.action.checkItem({event: $event, mainId})" @click.stop />
+          <PartText class="even ellipsis" :class="main.getter.classLimit(mainId)">
+            {{main.getter.stateUnit(``, mainId).title}}</PartText>
+          <PartText class="auto" :class="main.getter.classLimit(mainId)">
+            {{main.getter.textCount(mainId)}}</PartText>
+          <transition>
+            <PartLayout class="option flex gap-l slide-right" v-show="main.getter.classItem(mainId).edit">
+              <IconClone class="auto" :class="main.getter.classLimit(mainId)"
+                @click="main.action.copyItem({event: $event, mainId})" />
+              <IconMove class="auto" :class="main.getter.classLimit(mainId)"
+                @click="main.action.moveItem({event: $event, mainId})" />
+              <IconTrash class="auto" :class="main.getter.classLimit(mainId)"
+                @click="main.action.deleteItem({event: $event, mainId})" />
+            </PartLayout>
+          </transition>
+        </PartLayout>
+      </transition-group>
+    </ClientOnly>
   </PartLayout>
   <router-view v-slot="{Component}">
     <transition>

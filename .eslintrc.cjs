@@ -113,7 +113,7 @@ module.exports = {
     // ※ version7.0.0以降でサポート
     'no-useless-backreference': [`off`],
     // awaitまたはyieldの使用が原因で競合状態を引き起こす可能性がある割り当てを禁止する [recommend: ×, fix: ×]
-    'require-atomic-updates': [`error`],
+    'require-atomic-updates': [`off`],
     // NaNをチェックするときにisNaN()呼び出しを要求する [recommend: ●, fix: ×]
     // enforceForSwitchCase: case NaNとswitch(NaN)の使用を禁止します
     // enforceForIndexOf: indexOf(NaN)またはlastIndexOf(NaN)の使用を禁止します
