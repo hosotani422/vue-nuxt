@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import constant from '@/utils/const';
-import * as app from '@/composables/page/app';
-import * as conf from '@/composables/page/conf';
+import app from '@/stores/page/app';
+import conf from '@/stores/page/conf';
 </script>
 
 <template>

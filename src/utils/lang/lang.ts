@@ -1,6 +1,6 @@
 import jp from '@/utils/lang/jp';
 import en from '@/utils/lang/en';
-import * as conf from '@/composables/page/conf';
+import conf from '@/stores/page/conf';
 
 const lang: {
   [K in typeof conf[`state`][`data`][`lang`]]: {

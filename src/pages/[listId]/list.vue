@@ -1,10 +1,10 @@
 <script setup lang='ts'>
 import * as Vue from 'vue';
 import constant from '@/utils/const';
-import * as app from '@/composables/page/app';
-import * as list from '@/composables/page/list';
-const wrap = ref<Vue.ComponentPublicInstance<HTMLElement>>();
-const items = ref<{[K: string]: Vue.ComponentPublicInstance<HTMLElement>;}>({});
+import app from '@/stores/page/app';
+import list from '@/stores/page/list';
+const wrap = ref<Vue.ComponentPublicInstance<any>>();
+const items = ref<{[K: string]: Vue.ComponentPublicInstance<any>;}>({});
 list.ref.wrap = wrap;
 list.ref.items = items;
 </script>
@@ -25,7 +25,7 @@ list.ref.items = items;
     <PartLayout tag="ul" ref="wrap" class="even padding-l scrollXY select-none">
       <transition-group>
         <PartLayout tag="li"
-          :ref="(el: Vue.ComponentPublicInstance<HTMLElement>) => {if (el) {items[listId] = el;}}"
+          :ref="(el: Vue.ComponentPublicInstance<any>) => {if (el) {items[listId] = el;}}"
           :key="`list${listId}`" v-for="listId of list.getter.stateFull().sort"
           class="itemList flex align-center padding-l gap-l border-bottom-m scale-up"
           :class="list.getter.classItem(listId)"

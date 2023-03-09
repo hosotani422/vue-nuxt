@@ -1,12 +1,13 @@
 <script setup lang='ts'>
-import * as notice from '@/composables/popup/notice';
+import notice from '@/stores/popup/notice';
 </script>
 
 <template>
 <transition>
   <PartLayout class="popupNotice flex align-center padding-l" v-if="notice.state.open">
     <PartText class="even font-s">{{notice.state.message}}</PartText>
-    <InputButton class="auto" @click="notice.variable.callback()">{{notice.state.button}}</InputButton>
+    <InputButton class="auto" @click="notice.prop.callback()">
+      {{notice.state.button}}</InputButton>
   </PartLayout>
 </transition>
 </template>

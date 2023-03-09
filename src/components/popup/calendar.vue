@@ -1,8 +1,8 @@
 <script setup lang='ts'>
 import * as Vue from 'vue';
-import * as calendar from '@/composables/popup/calendar';
-const body = ref<Vue.ComponentPublicInstance<HTMLElement>>();
-const area = ref<Vue.ComponentPublicInstance<HTMLElement>>();
+import calendar from '@/stores/popup/calendar';
+const body = ref<Vue.ComponentPublicInstance<any>>();
+const area = ref<Vue.ComponentPublicInstance<any>>();
 calendar.ref.body = body;
 calendar.ref.area = area;
 </script>
@@ -30,13 +30,13 @@ calendar.ref.area = area;
           class="day flex align-center justify-center padding-m font-m"
           :class="calendar.getter.classDay(month.id, day.day)"
           :key="`month${month.id}day${day.day}`" v-for="day in month.day"
-          @click="calendar.variable.callback(day.day)">{{day.text}}</PartLayout>
+          @click="calendar.prop.callback(day.day)">{{day.text}}</PartLayout>
       </PartLayout>
     </PartLayout>
   </PartLayout>
   <PartLayout class="auto flex justify-end gap-2l">
     <InputButton class="auto" @click="calendar.action.close()">{{calendar.state.cancel}}</InputButton>
-    <InputButton class="auto error" @click="calendar.variable.callback(``)">{{calendar.state.clear}}</InputButton>
+    <InputButton class="auto error" @click="calendar.prop.callback(``)">{{calendar.state.clear}}</InputButton>
   </PartLayout>
 </PopupModal>
 </template>

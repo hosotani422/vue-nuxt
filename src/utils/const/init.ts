@@ -1,16 +1,16 @@
 import * as base from '@/utils/const/base';
-import * as lists from '@/composables/page/list';
-import * as mains from '@/composables/page/main';
-import * as subs from '@/composables/page/sub';
-import * as confs from '@/composables/page/conf';
-import * as calendars from '@/composables/popup/calendar';
-import * as clocks from '@/composables/popup/clock';
-import * as dialogs from '@/composables/popup/dialog';
-import * as notices from '@/composables/popup/notice';
+import lists from '@/stores/page/list';
+import mains from '@/stores/page/main';
+import subs from '@/stores/page/sub';
+import confs from '@/stores/page/conf';
+import calendars from '@/stores/popup/calendar';
+import clocks from '@/stores/popup/clock';
+import dialogs from '@/stores/popup/dialog';
+import notices from '@/stores/popup/notice';
 
 export const listId = base.id.inbox;
 
-export const list: typeof lists.state.data = {
+export const list: typeof lists[`state`][`data`] = {
   sort: [base.id.inbox, base.id.trash],
   data: {
     [base.id.inbox]: {title: `Inbox`},
@@ -18,17 +18,17 @@ export const list: typeof lists.state.data = {
   },
 };
 
-export const main: typeof mains.state.data = {
+export const main: typeof mains[`state`][`data`] = {
   [base.id.inbox]: {sort: [], data: {}},
   [base.id.trash]: {sort: [], data: {}},
 };
 
-export const sub: typeof subs.state.data = {
+export const sub: typeof subs[`state`][`data`] = {
   [base.id.inbox]: {data: {}},
   [base.id.trash]: {data: {}},
 };
 
-export const conf: typeof confs.state.data = {
+export const conf: typeof confs[`state`][`data`] = {
   size: 2,
   speed: 2,
   volume: 1,
@@ -38,7 +38,7 @@ export const conf: typeof confs.state.data = {
   save: `local`,
 };
 
-export const calendar: typeof calendars.state = {
+export const calendar: typeof calendars[`state`] = {
   open: false,
   select: ``,
   current: ``,
@@ -46,7 +46,7 @@ export const calendar: typeof calendars.state = {
   clear: ``,
 };
 
-export const clock: typeof clocks.state = {
+export const clock: typeof clocks[`state`] = {
   open: false,
   hour: 0,
   minute: 0,
@@ -55,7 +55,7 @@ export const clock: typeof clocks.state = {
   ok: ``,
 };
 
-export const dialog: typeof dialogs.state = {
+export const dialog: typeof dialogs[`state`] = {
   open: false,
   mode: `alert`,
   title: ``,
@@ -79,7 +79,7 @@ export const dialog: typeof dialogs.state = {
   cancel: ``,
 };
 
-export const notice: typeof notices.state = {
+export const notice: typeof notices[`state`] = {
   open: false,
   message: ``,
   button: ``,
