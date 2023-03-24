@@ -1,8 +1,8 @@
 import constant from '@/utils/const';
-import * as list from '@/composables/page/list';
-import * as main from '@/composables/page/main';
-import * as sub from '@/composables/page/sub';
-import * as conf from '@/composables/page/conf';
+import list from '@/stores/page/list';
+import main from '@/stores/page/main';
+import sub from '@/stores/page/sub';
+import conf from '@/stores/page/conf';
 
 export const readList = async(): Promise<any> => {
   if (conf.state.data.save === `rest`) {
@@ -22,12 +22,12 @@ export const readList = async(): Promise<any> => {
     });
     return JSON.parse(response.data.readList);
   } else if (process.client) {
-    return JSON.parse(localStorage.getItem(`list`)!);
+    return JSON.parse(localStorage.getItem(`list`)!) || constant.init.list;
   }
   return constant.init.list;
 };
 
-export const writeList = (data: typeof list.state.data): void => {
+export const writeList = (data: typeof list[`state`][`data`]): void => {
   if (conf.state.data.save === `rest`) {
     useFetch(`/write`, {
       baseURL: `http://localhost:3001`,
@@ -68,12 +68,12 @@ export const readMain = async(): Promise<any> => {
     });
     return JSON.parse(response.data.readMain);
   } else if (process.client) {
-    return JSON.parse(localStorage.getItem(`main`)!);
+    return JSON.parse(localStorage.getItem(`main`)!) || constant.init.main;
   }
   return constant.init.main;
 };
 
-export const writeMain = (data: typeof main.state.data): void => {
+export const writeMain = (data: typeof main[`state`][`data`]): void => {
   if (conf.state.data.save === `rest`) {
     useFetch(`/write`, {
       baseURL: `http://localhost:3001`,
@@ -114,12 +114,12 @@ export const readSub = async(): Promise<any> => {
     });
     return JSON.parse(response.data.readSub);
   } else if (process.client) {
-    return JSON.parse(localStorage.getItem(`sub`)!);
+    return JSON.parse(localStorage.getItem(`sub`)!) || constant.init.sub;
   }
   return constant.init.sub;
 };
 
-export const writeSub = (data: typeof sub.state.data): void => {
+export const writeSub = (data: typeof sub[`state`][`data`]): void => {
   if (conf.state.data.save === `rest`) {
     useFetch(`/write`, {
       baseURL: `http://localhost:3001`,
@@ -160,12 +160,12 @@ export const readConf = async(): Promise<any> => {
     });
     return JSON.parse(response.data.readConf);
   } else if (process.client) {
-    return JSON.parse(localStorage.getItem(`conf`)!);
+    return JSON.parse(localStorage.getItem(`conf`)!) || constant.init.conf;
   }
   return constant.init.conf;
 };
 
-export const writeConf = (data: typeof conf.state.data): void => {
+export const writeConf = (data: typeof conf[`state`][`data`]): void => {
   if (conf.state.data.save === `rest`) {
     useFetch(`/write`, {
       baseURL: `http://localhost:3001`,
@@ -206,7 +206,7 @@ export const readRoute = async(): Promise<string> => {
     });
     return JSON.parse(response.data.readRoute);
   } else if (process.client) {
-    return localStorage.getItem(`route`)!;
+    return localStorage.getItem(`route`) || constant.init.listId;
   }
   return constant.init.listId;
 };

@@ -1,12 +1,12 @@
 <script setup lang='ts'>
 import * as Vue from 'vue';
-import * as app from '@/composables/page/app';
-import * as main from '@/composables/page/main';
-import * as sub from '@/composables/page/sub';
-const home = ref<Vue.ComponentPublicInstance<HTMLElement>>();
-const wrap = ref<Vue.ComponentPublicInstance<HTMLElement>>();
-const items = ref<{[K: string]: Vue.ComponentPublicInstance<HTMLElement>;}>({});
-const titles = ref<{[K: string]: Vue.ComponentPublicInstance<HTMLElement>;}>({});
+import app from '@/stores/page/app';
+import main from '@/stores/page/main';
+import sub from '@/stores/page/sub';
+const home = ref<Vue.ComponentPublicInstance<any>>();
+const wrap = ref<Vue.ComponentPublicInstance<any>>();
+const items = ref<{[K: string]: Vue.ComponentPublicInstance<any>;}>({});
+const titles = ref<{[K: string]: Vue.ComponentPublicInstance<any>;}>({});
 sub.ref.home = home;
 sub.ref.wrap = wrap;
 sub.ref.items = items;
@@ -34,14 +34,14 @@ sub.ref.titles = titles;
         <PartLayout tag="ul" ref="wrap" class="fade-normal" v-else>
           <transition-group>
             <PartLayout tag="li"
-              :ref="(el: Vue.ComponentPublicInstance<HTMLElement>) => {if (el) {items[subId] = el;}}"
+              :ref="(el: Vue.ComponentPublicInstance<any>) => {if (el) {items[subId] = el;}}"
               :key="`list${app.getter.listId()}main${app.getter.mainId()}sub${subId}`"
               class="itemSub flex align-start padding-l gap-l border-bottom-m scale-up"
               :class="sub.getter.classItem(subId)" v-for="(subId, index) of sub.getter.stateFull().sort">
               <InputCheck class="auto" :modelValue="sub.getter.stateUnit(``, ``, subId).check"
                 @change="sub.action.checkItem({event: $event, subId})" />
               <InputTextarea
-                :ref="(el: Vue.ComponentPublicInstance<HTMLElement>) => {if (el) {titles[subId] = el;}}"
+                :ref="(el: Vue.ComponentPublicInstance<any>) => {if (el) {titles[subId] = el;}}"
                 class="even padding-none"
                 :placeholder="app.getter.lang().placeholder.sub"
                 :modelValue="sub.getter.stateUnit(``, ``, subId).title"

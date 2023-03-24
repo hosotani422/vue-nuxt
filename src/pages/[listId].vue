@@ -1,10 +1,10 @@
 <script setup lang='ts'>
 import * as Vue from 'vue';
-import * as app from '@/composables/page/app';
-import * as list from '@/composables/page/list';
-import * as main from '@/composables/page/main';
-const wrap = ref<Vue.ComponentPublicInstance<HTMLElement>>();
-const items = ref<{[K: string]: Vue.ComponentPublicInstance<HTMLElement>;}>({});
+import app from '@/stores/page/app';
+import list from '@/stores/page/list';
+import main from '@/stores/page/main';
+const wrap = ref<Vue.ComponentPublicInstance<any>>();
+const items = ref<{[K: string]: Vue.ComponentPublicInstance<any>;}>({});
 main.ref.wrap = wrap;
 main.ref.items = items;
 </script>
@@ -26,7 +26,7 @@ main.ref.items = items;
     <ClientOnly>
       <transition-group appear>
         <PartLayout tag="li"
-          :ref="(el: Vue.ComponentPublicInstance<HTMLElement>) => {if (el) {items[mainId] = el;}}"
+          :ref="(el: Vue.ComponentPublicInstance<any>) => {if (el) {items[mainId] = el;}}"
           :key="`list${app.getter.listId()}main${mainId}`" v-for="mainId of main.getter.stateFull().sort"
           class="itemMain flex align-center padding-l gap-l border-bottom-m scale-up"
           :class="main.getter.classItem(mainId)" @contextmenu.prevent

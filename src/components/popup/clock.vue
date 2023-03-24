@@ -1,8 +1,8 @@
 <script setup lang='ts'>
 import * as Vue from 'vue';
-import * as clock from '@/composables/popup/clock';
-const hour = ref<Vue.ComponentPublicInstance<HTMLElement>>();
-const minute = ref<Vue.ComponentPublicInstance<HTMLElement>>();
+import clock from '@/stores/popup/clock';
+const hour = ref<Vue.ComponentPublicInstance<any>>();
+const minute = ref<Vue.ComponentPublicInstance<any>>();
 clock.ref.hour = hour;
 clock.ref.minute = minute;
 </script>
@@ -19,9 +19,9 @@ clock.ref.minute = minute;
   </PartLayout>
   <PartLayout class="auto flex align-center justify-end gap-2l">
     <InputButton class="auto" @click="clock.action.close()">{{clock.state.cancel}}</InputButton>
-    <InputButton class="auto error" @click="clock.variable.callback()">{{clock.state.clear}}</InputButton>
+    <InputButton class="auto error" @click="clock.prop.callback()">{{clock.state.clear}}</InputButton>
     <InputButton class="auto error"
-      @click="clock.variable.callback(clock.state.hour, clock.state.minute)">{{clock.state.ok}}</InputButton>
+      @click="clock.prop.callback(clock.state.hour, clock.state.minute)">{{clock.state.ok}}</InputButton>
   </PartLayout>
 </PopupModal>
 </template>

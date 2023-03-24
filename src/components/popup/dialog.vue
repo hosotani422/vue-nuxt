@@ -1,6 +1,6 @@
 <script setup lang='ts'>
-import * as app from '@/composables/page/app';
-import * as dialog from '@/composables/popup/dialog';
+import app from '@/stores/page/app';
+import dialog from '@/stores/popup/dialog';
 </script>
 
 <template>
@@ -24,9 +24,9 @@ import * as dialog from '@/composables/popup/dialog';
   </PartLayout>
   <PartLayout class="flex align-center justify-end gap-2l">
     <InputButton class="auto"
-      @click="dialog.variable.callback.cancel!()">{{dialog.state.cancel}}</InputButton>
+      @click="dialog.prop.callback.cancel!()">{{dialog.state.cancel}}</InputButton>
     <InputButton class="auto error" v-if="dialog.state.mode !== `alert`"
-      @click="dialog.variable.callback.ok!()">{{dialog.state.ok}}</InputButton>
+      @click="dialog.prop.callback.ok!()">{{dialog.state.ok}}</InputButton>
   </PartLayout>
 </PopupModal>
 </template>

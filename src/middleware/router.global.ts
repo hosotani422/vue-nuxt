@@ -1,5 +1,5 @@
 import * as Api from '@/api/api';
-import * as app from '@/composables/page/app';
+import app from '@/stores/page/app';
 
 export default defineNuxtRouteMiddleware(async() => {
   if (process.client) {
