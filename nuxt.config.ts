@@ -5,15 +5,12 @@ export default defineNuxtConfig({
   ssr: true,
   rootDir: `src`,
   buildDir: `../.nuxt`,
-  css: [`@/assets/style/base/index.scss`],
+  css: [`@/assets/style/tailwind.css`],
+  components: {
+    global: true,
+    dirs: [`@/components`],
+  },
   vite: {
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: `@import '@/assets/style/const/index.scss';`,
-        },
-      },
-    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, `src`),
@@ -29,5 +26,11 @@ export default defineNuxtConfig({
       `defineStore`,
       [`defineStore`, `definePiniaStore`],
     ],
+  },
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
   },
 });

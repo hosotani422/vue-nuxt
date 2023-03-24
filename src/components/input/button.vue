@@ -3,7 +3,7 @@ export default defineNuxtComponent({
   inheritAttrs: false,
   props: {
     type: {
-      type: String,
+      type: String as PropType<`button` | `reset` | `submit`>,
       default: `button`,
       validator(value: string) {
         return [`button`, `reset`, `submit`].includes(value);
@@ -14,26 +14,10 @@ export default defineNuxtComponent({
 </script>
 
 <template>
-<PartBase
-  class="inputButton"
-  tag="button"
+<button
+  class="select-none m-0 p-0 h-8 text-base bg-transparent border-0 outline-0"
   :type="type"
-  v-bind="$attrs"
->
+  v-bind="$attrs">
   <slot>ボタン</slot>
-</PartBase>
+</button>
 </template>
-
-<style lang='scss' scoped>
-.inputButton {
-  user-select: none;
-  margin: 0;
-  padding: 0;
-  height: 2rem;
-  font-size: 1rem;
-  color: $color-state-fine;
-  background: transparent;
-  border: none;
-  outline: none;
-}
-</style>

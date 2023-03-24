@@ -14,45 +14,18 @@ export default defineNuxtComponent({
 </script>
 
 <template>
-<PartLayout
-  class="inputRadio flex align-center gap-l"
-  tag="label"
->
-  <PartBase
-    class="input"
-    tag="input"
+<label class="select-none flex items-center gap-3">
+  <input
+    class="appearance-none relative z-[2] w-8 h-8 bg-transparent
+      border-solid border-[0.1rem] border-theme-half rounded-full
+      checked:before:absolute checked:before:z-[1]
+      checked:before:top-[0.5rem] checked:before:left-[0.5rem]
+      checked:before:w-[0.8rem] checked:before:h-[0.8rem]
+      checked:before:bg-theme-fine checked:before:rounded-full"
     type="radio"
     :checked="modelValue === $attrs.value"
-    @change="$emit(`update:modelValue`, $event.target.value)"
-    v-bind="$attrs"
-  />
+    @change="$emit(`update:modelValue`, ($event.target as HTMLInputElement).value)"
+    v-bind="$attrs" />
   <slot />
-</PartLayout>
+</label>
 </template>
-
-<style lang='scss' scoped>
-.inputRadio {
-  user-select: none;
-  > .input {
-    appearance: none;
-    position: relative;
-    z-index: 2;
-    width: 2rem;
-    height: 2rem;
-    background: transparent;
-    border: 0.1rem solid $color-line-light;
-    border-radius: 50%;
-    &:checked:before {
-      content: "";
-      position: absolute;
-      z-index: 1;
-      top: 0.5rem;
-      left: 0.5rem;
-      width: 0.8rem;
-      height: 0.8rem;
-      background: $color-state-fine;
-      border-radius: 50%;
-    }
-  }
-}
-</style>

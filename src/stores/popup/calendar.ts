@@ -74,10 +74,10 @@ const useStore = defineStore(`calendar`, () => {
       state.open = false;
     },
     pageMove: (payload: {prev: boolean;}): void => {
-      ref.area!.value!.$el.classList.add(payload.prev ? `prev` : `next`);
-      ref.area!.value!.$el.addEventListener(`transitionend`, function listener() {
-        ref.area!.value!.$el.removeEventListener(`transitionend`, listener);
-        ref.area!.value!.$el.classList.remove(payload.prev ? `prev` : `next`);
+      ref.area!.value!.classList.add(payload.prev ? `prev` : `next`);
+      ref.area!.value!.addEventListener(`transitionend`, function listener() {
+        ref.area!.value!.removeEventListener(`transitionend`, listener);
+        ref.area!.value!.classList.remove(payload.prev ? `prev` : `next`);
         state.current = app.lib.dayjs(state.current).add(payload.prev ? -1 : 1, `month`).format(`YYYY/MM`);
       });
     },
@@ -87,7 +87,7 @@ const useStore = defineStore(`calendar`, () => {
       prop.swipe.x = payload.event.changedTouches[0]!.clientX;
       prop.swipe.y = payload.event.changedTouches[0]!.clientY;
       prop.swipe.left = prop.swipe.target.getBoundingClientRect().left -
-        ref.body!.value!.$el.parentElement.getBoundingClientRect().left;
+        ref.body!.value!.parentElement.getBoundingClientRect().left;
     },
     swipeStart: (payload: {event: TouchEvent;}): void => {
       if (prop.swipe.status === `start`) {

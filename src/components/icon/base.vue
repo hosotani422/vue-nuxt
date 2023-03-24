@@ -19,29 +19,16 @@ export default defineNuxtComponent({
 </script>
 
 <template>
-<PartText
-  class="iconBase"
-  :tag="tag"
-  v-bind="$attrs"
->
+<i class="w-8" v-bind="$attrs">
   <svg
     xmlns="http://www.w3.org/2000/svg"
     :aria-labelledby="name"
     :viewBox="viewBox"
     role="presentation">
-    <title
-      :id="name"
-      lang="en"
-    >
+    <title :id="name" lang="en">
       {{name}} icon
     </title>
     <slot />
   </svg>
-</PartText>
+</i>
 </template>
-
-<style lang='scss' scoped>
-.iconBase {
-  width: 2rem;
-}
-</style>

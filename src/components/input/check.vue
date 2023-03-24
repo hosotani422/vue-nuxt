@@ -14,45 +14,20 @@ export default defineNuxtComponent({
 </script>
 
 <template>
-<PartLayout
-  class="inputCheck flex align-center gap-l"
-  tag="label"
->
-  <PartBase
-    class="input"
-    tag="input"
+<label class="select-none flex items-center gap-3">
+  <input
+    class="appearance-none relative z-[2] w-8 h-8 bg-transparent
+      border-solid border-[0.1rem] border-theme-half
+      checked:before:absolute checked:before:z-[1]
+      checked:before:top-[0.2rem] checked:before:left-[0.56rem]
+      checked:before:w-[0.7rem] checked:before:h-[1.1rem]
+      checked:before:border-r-solid checked:before:border-r-[0.2rem] checked:before:border-r-theme-fine
+      checked:before:border-b-solid checked:before:border-b-[0.2rem] checked:before:border-b-theme-fine
+      checked:before:rotate-45"
     type="checkbox"
     :checked="modelValue"
-    @change="$emit(`update:modelValue`, $event.target.checked)"
-    v-bind="$attrs"
-  />
+    @change="$emit(`update:modelValue`, ($event.target as HTMLInputElement).checked)"
+    v-bind="$attrs" />
   <slot />
-</PartLayout>
+</label>
 </template>
-
-<style lang='scss' scoped>
-.inputCheck {
-  user-select: none;
-  > .input {
-    appearance: none;
-    position: relative;
-    z-index: 2;
-    width: 2rem;
-    height: 2rem;
-    background: transparent;
-    border: 0.1rem solid $color-line-light;
-    &:checked:before {
-      content: "";
-      position: absolute;
-      z-index: 1;
-      top: 0.2rem;
-      left: 0.56rem;
-      width: 0.7rem;
-      height: 1.1rem;
-      border-right: solid 0.2rem $color-state-fine;
-      border-bottom: solid 0.2rem $color-state-fine;
-      transform: rotate(45deg);
-    }
-  }
-}
-</style>

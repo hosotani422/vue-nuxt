@@ -11,7 +11,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Html :style="app.getter.styleHtml()" :class="app.getter.classTop()">
+  <Html class="theme-font-color" :class="app.getter.classTop()">
     <Head>
       <Title>Memotea</Title>
       <Meta charset="utf-8" />
@@ -21,39 +21,17 @@ onMounted(() => {
       <NoScript>JavaScript is required</NoScript>
     </Head>
     <Body>
-      <PartLayout class="pageRoot flex column">
-        <PartLayout class="even">
+      <div class="fixed z-[1] top-0 right-0 bottom-0 left-0 flex flex-col">
+        <div class="flex-even">
           <NuxtPage pageKey="pageKey" />
           <PopupCalendar />
           <PopupClock />
           <PopupDialog />
           <PopupNotice />
-        </PartLayout>
-        <PartLayout class="foot" :class="app.getter.classFoot()" v-if="app.getter.isApp()" />
-      </PartLayout>
+        </div>
+        <div v-if="app.getter.isApp()"
+          class="theme-back-color" :class="app.getter.classBottom()" />
+      </div>
     </Body>
   </Html>
 </template>
-
-<style lang='scss' scoped>
-.pageRoot {
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  > .foot {
-    background: $color-back-dark;
-    &.small {
-      flex: 0 0 32px;
-    }
-    &.middle {
-      flex: 0 0 50px;
-    }
-    &.large {
-      flex: 0 0 90px;
-    }
-  }
-}
-</style>
