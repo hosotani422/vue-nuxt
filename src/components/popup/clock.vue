@@ -8,28 +8,23 @@ clock.ref.minute = minute;
 </script>
 
 <template>
-<PopupModal class="popupClock" :open="clock.state.open">
-  <PartLayout class="even flex column align-center gap-l">
-    <PartLayout tag="canvas" ref="hour" class="even"
+<PopupModal class="popupClock" :open="clock.state.open" :max="true">
+  <div class="flex-even flex flex-col items-center gap-3">
+    <canvas ref="hour" class="flex-even"
       @touchstart="clock.action.inputHour({event: $event})"
       @touchmove="clock.action.inputHour({event: $event})" />
-    <PartLayout tag="canvas" ref="minute" class="even"
+    <canvas ref="minute" class="flex-even"
       @touchstart="clock.action.inputMinute({event: $event})"
       @touchmove="clock.action.inputMinute({event: $event})" />
-  </PartLayout>
-  <PartLayout class="auto flex align-center justify-end gap-2l">
-    <InputButton class="auto" @click="clock.action.close()">{{clock.state.cancel}}</InputButton>
-    <InputButton class="auto error" @click="clock.prop.callback()">{{clock.state.clear}}</InputButton>
-    <InputButton class="auto error"
-      @click="clock.prop.callback(clock.state.hour, clock.state.minute)">{{clock.state.ok}}</InputButton>
-  </PartLayout>
+  </div>
+  <div class="flex-auto flex items-center justify-end gap-4">
+    <InputButton class="flex-auto text-theme-fine" @click="clock.action.close()">
+      {{clock.state.cancel}}</InputButton>
+    <InputButton class="flex-auto text-theme-warn" @click="clock.prop.callback()">
+      {{clock.state.clear}}</InputButton>
+    <InputButton class="flex-auto text-theme-warn"
+      @click="clock.prop.callback(clock.state.hour, clock.state.minute)">
+      {{clock.state.ok}}</InputButton>
+  </div>
 </PopupModal>
 </template>
-
-<style lang='scss' scoped>
-.popupClock {
-  ::v-deep(.home) {
-    height: 80%;
-  }
-}
-</style>

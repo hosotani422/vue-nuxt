@@ -14,28 +14,10 @@ export default defineNuxtComponent({
 </script>
 
 <template>
-<PartText
-  class="inputTextarea"
-  tag="textarea"
+<textarea
+  class="resize-none overflow-auto m-0 p-2 leading-8 text-base
+    bg-transparent border-0 outline-0 placeholder:text-theme-half"
   v-text="modelValue"
-  @input="$emit(`update:modelValue`, $event.target.value)"
-  v-bind="$attrs"
-/>
+  @input="$emit(`update:modelValue`, ($event.target as HTMLInputElement).value)"
+  v-bind="$attrs" />
 </template>
-
-<style lang='scss' scoped>
-.inputTextarea {
-  resize: none;
-  overflow: auto;
-  margin: 0;
-  padding: 0.5rem;
-  line-height: 2rem;
-  font-size: 1rem;
-  background: transparent;
-  border: none;
-  outline: none;
-  &::placeholder {
-    color: $color-font-half;
-  }
-}
-</style>

@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .theme-font-color {
+    @apply _light:text-font-light;
+    @apply _dark:text-font-dark;
+  }
+  .theme-back-color {
+    @apply light_:bg-back-light;
+    @apply dark_:bg-back-dark;
+  }
+  .theme-mask-color {
+    @apply light_:bg-mask-light;
+    @apply dark_:bg-mask-dark;
+  }
+  .theme-grad-color {
+    @apply light_:bg-grad-light;
+    @apply dark_:bg-grad-dark;
+  }
+  .theme-shadow-normal {
+    @apply light_:shadow-normal-light;
+    @apply dark_:shadow-normal-dark;
+  }
+  .theme-shadow-reverse {
+    @apply light_:shadow-reverse-light;
+    @apply dark_:shadow-reverse-dark;
+  }
+  .theme-shadow-inner {
+    @apply light_:shadow-inner-light;
+    @apply dark_:shadow-inner-dark;
+  }
+  .theme-shadow-outer {
+    @apply light_:shadow-outer-light;
+    @apply dark_:shadow-outer-dark;
+  }
+  .fade-normal {
+    @apply speed1:active:duration-1000;
+    @apply speed2:active:duration-500;
+    @apply speed3:active:duration-200;
+    @apply active:transition-opacity;
+    @apply fromto:opacity-0;
+  }
+  .slide-right {
+    @apply speed1:active:duration-1000;
+    @apply speed2:active:duration-500;
+    @apply speed3:active:duration-200;
+    @apply active:transition-transform;
+    @apply fromto:translate-x-[150%];
+  }
+  .scale-up {
+    @apply speed1:duration-1000;
+    @apply speed2:duration-500;
+    @apply speed3:duration-200;
+    @apply speed1:[transition-property:height,padding-top,padding-bottom,border-width,transform];
+    @apply speed2:[transition-property:height,padding-top,padding-bottom,border-width,transform];
+    @apply speed3:[transition-property:height,padding-top,padding-bottom,border-width,transform];
+    @apply fromto:!h-0;
+    @apply fromto:!py-0;
+    @apply fromto:!border-0;
+    @apply fromto:!scale-100;
+  }
+}

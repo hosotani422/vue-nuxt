@@ -8,82 +8,43 @@ calendar.ref.area = area;
 </script>
 
 <template>
-<PopupModal class="popupCalendar" :open="calendar.state.open"
+<PopupModal :open="calendar.state.open"
   @touchmove="calendar.action.swipeStart({event: $event}), calendar.action.swipeMove({event: $event})"
   @touchend="calendar.action.swipeEnd({event: $event})">
-  <PartLayout class="flex auto column gap-2l">
-    <PartLayout class="flex align-center">
-      <IconPrev class="auto" @click="calendar.action.pageMove({prev: true})" />
-      <PartText class="even center">{{calendar.state.current}}</PartText>
-      <IconNext class="auto" @click="calendar.action.pageMove({prev: false})" />
-    </PartLayout>
-    <PartLayout tag="ul" class="flex">
-      <PartText tag="li" class="even center font-s" :key="`week${week}`"
-        v-for="week of calendar.getter.textWeek()">{{week}}</PartText>
-    </PartLayout>
-  </PartLayout>
-  <PartLayout ref="body" class="body auto hiddenXY">
-    <PartLayout ref="area" class="area flex" @touchstart="calendar.action.swipeInit({event: $event})">
-      <PartLayout tag="ul" class="month even flex wrap"
+  <div class="flex flex-auto flex-col gap-4">
+    <div class="flex items-center">
+      <IconPrev class="flex-auto" @click="calendar.action.pageMove({prev: true})" />
+      <p class="flex-even text-center">{{calendar.state.current}}</p>
+      <IconNext class="flex-auto" @click="calendar.action.pageMove({prev: false})" />
+    </div>
+    <ul class="flex">
+      <li class="flex-even text-center text-xs" :key="`week${week}`"
+        v-for="week of calendar.getter.textWeek()">{{week}}</li>
+    </ul>
+  </div>
+  <div ref="body" class="body flex-auto overflow-hidden">
+    <div ref="area" class="flex w-[300%] h-[15rem] translate-x-[-33.33%] current:transition-transform
+      speed1:current:duration-1000 speed2:current:duration-500 speed3:current:duration-200
+      [&.back]:translate-x-[-33.333%] [&.prev]:translate-x-0 [&.next]:translate-x-[-66.666%]"
+      @touchstart="calendar.action.swipeInit({event: $event})">
+      <ul class="flex flex-even flex-wrap"
         :key="`month${month.id}`" v-for="month in calendar.getter.textDay()">
-        <PartLayout tag="li"
-          class="day flex align-center justify-center padding-m font-m"
+        <li class="flex items-center justify-center p-2 text-base
+          flex-[0_0_14.285%] border-solid border-[0.1rem] border-transparent [&.hide]:invisible
+          [&.select]:text-font-dark [&.select]:bg-theme-fine [&.select]:shadow-[0_0_0_0.1rem_#303030_inset]
+          [&.select]:!border-solid [&.select]:!border-[0.1rem] [&.select]:!border-[#303030]
+          [&.today]:!border-solid [&.today]:!border-[0.1rem] [&.today]:!border-theme-fine"
           :class="calendar.getter.classDay(month.id, day.day)"
           :key="`month${month.id}day${day.day}`" v-for="day in month.day"
-          @click="calendar.prop.callback(day.day)">{{day.text}}</PartLayout>
-      </PartLayout>
-    </PartLayout>
-  </PartLayout>
-  <PartLayout class="auto flex justify-end gap-2l">
-    <InputButton class="auto" @click="calendar.action.close()">{{calendar.state.cancel}}</InputButton>
-    <InputButton class="auto error" @click="calendar.prop.callback(``)">{{calendar.state.clear}}</InputButton>
-  </PartLayout>
+          @click="calendar.prop.callback(day.day)">{{day.text}}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="flex-auto flex justify-end gap-4">
+    <InputButton class="flex-auto text-theme-fine" @click="calendar.action.close()">
+      {{calendar.state.cancel}}</InputButton>
+    <InputButton class="flex-auto text-theme-warn" @click="calendar.prop.callback(``)">
+      {{calendar.state.clear}}</InputButton>
+  </div>
 </PopupModal>
 </template>
-
-<style lang='scss' scoped>
-.popupCalendar {
-  ::v-deep(.body) {
-    > .area {
-      width: 300%;
-      height: 15rem;
-      transform: translateX(-100% * calc(1 / 3));
-      &.back, &.prev, &.next {
-        .speed1 & {
-          transition: transform 1s;
-        }
-        .speed2 & {
-          transition: transform 0.5s;
-        }
-        .speed3 & {
-          transition: transform 0.25s;
-        }
-      }
-      &.back {
-        transform: translateX(-100% * calc(1 / 3));
-      }
-      &.prev {
-        transform: translateX(0%);
-      }
-      &.next {
-        transform: translateX(-100% * calc(2 / 3));
-      }
-      > .month {
-        > .day {
-          flex: 0 0 calc(100% / 7);
-          border: 0.1rem solid transparent;
-          &.select {
-            color: $color-font-dark;
-            background: $color-state-fine;
-            box-shadow: 0 0 0 0.1rem $color-back-dark inset;
-            border: 0.1rem solid $color-back-dark;
-          }
-          &.today {
-            border: 0.1rem solid $color-state-fine;
-          }
-        }
-      }
-    }
-  }
-}
-</style>

@@ -35,8 +35,8 @@ const useStore = defineStore(`clock`, () => {
       state.ok = payload.ok;
       prop.callback = payload.callback;
       await nextTick();
-      action.drawHour({target: ref.hour!.value!.$el});
-      action.drawMinute({target: ref.minute!.value!.$el});
+      action.drawHour({target: ref.hour!.value});
+      action.drawMinute({target: ref.minute!.value});
     },
     close: (): void => {
       state.open = false;

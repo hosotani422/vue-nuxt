@@ -5,33 +5,13 @@ export default defineNuxtComponent({
 </script>
 
 <template>
-<PartLayout
-  class="inputFile"
-  tag="label"
->
-  <PartBase v-bind="$attrs"
-    class="input"
-    tag="input"
+<label class="relative z-[1]">
+  <input
+    class="absolute z-[2] top-0 right-0 bottom-0 left-0 opacity-0"
     type="file"
-  />
+    v-bind="$attrs" />
   <InputButton :class="$attrs.class">
     <slot>ファイル選択</slot>
   </InputButton>
-</PartLayout>
+</label>
 </template>
-
-<style lang='scss' scoped>
-.inputFile {
-  position: relative;
-  z-index: 1;
-  > .input {
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    opacity: 0;
-  }
-}
-</style>

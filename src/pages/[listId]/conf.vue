@@ -5,145 +5,89 @@ import conf from '@/stores/page/conf';
 </script>
 
 <template>
-<PartLayout class="pageConf select-none"
+<div class="absolute z-[10] right-0 bottom-0 left-0 h-[200%] select-none theme-mask-color
+  speed1:active:duration-1000 speed2:active:duration-500 speed3:active:duration-200
+  active:transition fromto:!translate-y-[50%] fromto:!bg-transparent"
   @touchstart.self="conf.action.swipeInit({event: $event})"
   @touchmove="conf.action.swipeStart({event: $event}), conf.action.swipeMove({event: $event})"
   @touchend="conf.action.swipeEnd({event: $event})">
-  <PartLayout class="home flex column">
-    <PartLayout class="head auto flex align-center padding-l gap-l">
-      <IconDown class="auto" @click="app.action.routerBack()" />
-      <PartText class="even font-l">{{app.getter.lang().conf.title}}</PartText>
-      <PartText class="auto">{{constant.base.title}} {{constant.base.version}}</PartText>
-    </PartLayout>
-    <PartLayout tag="ul" class="body even padding-l scrollXY">
-      <PartLayout class="item flex align-center padding-l gap-l border-bottom-m">
-        <PartText class="even">{{app.getter.lang().conf.size.title}}</PartText>
-        <InputRange class="even" min="1" max="3" step="1" v-model="conf.state.data.size" />
-        <PartText class="auto">{{app.getter.lang().conf.size.value[conf.state.data.size]}}</PartText>
-      </PartLayout>
-      <PartLayout class="item flex align-center padding-l gap-l border-bottom-m">
-        <PartText class="even">{{app.getter.lang().conf.speed.title}}</PartText>
-        <InputRange class="even" min="1" max="3" step="1" v-model="conf.state.data.speed" />
-        <PartText class="auto">{{app.getter.lang().conf.speed.value[conf.state.data.speed]}}</PartText>
-      </PartLayout>
-      <PartLayout class="item flex align-center padding-l gap-l border-bottom-m">
-        <PartText class="even">{{app.getter.lang().conf.volume.title}}</PartText>
-        <InputRange class="even" min="0" max="3" step="1" v-model="conf.state.data.volume" />
-        <PartText class="auto">{{app.getter.lang().conf.volume.value[conf.state.data.volume]}}</PartText>
-      </PartLayout>
-      <PartLayout class="item flex align-center padding-l gap-l border-bottom-m">
-        <PartText class="even">{{app.getter.lang().conf.vibrate.title}}</PartText>
-        <InputRadio class="auto" value="off"
+  <div class="absolute z-[1] right-0 bottom-0 left-0 h-[45%] flex flex-col theme-grad-color theme-shadow-normal">
+    <div class="relative z-[9] flex-auto flex items-center p-3 gap-3 theme-grad-color theme-shadow-normal">
+      <IconDown class="flex-auto" @click="app.action.routerBack()" />
+      <p class="flex-even text-xl">{{app.getter.lang().conf.title}}</p>
+      <p class="flex-auto">{{constant.base.title}} {{constant.base.version}}</p>
+    </div>
+    <ul class="body flex-even p-3 overflow-auto">
+      <li class="h-16 flex items-center p-3 gap-4
+        border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
+        <p class="flex-even">{{app.getter.lang().conf.size.title}}</p>
+        <InputRange class="flex-even" min="1" max="3" step="1" v-model="conf.state.data.size" />
+        <p class="flex-auto">{{app.getter.lang().conf.size.value[conf.state.data.size]}}</p>
+      </li>
+      <li class="h-16 flex items-center p-3 gap-4
+        border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
+        <p class="flex-even">{{app.getter.lang().conf.speed.title}}</p>
+        <InputRange class="flex-even" min="1" max="3" step="1" v-model="conf.state.data.speed" />
+        <p class="flex-auto">{{app.getter.lang().conf.speed.value[conf.state.data.speed]}}</p>
+      </li>
+      <li class="h-16 flex items-center p-3 gap-4
+        border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
+        <p class="flex-even">{{app.getter.lang().conf.volume.title}}</p>
+        <InputRange class="flex-even" min="0" max="3" step="1" v-model="conf.state.data.volume" />
+        <p class="flex-auto">{{app.getter.lang().conf.volume.value[conf.state.data.volume]}}</p>
+      </li>
+      <li class="h-16 flex items-center p-3 gap-4
+        border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
+        <p class="flex-even">{{app.getter.lang().conf.vibrate.title}}</p>
+        <InputRadio class="flex-auto" value="off"
           v-model="conf.state.data.vibrate">{{app.getter.lang().conf.vibrate.value.off}}</InputRadio>
-        <InputRadio class="auto" value="on"
+        <InputRadio class="flex-auto" value="on"
           v-model="conf.state.data.vibrate">{{app.getter.lang().conf.vibrate.value.on}}</InputRadio>
-      </PartLayout>
-      <PartLayout class="item flex align-center padding-l gap-l border-bottom-m">
-        <PartText class="even">{{app.getter.lang().conf.theme.title}}</PartText>
-        <InputRadio class="auto" value="light"
+      </li>
+      <li class="h-16 flex items-center p-3 gap-4
+        border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
+        <p class="flex-even">{{app.getter.lang().conf.theme.title}}</p>
+        <InputRadio class="flex-auto" value="light"
           v-model="conf.state.data.theme">{{app.getter.lang().conf.theme.value.light}}</InputRadio>
-        <InputRadio class="auto" value="dark"
+        <InputRadio class="flex-auto" value="dark"
           v-model="conf.state.data.theme">{{app.getter.lang().conf.theme.value.dark}}</InputRadio>
-      </PartLayout>
-      <PartLayout class="item flex align-center padding-l gap-l border-bottom-m">
-        <PartText class="even">{{app.getter.lang().conf.lang.title}}</PartText>
-        <InputRadio class="auto" value="en"
+      </li>
+      <li class="h-16 flex items-center p-3 gap-4
+        border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
+        <p class="flex-even">{{app.getter.lang().conf.lang.title}}</p>
+        <InputRadio class="flex-auto" value="en"
           v-model="conf.state.data.lang">{{app.getter.lang().conf.lang.value.en}}</InputRadio>
-        <InputRadio class="auto" value="jp"
+        <InputRadio class="flex-auto" value="jp"
           v-model="conf.state.data.lang">{{app.getter.lang().conf.lang.value.jp}}</InputRadio>
-      </PartLayout>
-      <PartLayout class="item flex align-center padding-l gap-l border-bottom-m">
-        <PartText class="even">{{app.getter.lang().conf.save.title}}</PartText>
-        <InputRadio class="auto" value="local"
+      </li>
+      <li class="h-16 flex items-center p-3 gap-4
+        border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
+        <p class="flex-even">{{app.getter.lang().conf.save.title}}</p>
+        <InputRadio class="flex-auto" value="local"
           v-model="conf.state.data.save">{{app.getter.lang().conf.save.value.local}}</InputRadio>
-        <InputRadio class="auto" value="rest"
+        <InputRadio class="flex-auto" value="rest"
           v-model="conf.state.data.save">{{app.getter.lang().conf.save.value.rest}}</InputRadio>
-        <InputRadio class="auto" value="gql"
+        <InputRadio class="flex-auto" value="gql"
           v-model="conf.state.data.save">{{app.getter.lang().conf.save.value.gql}}</InputRadio>
-      </PartLayout>
-      <PartLayout class="item flex align-center padding-l gap-2l border-bottom-m">
-        <PartText class="even">{{app.getter.lang().conf.backup.title}}</PartText>
-        <PartBase tag="a" class="auto" @click="conf.action.downloadBackup({event: $event})">
-          <InputButton>{{app.getter.lang().conf.backup.download}}</InputButton>
-        </PartBase>
-        <InputFile class="auto error" @change="conf.action.uploadBackup({event: $event})">
+      </li>
+      <li class="h-16 flex items-center p-3 gap-4
+        border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
+        <p class="flex-even">{{app.getter.lang().conf.backup.title}}</p>
+        <a class="flex-auto" @click="conf.action.downloadBackup({event: $event})">
+          <InputButton class="flex-auto text-theme-fine">{{app.getter.lang().conf.backup.download}}</InputButton>
+        </a>
+        <InputFile class="flex-auto text-theme-warn" @change="conf.action.uploadBackup({event: $event})">
           {{app.getter.lang().conf.backup.upload}}</InputFile>
-      </PartLayout>
-      <PartLayout class="item flex align-center padding-l gap-2l border-bottom-m">
-        <PartText class="even">{{app.getter.lang().conf.reset.title}}</PartText>
-        <InputButton class="auto" @click="conf.action.resetConf()">{{app.getter.lang().conf.reset.conf}}</InputButton>
-        <InputButton class="auto error" @click="conf.action.resetList()">{{app.getter.lang().conf.reset.list}}</InputButton>
-      </PartLayout>
-    </PartLayout>
-  </PartLayout>
-</PartLayout>
+      </li>
+      <li class="h-16 flex items-center p-3 gap-4
+        border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
+        <p class="flex-even">{{app.getter.lang().conf.reset.title}}</p>
+        <InputButton class="flex-auto text-theme-fine" @click="conf.action.resetConf()">
+          {{app.getter.lang().conf.reset.conf}}</InputButton>
+        <InputButton class="flex-auto text-theme-warn" @click="conf.action.resetList()">
+          {{app.getter.lang().conf.reset.list}}</InputButton>
+      </li>
+    </ul>
+  </div>
+</div>
 </template>
-
-<style lang='scss' scoped>
-.pageConf {
-  position: absolute;
-  z-index: zindex(page);
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 200%;
-  &.v-enter-active, &.v-leave-active {
-    .speed1 & {
-      transition: transform 1s, background 1s;
-    }
-    .speed2 & {
-      transition: transform 0.5s, background 0.5s;
-    }
-    .speed3 & {
-      transition: transform 0.25s, background 0.25s;
-    }
-  }
-  &.v-enter-from, &.v-leave-to {
-    transform: translateY(50%) !important;
-    background: transparent !important;
-  }
-  .light & {
-    background: $color-mask-light;
-  }
-  .dark & {
-    background: $color-mask-dark;
-  }
-  > .home {
-    position: absolute;
-    z-index: 1;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 45%;
-    .light & {
-      background: $color-grad-light;
-      box-shadow: $shadow-normal-light;
-    }
-    .dark & {
-      background: $color-grad-dark;
-      box-shadow: $shadow-normal-dark;
-    }
-    > .head {
-      position: relative;
-      z-index: 9;
-      .light & {
-        box-shadow: $shadow-normal-light;
-      }
-      .dark & {
-        box-shadow: $shadow-normal-dark;
-      }
-    }
-    > .body {
-      > .item {
-        height: 4rem;
-        .light & {
-          background: $color-back-light;
-        }
-        .dark & {
-          background: $color-back-dark;
-        }
-      }
-    }
-  }
-}
-</style>

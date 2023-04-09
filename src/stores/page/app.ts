@@ -43,22 +43,33 @@ const useStore = defineStore(`app`, () => {
       return mainId && !Array.isArray(mainId) ? mainId : ``;
     }),
     lang: computed(() => (): typeof lang[typeof conf[`state`][`data`][`lang`]] => lang[conf.state.data.lang]),
-    styleHtml: computed(() => (): string => {
-      if (conf.state.data.size === 1) {
-        return `font-size: 14px;`;
-      } else if (conf.state.data.size === 3) {
-        return `font-size: 18px;`;
-      }
-      return `font-size: 16px;`;
+    classTop: computed(() => (): string => {
+      const classList: string[] = [conf.state.data.theme];
+      classList.push((() => {
+        if (conf.state.data.speed === 1) {
+          return `speed1`;
+        } else if (conf.state.data.speed === 3) {
+          return `speed3`;
+        }
+        return `speed2`;
+      })());
+      classList.push((() => {
+        if (conf.state.data.size === 1) {
+          return `text-sm`;
+        } else if (conf.state.data.size === 3) {
+          return `text-lg`;
+        }
+        return `text-base`;
+      })());
+      return classList.join(` `);
     }),
-    classTop: computed(() => (): string => `speed${conf.state.data.speed} ${conf.state.data.theme}`),
-    classFoot: computed(() => (): string => {
+    classBottom: computed(() => (): string => {
       if (process.client && window.outerHeight <= 400) {
-        return `small`;
+        return `flex-[0_0_32px]`;
       } else if (process.client && window.outerHeight >= 720) {
-        return `large`;
+        return `flex-[0_0_90px]`;
       }
-      return `middle`;
+      return `flex-[0_0_50px]`;
     }),
   };
 

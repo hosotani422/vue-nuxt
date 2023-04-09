@@ -1,6 +1,0 @@
-@mixin device($type) {
-  $devices: (tb: 800, sp: 600);
-  @media only screen and (max-width: #{map-get($devices, $type)}px) {
-    @content;
-  }
-}
