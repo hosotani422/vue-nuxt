@@ -20,8 +20,8 @@ export default defineNuxtComponent({
     class="absolute z-[70] top-0 right-0 bottom-0 left-0
       flex items-center justify-center fade-normal theme-mask-color"
     v-bind="$attrs">
-    <div class="w-[80%] max-h-[80%] rounded flex flex-col p-4 gap-3 theme-back-color theme-shadow-normal"
-      :class="{'h-[80%]': max}">
+    <div :class="{'h-[80%]': max}"
+      class="w-[80%] max-h-[80%] rounded flex flex-col p-4 gap-3 theme-back-color theme-shadow-normal">
       <slot />
     </div>
   </div>

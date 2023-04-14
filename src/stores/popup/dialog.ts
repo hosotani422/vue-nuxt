@@ -1,18 +1,6 @@
 import * as Pinia from 'pinia';
 import constant from '@/utils/const';
 
-const prop: {
-  callback: {
-    ok?: () => void;
-    cancel?: () => void;
-  };
-} = {
-  callback: {
-    ok: () => {},
-    cancel: () => {},
-  },
-};
-
 const useStore = defineStore(`dialog`, () => {
   const state: {
     open: boolean;
@@ -45,6 +33,10 @@ const useStore = defineStore(`dialog`, () => {
     };
     ok: string;
     cancel: string;
+    callback: {
+      ok?: () => void;
+      cancel?: () => void;
+    };
   } = reactive(constant.init.dialog);
 
   const getter = {
@@ -62,7 +54,7 @@ const useStore = defineStore(`dialog`, () => {
     open: (payload: {
       mode: typeof state.mode; title: typeof state.title; message: typeof state.message;
       text?: typeof state.text; check?: typeof state.check; radio?: typeof state.radio;
-      ok?: typeof state.ok; cancel?: typeof state.cancel; callback?: typeof prop.callback;}): void => {
+      ok?: typeof state.ok; cancel?: typeof state.cancel; callback?: typeof state.callback;}): void => {
       state.open = true;
       state.mode = payload.mode;
       state.title = payload.title;
@@ -72,8 +64,8 @@ const useStore = defineStore(`dialog`, () => {
       payload.radio && (state.radio = payload.radio);
       payload.ok && (state.ok = payload.ok);
       payload.cancel && (state.cancel = payload.cancel);
-      payload.callback?.ok && (prop.callback.ok = payload.callback.ok);
-      payload.callback?.cancel && (prop.callback.cancel = payload.callback.cancel);
+      payload.callback?.ok && (state.callback.ok = payload.callback.ok);
+      payload.callback?.cancel && (state.callback.cancel = payload.callback.cancel);
     },
     close: (): void => {
       state.open = false;
@@ -90,4 +82,4 @@ const useStore = defineStore(`dialog`, () => {
 
 const store = useStore(Pinia.createPinia());
 
-export default {prop, state: store.state, getter: store.getter, action: store.action};
+export default {state: store.state, getter: store.getter, action: store.action};

@@ -11,7 +11,7 @@ import clock from '@/stores/popup/clock';
 import dialog from '@/stores/popup/dialog';
 import notice from '@/stores/popup/notice';
 
-const ref: {
+const refer: {
   home?: Vue.Ref<Vue.ComponentPublicInstance<any> | undefined>;
   wrap?: Vue.Ref<Vue.ComponentPublicInstance<any> | undefined>;
   items?: Vue.Ref<{[K: string]: Vue.ComponentPublicInstance<any>;}>;
@@ -123,7 +123,7 @@ const useStore = defineStore(`sub`, () => {
     },
     inputItem: (payload: {event: Event; subId: string;}): void => {
       getter.stateUnit.value(``, ``, payload.subId).title = (payload.event.target as HTMLInputElement).value;
-      Dom.resize(ref.titles!.value[payload.subId].$el);
+      Dom.resize(refer.titles!.value[payload.subId].$el);
     },
     enterItem: async(payload: {event: KeyboardEvent; subId: string;}) => {
       const subId = `sub${app.lib.dayjs().valueOf()}`;
@@ -132,11 +132,11 @@ const useStore = defineStore(`sub`, () => {
       getter.stateUnit.value(``, ``, payload.subId).title = target.value.slice(0, target.selectionStart!);
       getter.stateFull.value().data[subId] = {check: false, title: target.value.slice(target.selectionStart!)};
       await nextTick();
-      ref.titles!.value[subId].$el.focus();
-      Dom.resize(ref.items!.value[payload.subId]);
-      ref.items!.value[payload.subId]!.addEventListener(`transitionend`, function listener() {
-        ref.items!.value[payload.subId]!.removeEventListener(`transitionend`, listener);
-        ref.items!.value[payload.subId]!.style.height = ``;
+      refer.titles!.value[subId].$el.focus();
+      Dom.resize(refer.items!.value[payload.subId]);
+      refer.items!.value[payload.subId]!.addEventListener(`transitionend`, function listener() {
+        refer.items!.value[payload.subId]!.removeEventListener(`transitionend`, listener);
+        refer.items!.value[payload.subId]!.style.height = ``;
       });
     },
     backItem: async(payload: {event: KeyboardEvent; subId: string;}) => {
@@ -147,16 +147,16 @@ const useStore = defineStore(`sub`, () => {
         getter.stateUnit.value(``, ``, subId).title += getter.stateUnit.value(``, ``, payload.subId).title;
         delete getter.stateFull.value().data[payload.subId];
         await nextTick();
-        Dom.resize(ref.titles!.value[subId].$el);
-        ref.titles!.value[subId].$el.focus();
-        ref.titles!.value[subId].$el.selectionStart = caret;
-        ref.titles!.value[subId].$el.selectionEnd = caret;
+        Dom.resize(refer.titles!.value[subId].$el);
+        refer.titles!.value[subId].$el.focus();
+        refer.titles!.value[subId].$el.selectionStart = caret;
+        refer.titles!.value[subId].$el.selectionEnd = caret;
         // 文字削除キャンセル
         payload.event.preventDefault();
       }
     },
     deleteItem: async(payload: {subId: string;}) => {
-      const height = Dom.resize(ref.items!.value[payload.subId]);
+      const height = Dom.resize(refer.items!.value[payload.subId]);
       const backup = app.lib.lodash.cloneDeep(state.data);
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId), 1);
       delete getter.stateFull.value().data[payload.subId];
@@ -170,10 +170,10 @@ const useStore = defineStore(`sub`, () => {
           notice.action.close();
           state.data = backup;
           await nextTick();
-          Dom.resize(ref.items!.value[payload.subId], height);
-          ref.items!.value[payload.subId]!.addEventListener(`transitionend`, function listener() {
-            ref.items!.value[payload.subId]!.removeEventListener(`transitionend`, listener);
-            ref.items!.value[payload.subId]!.style.height = ``;
+          Dom.resize(refer.items!.value[payload.subId], height);
+          refer.items!.value[payload.subId]!.addEventListener(`transitionend`, function listener() {
+            refer.items!.value[payload.subId]!.removeEventListener(`transitionend`, listener);
+            refer.items!.value[payload.subId]!.style.height = ``;
           });
         },
       });
@@ -210,7 +210,7 @@ const useStore = defineStore(`sub`, () => {
         clear: app.getter.lang().button.clear,
         callback: (date) => {
           calendar.action.close();
-          main.getter.stateUnit().date = date;
+          main.getter.stateUnit().date = date || ``;
         },
       });
     },
@@ -267,12 +267,12 @@ const useStore = defineStore(`sub`, () => {
       });
     },
     dragInit: (payload: {event: TouchEvent; subId: string;}): void => {
-      const item = ref.items!.value[payload.subId]!.getBoundingClientRect();
+      const item = refer.items!.value[payload.subId]!.getBoundingClientRect();
       prop.drag.status = `start`;
       prop.drag.id = payload.subId;
       prop.drag.y = payload.event.changedTouches[0]!.clientY;
       prop.drag.top = item.top;
-      prop.drag.left = item.left - ref.home!.value!.getBoundingClientRect().left;
+      prop.drag.left = item.left - refer.home!.value!.getBoundingClientRect().left;
       prop.drag.height = item.height;
       prop.drag.width = item.width;
       state.status[payload.subId] = `edit`;
@@ -281,14 +281,14 @@ const useStore = defineStore(`sub`, () => {
     dragStart: (payload: {event: TouchEvent;}): void => {
       if (prop.drag.status === `start`) {
         prop.drag.status = `move`;
-        prop.drag.clone = ref.items!.value[prop.drag.id!]!.cloneNode(true) as HTMLElement;
+        prop.drag.clone = refer.items!.value[prop.drag.id!]!.cloneNode(true) as HTMLElement;
         prop.drag.clone.style.position = `absolute`;
         prop.drag.clone.style.zIndex = `1`;
         prop.drag.clone.style.top = `${prop.drag.top}px`;
         prop.drag.clone.style.left = `${prop.drag.left}px`;
         prop.drag.clone.style.height = `${prop.drag.height}px`;
         prop.drag.clone.style.width = `${prop.drag.width}px`;
-        ref.wrap!.value!.appendChild(prop.drag.clone);
+        refer.wrap!.value!.appendChild(prop.drag.clone);
         state.status[prop.drag.id!] = `hide`;
         // スクロール解除
         payload.event.preventDefault();
@@ -300,10 +300,10 @@ const useStore = defineStore(`sub`, () => {
           `${prop.drag.top! + payload.event.changedTouches[0]!.clientY - prop.drag.y!}px`;
         const index = getter.stateFull.value().sort.indexOf(prop.drag.id!);
         const clone = prop.drag.clone!.getBoundingClientRect();
-        const wrap = ref.wrap!.value!.getBoundingClientRect();
-        const prev = ref.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
-        const current = ref.items!.value[getter.stateFull.value().sort[index]!]?.getBoundingClientRect();
-        const next = ref.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
+        const wrap = refer.wrap!.value!.getBoundingClientRect();
+        const prev = refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
+        const current = refer.items!.value[getter.stateFull.value().sort[index]!]?.getBoundingClientRect();
+        const next = refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
         if (prev && clone.top + (clone.height / 2) <
           (next ? next.top : wrap.top + wrap.height) - ((prev.height + current.height) / 2)) {
           getter.stateFull.value().sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
@@ -321,7 +321,7 @@ const useStore = defineStore(`sub`, () => {
         prop.drag.clone!.classList.remove(`edit`);
         prop.drag.clone!.animate({
           top: [`${prop.drag.clone!.getBoundingClientRect().top}px`,
-            `${ref.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`],
+            `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`],
         }, constant.base.duration[conf.state.data.speed]).addEventListener(`finish`, () => {
           delete state.status[prop.drag.id!];
           prop.drag.clone!.remove();
@@ -387,4 +387,4 @@ const useStore = defineStore(`sub`, () => {
 
 const store = useStore(Pinia.createPinia());
 
-export default {ref, prop, state: store.state, getter: store.getter, action: store.action};
+export default {refer, prop, state: store.state, getter: store.getter, action: store.action};

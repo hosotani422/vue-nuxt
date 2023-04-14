@@ -3,16 +3,10 @@ import * as Pinia from 'pinia';
 import constant from '@/utils/const';
 import conf from '@/stores/page/conf';
 
-const ref: {
+const refer: {
   hour?: Vue.Ref<Vue.ComponentPublicInstance<any> | undefined>;
   minute?: Vue.Ref<Vue.ComponentPublicInstance<any> | undefined>;
 } = {};
-
-const prop: {
-  callback: (hour?: number, minute?: number) => void;
-} = {
-  callback: () => {},
-};
 
 const useStore = defineStore(`clock`, () => {
   const state: {
@@ -22,21 +16,22 @@ const useStore = defineStore(`clock`, () => {
     cancel: string;
     clear: string;
     ok: string;
+    callback: (hour?: number, minute?: number) => void;
   } = reactive(constant.init.clock);
 
   const action = {
     open: async(payload: {hour: typeof state.hour; minute: typeof state.minute; cancel: typeof state.cancel;
-      clear: typeof state.clear; ok: typeof state.ok; callback: typeof prop.callback;}) => {
+      clear: typeof state.clear; ok: typeof state.ok; callback: typeof state.callback;}) => {
       state.open = true;
       state.hour = payload.hour;
       state.minute = payload.minute;
       state.cancel = payload.cancel;
       state.clear = payload.clear;
       state.ok = payload.ok;
-      prop.callback = payload.callback;
+      state.callback = payload.callback;
       await nextTick();
-      action.drawHour({target: ref.hour!.value});
-      action.drawMinute({target: ref.minute!.value});
+      action.drawHour({target: refer.hour!.value});
+      action.drawMinute({target: refer.minute!.value});
     },
     close: (): void => {
       state.open = false;
@@ -151,4 +146,4 @@ const useStore = defineStore(`clock`, () => {
 
 const store = useStore(Pinia.createPinia());
 
-export default {ref, prop, state: store.state, action: store.action};
+export default {refer, state: store.state, action: store.action};

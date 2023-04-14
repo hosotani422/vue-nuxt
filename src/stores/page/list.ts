@@ -9,7 +9,7 @@ import conf from '@/stores/page/conf';
 import dialog from '@/stores/popup/dialog';
 import notice from '@/stores/popup/notice';
 
-const ref: {
+const refer: {
   wrap?: Vue.Ref<Vue.ComponentPublicInstance<any> | undefined>;
   items?: Vue.Ref<{[K: string]: Vue.ComponentPublicInstance<any>;}>;
 } = {};
@@ -63,13 +63,13 @@ const useStore = defineStore(`list`, () => {
       edit: state.status[listId] === `edit`,
       hide: state.status[listId] === `hide`,
     })),
-    iconType: computed(() => (listId: string): `IconInbox` | `IconTrash` | `IconList` => {
+    iconType: computed(() => (listId: string): `ItemIconInbox` | `ItemIconTrash` | `ItemIconList` => {
       if (listId === constant.base.id.inbox) {
-        return `IconInbox`;
+        return `ItemIconInbox`;
       } else if (listId === constant.base.id.trash) {
-        return `IconTrash`;
+        return `ItemIconTrash`;
       }
-      return `IconList`;
+      return `ItemIconList`;
     }),
     classLimit: computed(() => (listId: string): {[K in `text-theme-care` | `text-theme-warn`]: boolean;} => {
       const limit = {'text-theme-care': false, 'text-theme-warn': false};
@@ -199,7 +199,7 @@ const useStore = defineStore(`list`, () => {
       }
     },
     dragInit: (payload: {event: TouchEvent; listId: string;}): void => {
-      const item = ref.items!.value[payload.listId]!.getBoundingClientRect();
+      const item = refer.items!.value[payload.listId]!.getBoundingClientRect();
       prop.drag.status = `start`;
       prop.drag.id = payload.listId;
       prop.drag.y = (payload.event.detail as unknown as TouchEvent).changedTouches[0]!.clientY;
@@ -212,14 +212,14 @@ const useStore = defineStore(`list`, () => {
     dragStart: (payload: {event: TouchEvent;}): void => {
       if (prop.drag.status === `start`) {
         prop.drag.status = `move`;
-        prop.drag.clone = ref.items!.value[prop.drag.id!]!.cloneNode(true) as HTMLElement;
+        prop.drag.clone = refer.items!.value[prop.drag.id!]!.cloneNode(true) as HTMLElement;
         prop.drag.clone.style.position = `absolute`;
         prop.drag.clone.style.zIndex = `1`;
         prop.drag.clone.style.top = `${prop.drag.top}px`;
         prop.drag.clone.style.left = `${prop.drag.left}px`;
         prop.drag.clone.style.height = `${prop.drag.height}px`;
         prop.drag.clone.style.width = `${prop.drag.width}px`;
-        ref.wrap!.value!.appendChild(prop.drag.clone);
+        refer.wrap!.value!.appendChild(prop.drag.clone);
         state.status[prop.drag.id!] = `hide`;
         // スクロール解除
         payload.event.preventDefault();
@@ -231,9 +231,9 @@ const useStore = defineStore(`list`, () => {
           `${prop.drag.top! + payload.event.changedTouches[0]!.clientY - prop.drag.y!}px`;
         const index = getter.stateFull.value().sort.indexOf(prop.drag.id!);
         const clone = prop.drag.clone!.getBoundingClientRect();
-        const prev = ref.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
-        const current = ref.items!.value[getter.stateFull.value().sort[index]!]?.getBoundingClientRect();
-        const next = ref.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
+        const prev = refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
+        const current = refer.items!.value[getter.stateFull.value().sort[index]!]?.getBoundingClientRect();
+        const next = refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
         if (prev && clone.top + (clone.height / 2) <
           (next ? next.top : current.top + current.height) - ((prev.height + current.height) / 2)) {
           getter.stateFull.value().sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
@@ -251,7 +251,7 @@ const useStore = defineStore(`list`, () => {
         prop.drag.clone!.classList.remove(`edit`);
         prop.drag.clone!.animate({
           top: [`${prop.drag.clone!.getBoundingClientRect().top}px`,
-            `${ref.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`],
+            `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`],
         }, constant.base.duration[conf.state.data.speed]).addEventListener(`finish`, () => {
           delete state.status[prop.drag.id!];
           prop.drag.clone!.remove();
@@ -315,4 +315,4 @@ const useStore = defineStore(`list`, () => {
 
 const store = useStore(Pinia.createPinia());
 
-export default {ref, prop, state: store.state, getter: store.getter, action: store.action};
+export default {refer, prop, state: store.state, getter: store.getter, action: store.action};
