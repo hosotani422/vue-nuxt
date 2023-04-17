@@ -146,7 +146,7 @@ module.exports = {
     complexity: [`off`],
     // return値を常に指定するか、絶対に指定しないように要求する [recommend: ×, fix: ×]
     // treatUndefinedAsUnspecified: return値としてundefinedを禁止する
-    'consistent-return': [`error`, {treatUndefinedAsUnspecified: true}],
+    'consistent-return': [`off`],
     // ブロックの周りの中括弧の規則に従う必要があります [recommend: ×, fix: ●]
     // all: 常に中括弧ありとする
     // multi: 単一ステートメント時に中括弧なし、複数ステートメント時に中括弧ありとする

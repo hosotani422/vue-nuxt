@@ -36,7 +36,6 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/line-clamp'),
     plugin(({addVariant}) => {
       addVariant(`_light`, `&.light`);
       addVariant(`_dark`, `&.dark`);

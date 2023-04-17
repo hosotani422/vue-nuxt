@@ -103,10 +103,9 @@ export default defineNuxtComponent({
               :key="`list${listId()}main${mainId()}sub${subId}`">
               <ItemInputCheck class="flex-auto" :modelValue="stateUnit(``, ``, subId).check"
                 @change="$emit(`checkItem`, {event: $event, subId})" />
-              <ItemInputTextarea class="flex-even !p-0"
+              <ItemInputTextarea class="flex-even !p-0" :placeholder="lang().placeholder.sub"
                 :ref="(el: Vue.ComponentPublicInstance<any>) => {if (el) {titles[subId] = el;}}"
-                :placeholder="lang().placeholder.sub" :modelValue="stateUnit(``, ``, subId).title"
-                @click="$emit(`switchEdit`, {subId})"
+                v-model="stateUnit(``, ``, subId).title" @click="$emit(`switchEdit`, {subId})"
                 @keydown.enter.prevent="$emit(`enterItem`, {event: $event, subId})"
                 @keydown.backspace="index > 0 && $emit(`backItem`, {event: $event, subId})"
                 @input="$emit(`inputItem`, {event: $event, subId})" v-height />
