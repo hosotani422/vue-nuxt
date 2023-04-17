@@ -3,13 +3,12 @@ import * as Pinia from 'pinia';
 import constant from '@/utils/const';
 import app from '@/stores/page/app';
 
-const ref: {
+const refer: {
   body?: Vue.Ref<Vue.ComponentPublicInstance<any> | undefined>;
   area?: Vue.Ref<Vue.ComponentPublicInstance<any> | undefined>;
 } = {};
 
 const prop: {
-  callback: (date: string) => void;
   swipe: {
     status?: `start` | `move` | `end`;
     target?: HTMLElement;
@@ -19,7 +18,6 @@ const prop: {
     listener?: () => void;
   };
 } = {
-  callback: () => {},
   swipe: {},
 };
 
@@ -30,6 +28,7 @@ const useStore = defineStore(`calendar`, () => {
     current: string;
     cancel: string;
     clear: string;
+    callback: (date?: string) => void;
   } = reactive(constant.init.calendar);
 
   const getter = {
@@ -62,22 +61,22 @@ const useStore = defineStore(`calendar`, () => {
 
   const action = {
     open: (payload: {select: typeof state.select; current: typeof state.current;
-      cancel: typeof state.cancel; clear: typeof state.clear; callback: typeof prop.callback;}): void => {
+      cancel: typeof state.cancel; clear: typeof state.clear; callback: typeof state.callback;}): void => {
       state.open = true;
       state.select = payload.select;
       state.current = payload.current;
       state.cancel = payload.cancel;
       state.clear = payload.clear;
-      prop.callback = payload.callback;
+      state.callback = payload.callback;
     },
     close: (): void => {
       state.open = false;
     },
     pageMove: (payload: {prev: boolean;}): void => {
-      ref.area!.value!.classList.add(payload.prev ? `prev` : `next`);
-      ref.area!.value!.addEventListener(`transitionend`, function listener() {
-        ref.area!.value!.removeEventListener(`transitionend`, listener);
-        ref.area!.value!.classList.remove(payload.prev ? `prev` : `next`);
+      refer.area!.value!.classList.add(payload.prev ? `prev` : `next`);
+      refer.area!.value!.addEventListener(`transitionend`, function listener() {
+        refer.area!.value!.removeEventListener(`transitionend`, listener);
+        refer.area!.value!.classList.remove(payload.prev ? `prev` : `next`);
         state.current = app.lib.dayjs(state.current).add(payload.prev ? -1 : 1, `month`).format(`YYYY/MM`);
       });
     },
@@ -87,7 +86,7 @@ const useStore = defineStore(`calendar`, () => {
       prop.swipe.x = payload.event.changedTouches[0]!.clientX;
       prop.swipe.y = payload.event.changedTouches[0]!.clientY;
       prop.swipe.left = prop.swipe.target.getBoundingClientRect().left -
-        ref.body!.value!.parentElement.getBoundingClientRect().left;
+      refer.body!.value!.parentElement.getBoundingClientRect().left;
     },
     swipeStart: (payload: {event: TouchEvent;}): void => {
       if (prop.swipe.status === `start`) {
@@ -133,4 +132,4 @@ const useStore = defineStore(`calendar`, () => {
 
 const store = useStore(Pinia.createPinia());
 
-export default {ref, prop, state: store.state, getter: store.getter, action: store.action};
+export default {refer, prop, state: store.state, getter: store.getter, action: store.action};

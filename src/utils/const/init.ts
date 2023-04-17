@@ -44,6 +44,7 @@ export const calendar: typeof calendars[`state`] = {
   current: ``,
   cancel: ``,
   clear: ``,
+  callback: () => {},
 };
 
 export const clock: typeof clocks[`state`] = {
@@ -53,6 +54,7 @@ export const clock: typeof clocks[`state`] = {
   cancel: ``,
   clear: ``,
   ok: ``,
+  callback: () => {},
 };
 
 export const dialog: typeof dialogs[`state`] = {
@@ -77,10 +79,16 @@ export const dialog: typeof dialogs[`state`] = {
   },
   ok: ``,
   cancel: ``,
+  callback: {
+    ok: () => {},
+    cancel: () => {},
+  },
 };
 
 export const notice: typeof notices[`state`] = {
   open: false,
   message: ``,
   button: ``,
+  callback: () => {},
+  timeoutId: 0,
 };
