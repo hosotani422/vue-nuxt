@@ -122,18 +122,20 @@ const useStore = defineStore(`sub`, () => {
       Api.writeSub(state.data);
     },
     inputItem: (payload: {event: Event; subId: string;}): void => {
-      getter.stateUnit.value(``, ``, payload.subId).title = (payload.event.target as HTMLInputElement).value;
       Dom.resize(refer.titles!.value[payload.subId].$el);
     },
     enterItem: async(payload: {event: KeyboardEvent; subId: string;}) => {
       const subId = `sub${app.lib.dayjs().valueOf()}`;
-      const target = payload.event.target as HTMLInputElement;
+      const caret = (payload.event.target as HTMLInputElement).selectionStart;
+      const title = getter.stateFull.value().data[payload.subId]!.title;
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId) + 1, 0, subId);
-      getter.stateUnit.value(``, ``, payload.subId).title = target.value.slice(0, target.selectionStart!);
-      getter.stateFull.value().data[subId] = {check: false, title: target.value.slice(target.selectionStart!)};
+      getter.stateFull.value().data[payload.subId]!.title = title.slice(0, caret!);
+      getter.stateFull.value().data[subId] = {check: false, title: title.slice(caret!)};
       await nextTick();
+      // 要素が正しく描画されないので強制描画
+      refer.titles!.value[payload.subId].$el.value = getter.stateFull.value().data[payload.subId]!.title;
       refer.titles!.value[subId].$el.focus();
-      Dom.resize(refer.items!.value[payload.subId]);
+      Dom.resize(refer.titles!.value[payload.subId].$el);
       refer.items!.value[payload.subId]!.addEventListener(`transitionend`, function listener() {
         refer.items!.value[payload.subId]!.removeEventListener(`transitionend`, listener);
         refer.items!.value[payload.subId]!.style.height = ``;
@@ -144,9 +146,11 @@ const useStore = defineStore(`sub`, () => {
         const subId = getter.stateFull.value().sort[getter.stateFull.value().sort.indexOf(payload.subId) - 1]!;
         const caret = getter.stateUnit.value(``, ``, subId).title.length;
         getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId), 1);
-        getter.stateUnit.value(``, ``, subId).title += getter.stateUnit.value(``, ``, payload.subId).title;
+        getter.stateFull.value().data[subId]!.title += getter.stateFull.value().data[payload.subId]!.title;
         delete getter.stateFull.value().data[payload.subId];
         await nextTick();
+        // 要素が正しく描画されないので強制描画
+        refer.titles!.value[subId].$el.value = getter.stateFull.value().data[subId]!.title;
         Dom.resize(refer.titles!.value[subId].$el);
         refer.titles!.value[subId].$el.focus();
         refer.titles!.value[subId].$el.selectionStart = caret;

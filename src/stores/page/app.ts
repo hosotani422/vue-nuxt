@@ -23,13 +23,11 @@ const lib: {
 
 const useStore = defineStore(`app`, () => {
   const state: {
-    initServer: boolean;
     initClient: boolean;
-    listId: string;
+    backId: string;
   } = reactive({
-    initServer: false,
     initClient: false,
-    listId: ``,
+    backId: ``,
   });
 
   const getter = {
@@ -101,8 +99,8 @@ const useStore = defineStore(`app`, () => {
       useRouter().push(`/${getter.listId.value()}/conf`);
     },
     routerBack: (payload?: {listId: string;}): void => {
-      state.listId = payload?.listId || ``;
-      payload?.listId && action.saveRoute({listId: state.listId});
+      state.backId = payload?.listId || ``;
+      payload?.listId && action.saveRoute({listId: state.backId});
       useRouter().back();
     },
     clearTrash: (): void => {
