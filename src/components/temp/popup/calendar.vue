@@ -39,13 +39,13 @@ export default defineNuxtComponent({
 </script>
 
 <template>
-<BasePopup :open="state.open" @touchend="$emit(`swipeEnd`, {event: $event})"
+<BasePopup data-test="CalendarPage" :open="state.open" @touchend="$emit(`swipeEnd`, {event: $event})"
   @touchmove="$emit(`swipeStart`, {event: $event}), $emit(`swipeMove`, {event: $event})">
   <div class="flex flex-auto flex-col gap-4">
     <div class="flex items-center">
-      <ItemIconPrev class="flex-auto" @click="$emit(`pageMove`, {prev: true})" />
+      <ItemIconPrev data-test="CalendarPrev" class="flex-auto" @click="$emit(`pageMove`, {prev: true})" />
       <p class="flex-even text-center">{{state.current}}</p>
-      <ItemIconNext class="flex-auto" @click="$emit(`pageMove`, {prev: false})" />
+      <ItemIconNext data-test="CalendarNext" class="flex-auto" @click="$emit(`pageMove`, {prev: false})" />
     </div>
     <ul class="flex">
       <li class="flex-even text-center text-xs" :key="`week${week}`" v-for="week of textWeek()">{{week}}</li>
@@ -57,7 +57,7 @@ export default defineNuxtComponent({
       [&.back]:translate-x-[-33.333%] [&.prev]:translate-x-0 [&.next]:translate-x-[-66.666%]"
       @touchstart="$emit(`swipeInit`, {event: $event})">
       <ul class="flex flex-even flex-wrap" :key="`month${month.id}`" v-for="month in textDay()">
-        <li class="flex items-center justify-center p-2 text-base
+        <li data-test="CalendarItem" class="flex items-center justify-center p-2 text-base
           flex-[0_0_14.285%] border-solid border-[0.1rem] border-transparent [&.hide]:invisible
           [&.select]:text-font-dark [&.select]:bg-theme-fine [&.select]:shadow-[0_0_0_0.1rem_#303030_inset]
           [&.select]:!border-solid [&.select]:!border-[0.1rem] [&.select]:!border-[#303030]
@@ -68,9 +68,9 @@ export default defineNuxtComponent({
     </div>
   </div>
   <div class="flex-auto flex justify-end gap-4">
-    <ItemInputButton class="flex-auto text-theme-fine"
+    <ItemInputButton data-test="CalendarCancel" class="flex-auto text-theme-fine"
       @click="$emit(`close`)">{{state.cancel}}</ItemInputButton>
-    <ItemInputButton class="flex-auto text-theme-warn"
+    <ItemInputButton data-test="CalendarClear" class="flex-auto text-theme-warn"
       @click="state.callback()">{{state.clear}}</ItemInputButton>
   </div>
 </BasePopup>

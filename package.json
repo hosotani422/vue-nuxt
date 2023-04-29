@@ -5,7 +5,8 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "cypress": "cypress run --browser chrome"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.1.1",
@@ -15,6 +16,7 @@
     "@types/lodash": "^4.14.194",
     "@types/node": "^18.15.13",
     "autoprefixer": "^10.4.14",
+    "cypress": "^12.11.0",
     "dayjs": "^1.11.7",
     "eslint": "^8.39.0",
     "lodash": "^4.17.21",
