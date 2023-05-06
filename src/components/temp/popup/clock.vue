@@ -27,7 +27,7 @@ export default defineNuxtComponent({
 </script>
 
 <template>
-<BasePopup class="popupClock" :open="state.open" :max="true">
+<BasePopup data-test="ClockPage" class="popupClock" :open="state.open" :max="true">
   <div class="flex-even flex flex-col items-center gap-3">
     <canvas ref="hour" class="flex-even"
       @touchstart="$emit(`inputHour`, {event: $event})"
@@ -37,11 +37,11 @@ export default defineNuxtComponent({
       @touchmove="$emit(`inputMinute`, {event: $event})" />
   </div>
   <div class="flex-auto flex items-center justify-end gap-4">
-    <ItemInputButton class="flex-auto text-theme-fine" @click="$emit(`close`)">
+    <ItemInputButton data-test="ClockCancel" class="flex-auto text-theme-fine" @click="$emit(`close`)">
       {{state.cancel}}</ItemInputButton>
-    <ItemInputButton class="flex-auto text-theme-warn" @click="state.callback()">
+    <ItemInputButton data-test="ClockClear" class="flex-auto text-theme-warn" @click="state.callback()">
       {{state.clear}}</ItemInputButton>
-    <ItemInputButton class="flex-auto text-theme-warn"
+    <ItemInputButton data-test="ClockOk" class="flex-auto text-theme-warn"
       @click="state.callback(state.hour, state.minute)">
       {{state.ok}}</ItemInputButton>
   </div>
