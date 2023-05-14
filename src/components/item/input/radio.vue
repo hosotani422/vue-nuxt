@@ -1,16 +1,18 @@
-<script lang='ts'>
-export default defineNuxtComponent({
+<script setup lang='ts'>
+defineOptions({
   inheritAttrs: false,
-  props: {
-    modelValue: {
-      type: String,
-      default: ``,
-    },
-  },
-  emits: {
-    'update:modelValue': (_value: string) => true,
-  },
 });
+withDefaults(defineProps<{
+  modelValue: string;
+}>(), {
+  modelValue: ``,
+});
+const emit = defineEmits<{
+  'update:modelValue': [value: string];
+}>();
+const updateValue = ($event: Event): void => {
+  emit(`update:modelValue`, ($event.target as HTMLInputElement).value);
+};
 </script>
 
 <template>
@@ -24,7 +26,7 @@ export default defineNuxtComponent({
       checked:before:bg-theme-fine checked:before:rounded-full"
     type="radio"
     :checked="modelValue === $attrs.value"
-    @change="$emit(`update:modelValue`, ($event.target as HTMLInputElement).value)"
+    @change="updateValue($event)"
     v-bind="$attrs" />
   <slot />
 </label>

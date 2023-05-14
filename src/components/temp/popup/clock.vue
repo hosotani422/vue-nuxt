@@ -1,33 +1,24 @@
-<script lang='ts'>
+<script setup lang='ts'>
 import * as Vue from 'vue';
 import clock from '@/stores/popup/clock';
-export default defineNuxtComponent({
+defineOptions({
   inheritAttrs: false,
-  props: {
-    refer: {
-      type: Object as PropType<typeof clock.refer>,
-      required: true,
-    },
-    state: {
-      type: Object as PropType<typeof clock.state>,
-      required: true,
-    },
-  },
-  emits: [
-    `close`, `inputHour`, `inputMinute`,
-  ],
-  setup(props) {
-    const hour = ref<Vue.ComponentPublicInstance<any>>();
-    const minute = ref<Vue.ComponentPublicInstance<any>>();
-    props.refer.hour = hour;
-    props.refer.minute = minute;
-    return {hour, minute};
-  },
 });
+const props = defineProps<{
+  refer: typeof clock.refer;
+  state: typeof clock.state;
+}>();
+defineEmits([
+  `close`, `inputHour`, `inputMinute`,
+]);
+const hour = ref<Vue.ComponentPublicInstance<any>>();
+const minute = ref<Vue.ComponentPublicInstance<any>>();
+props.refer.hour = hour;
+props.refer.minute = minute;
 </script>
 
 <template>
-<BasePopup data-test="ClockPage" class="popupClock" :open="state.open" :max="true">
+<BasePopup data-testid="ClockPage" class="popupClock" :open="state.open" :max="true">
   <div class="flex-even flex flex-col items-center gap-3">
     <canvas ref="hour" class="flex-even"
       @touchstart="$emit(`inputHour`, {event: $event})"
@@ -37,11 +28,11 @@ export default defineNuxtComponent({
       @touchmove="$emit(`inputMinute`, {event: $event})" />
   </div>
   <div class="flex-auto flex items-center justify-end gap-4">
-    <ItemInputButton data-test="ClockCancel" class="flex-auto text-theme-fine" @click="$emit(`close`)">
+    <ItemInputButton data-testid="ClockCancel" class="flex-auto text-theme-fine" @click="$emit(`close`)">
       {{state.cancel}}</ItemInputButton>
-    <ItemInputButton data-test="ClockClear" class="flex-auto text-theme-warn" @click="state.callback()">
+    <ItemInputButton data-testid="ClockClear" class="flex-auto text-theme-warn" @click="state.callback()">
       {{state.clear}}</ItemInputButton>
-    <ItemInputButton data-test="ClockOk" class="flex-auto text-theme-warn"
+    <ItemInputButton data-testid="ClockOk" class="flex-auto text-theme-warn"
       @click="state.callback(state.hour, state.minute)">
       {{state.ok}}</ItemInputButton>
   </div>

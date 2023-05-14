@@ -1,16 +1,18 @@
-<script lang='ts'>
-export default defineNuxtComponent({
+<script setup lang='ts'>
+defineOptions({
   inheritAttrs: false,
-  props: {
-    modelValue: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: {
-    'update:modelValue': (_value: boolean) => true,
-  },
 });
+withDefaults(defineProps<{
+  modelValue: boolean;
+}>(), {
+  modelValue: false,
+});
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean];
+}>();
+const updateValue = ($event: Event): void => {
+  emit(`update:modelValue`, ($event.target as HTMLInputElement).checked);
+};
 </script>
 
 <template>
@@ -26,7 +28,7 @@ export default defineNuxtComponent({
       checked:before:rotate-45"
     type="checkbox"
     :checked="modelValue"
-    @change="$emit(`update:modelValue`, ($event.target as HTMLInputElement).checked)"
+    @change="updateValue($event)"
     v-bind="$attrs" />
   <slot />
 </label>

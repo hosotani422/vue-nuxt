@@ -1,15 +1,11 @@
-<script lang='ts'>
-export default defineNuxtComponent({
+<script setup lang='ts'>
+defineOptions({
   inheritAttrs: false,
-  props: {
-    type: {
-      type: String as PropType<`button` | `reset` | `submit`>,
-      default: `button`,
-      validator(value: string) {
-        return [`button`, `reset`, `submit`].includes(value);
-      },
-    },
-  },
+});
+withDefaults(defineProps<{
+  type: `button` | `reset` | `submit`;
+}>(), {
+  type: `button`,
 });
 </script>
 
