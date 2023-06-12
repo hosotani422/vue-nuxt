@@ -1,25 +1,20 @@
-<script lang='ts'>
-export default defineNuxtComponent({
+<script setup lang='ts'>
+defineOptions({
   inheritAttrs: false,
-  props: {
-    tag: {
-      type: String,
-      default: `i`,
-    },
-    name: {
-      type: String,
-      default: ``,
-    },
-    viewBox: {
-      type: String,
-      default: `0 0 24 24`,
-    },
-  },
+});
+withDefaults(defineProps<{
+  tag: string;
+  name: string;
+  viewBox: string;
+}>(), {
+  tag: `i`,
+  name: ``,
+  viewBox: `0 0 24 24`,
 });
 </script>
 
 <template>
-<i class="w-8" v-bind="$attrs">
+<component :is="tag" class="w-8" v-bind="$attrs">
   <svg
     xmlns="http://www.w3.org/2000/svg"
     :aria-labelledby="name"
@@ -30,5 +25,5 @@ export default defineNuxtComponent({
     </title>
     <slot />
   </svg>
-</i>
+</component>
 </template>

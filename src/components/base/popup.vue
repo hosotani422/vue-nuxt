@@ -1,16 +1,13 @@
-<script lang='ts'>
-export default defineNuxtComponent({
+<script setup lang='ts'>
+defineOptions({
   inheritAttrs: false,
-  props: {
-    open: {
-      type: Boolean,
-      default: false,
-    },
-    max: {
-      type: Boolean,
-      default: false,
-    },
-  },
+});
+withDefaults(defineProps<{
+  open: boolean;
+  max: boolean;
+}>(), {
+  open: false,
+  max: false,
 });
 </script>
 

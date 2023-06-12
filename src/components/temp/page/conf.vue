@@ -1,26 +1,17 @@
-<script lang='ts'>
+<script setup lang='ts'>
 import conf from '@/stores/page/conf';
-export default defineNuxtComponent({
+defineOptions({
   inheritAttrs: false,
-  props: {
-    title: {
-      type: String,
-      default: ``,
-    },
-    state: {
-      type: Object as PropType<typeof conf[`state`][`data`]>,
-      required: true,
-    },
-    lang: {
-      type: Function,
-      required: true,
-    },
-  },
-  emits: [
-    `routerBack`, `downloadBackup`, `uploadBackup`, `resetConf`, `resetList`,
-    `swipeInit`, `swipeStart`, `swipeMove`, `swipeEnd`,
-  ],
 });
+defineProps<{
+  title: string;
+  state: typeof conf[`state`][`data`];
+  lang: Function;
+}>();
+defineEmits([
+  `routerBack`, `downloadBackup`, `uploadBackup`, `resetConf`, `resetList`,
+  `swipeInit`, `swipeStart`, `swipeMove`, `swipeEnd`,
+]);
 </script>
 
 <template>
@@ -92,10 +83,10 @@ export default defineNuxtComponent({
       <li class="h-16 flex items-center p-3 gap-4
         border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
         <p class="flex-even">{{lang().conf.backup.title}}</p>
-        <a class="flex-auto" @click="$emit(`downloadBackup`, {event: $event})">
+        <a class="flex-auto" data-testid="ConfSave" @click="$emit(`downloadBackup`, {event: $event})">
           <ItemInputButton class="flex-auto text-theme-fine">{{lang().conf.backup.download}}</ItemInputButton>
         </a>
-        <ItemInputFile class="flex-auto text-theme-warn" @change="$emit(`uploadBackup`, {event: $event})">
+        <ItemInputFile data-testid="ConfLoad" class="flex-auto text-theme-warn" @change="$emit(`uploadBackup`, {event: $event})">
           {{lang().conf.backup.upload}}</ItemInputFile>
       </li>
       <li class="h-16 flex items-center p-3 gap-4

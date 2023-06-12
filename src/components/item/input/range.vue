@@ -1,16 +1,18 @@
-<script lang='ts'>
-export default defineNuxtComponent({
+<script setup lang='ts'>
+defineOptions({
   inheritAttrs: false,
-  props: {
-    modelValue: {
-      type: Number,
-      default: 0,
-    },
-  },
-  emits: {
-    'update:modelValue': (_value: number) => true,
-  },
 });
+withDefaults(defineProps<{
+  modelValue: number;
+}>(), {
+  modelValue: 0,
+});
+const emit = defineEmits<{
+  'update:modelValue': [value: number];
+}>();
+const updateValue = ($event: Event): void => {
+  emit(`update:modelValue`, Number(($event.target as HTMLInputElement).value));
+};
 </script>
 
 <template>
@@ -18,6 +20,6 @@ export default defineNuxtComponent({
   class="appearance-none h-[0.1rem] bg-theme-half"
   type="range"
   :value="modelValue"
-  @input="$emit(`update:modelValue`, Number(($event.target as HTMLInputElement).value))"
+  @input="updateValue($event)"
   v-bind="$attrs" />
 </template>

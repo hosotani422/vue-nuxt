@@ -135,9 +135,9 @@ const useStore = defineStore(`conf`, () => {
         if (fileList.length === 5 && Util.isJson(fileList[1]) &&
           Util.isJson(fileList[2]) && Util.isJson(fileList[3]) && Util.isJson(fileList[4])) {
           state.data = JSON.parse(fileList[4]!);
-          sub.state.data = JSON.parse(fileList[3]!);
-          main.state.data = JSON.parse(fileList[2]!);
           list.state.data = JSON.parse(fileList[1]!);
+          main.state.data = JSON.parse(fileList[2]!);
+          sub.state.data = JSON.parse(fileList[3]!);
           app.action.routerBack({listId: fileList[0]!});
         } else {
           dialog.action.open({
@@ -183,9 +183,9 @@ const useStore = defineStore(`conf`, () => {
         callback: {
           ok: () => {
             dialog.action.close();
-            sub.state.data = constant.init.sub;
-            main.state.data = constant.init.main;
             list.state.data = constant.init.list;
+            main.state.data = constant.init.main;
+            sub.state.data = constant.init.sub;
             app.action.routerBack({listId: constant.init.listId});
           },
           cancel: () => {
