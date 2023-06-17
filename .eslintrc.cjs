@@ -754,7 +754,7 @@ module.exports = {
     // capIsNewExceptions: 指定した大文字で始まる関数名をnew演算子なしで呼び出すことができます
     // capIsNewExceptionPattern: 正規表現に一致する大文字で始まる関数名をnew演算子なしで呼び出すことができます
     // properties: オブジェクトのプロパティのチェックを有効にします
-    'new-cap': [`error`, {newIsCap: true, capIsNew: true, properties: true}],
+    'new-cap': [`error`, {newIsCap: true, capIsNew: false, properties: true}],
     // 引数なしのコンストラクターを呼び出すときに括弧が必要 [recommend: ×, fix: ●]
     // always: 引数なしコンストラクタに括弧を強制します
     // never: 引数なしコンストラクタに括弧を強制しません

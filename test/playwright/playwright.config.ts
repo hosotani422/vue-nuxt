@@ -11,11 +11,11 @@ import {defineConfig, devices} from '@playwright/test';
  */
 export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
-  testDir: `./test/playwright/e2e`,
+  testDir: `./e2e`,
   // Glob patterns or regular expressions that match test files.
   testMatch: `*.ts`,
   // Folder for test artifacts such as screenshots, videos, traces, etc.
-  outputDir: `./test/playwright/result`,
+  outputDir: `./result`,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -111,10 +111,10 @@ export default defineConfig({
     //   use: {...devices[`Desktop Safari`]},
     // },
     /* Test against mobile viewports. */
-    {
-      name: `Mobile Chrome`,
-      use: {...devices[`Pixel 5`]},
-    },
+    // {
+    //   name: `Mobile Chrome`,
+    //   use: {...devices[`Pixel 5`]},
+    // },
     // {
     //   name: `Mobile Safari`,
     //   use: {...devices[`iPhone 12`]},
@@ -124,10 +124,10 @@ export default defineConfig({
     //   name: `Microsoft Edge`,
     //   use: {...devices[`Desktop Edge`], channel: `msedge`},
     // },
-    // {
-    //   name: `Google Chrome`,
-    //   use: {...devices[`Desktop Chrome`], channel: `chrome`},
-    // },
+    {
+      name: `Google Chrome`,
+      use: {...devices[`Desktop Chrome`], channel: `chrome`},
+    },
   ],
   /* Run your local dev server before starting the tests */
   webServer: {

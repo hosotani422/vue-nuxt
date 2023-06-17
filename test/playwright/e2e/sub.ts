@@ -1,11 +1,16 @@
-import {test, expect} from '@playwright/test';
+import {test as base, expect} from '@playwright/test';
 import Fixture from '../fixture/fixture';
 
+const test = base.extend<{fixture: Fixture;}>({
+  fixture: async({page}, use) => {
+    const fixture = new Fixture(page);
+    await use(fixture);
+  },
+});
+
 test.describe(`sub`, () => {
-  let fixture: Fixture | null = null;
-  test.beforeEach(async({page}) => {
-    fixture = new Fixture(page);
-    await fixture!.startSub();
+  test.beforeEach(async({fixture}) => {
+    await fixture.initSub();
   });
   test(`route`, async({page}) => {
     await expect(page).toHaveURL(`/list1685704768236/sub/main1685704776101`);
@@ -47,9 +52,9 @@ test.describe(`sub`, () => {
     await page.getByTestId(`ClockClear`).click();
     await expect(page.getByTestId(`SubClock`)).toHaveValue(``);
   });
-  test(`dialog`, async({page}) => {
+  test(`dialog`, async({page, fixture}) => {
     await page.getByTestId(`SubDialog`).click();
-    await fixture!.checkDialog(page.getByTestId(`DialogCheck`).last());
+    await fixture.checkDialog(page.getByTestId(`DialogCheck`).last());
     await expect(page.getByTestId(`SubDialog`)).toHaveValue(`2日前`);
   });
 });
