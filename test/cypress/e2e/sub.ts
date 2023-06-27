@@ -3,10 +3,9 @@ Cypress.on(`uncaught:exception`, () => false);
 describe(`sub`, () => {
   beforeEach(() => {
     cy.visit(`/list0000000000000`);
-    cy.get(`[data-testid="MainPlus"]`).click();
-    cy.get(`[data-testid="DialogTitle"]`).type(`main1`);
-    cy.get(`[data-testid="DialogOk"]`).click();
-    cy.get(`[data-testid="MainItem"]`).click();
+    cy.get(`[data-testid="MainConf"]`).click();
+    cy.get(`[data-testid="ConfLoad"]`).selectFile(`./test/memotea.bak`);
+    cy.get(`[data-testid="MainItem"]`).first().click();
   });
   it(`route`, () => {
     cy.get(`[data-testid="SubRight"]`).click();
@@ -14,31 +13,21 @@ describe(`sub`, () => {
   });
   it(`create`, () => {
     cy.get(`[data-testid="SubTask"]`).first().type(`{enter}`);
-    cy.get(`[data-testid="SubTask"]`).first().type(`{enter}`);
-    cy.get(`[data-testid="SubItem"]`).should(`have.length`, 3);
+    cy.get(`[data-testid="SubItem"]`).should(`have.length`, 4);
   });
   it(`check`, () => {
-    cy.get(`[data-testid="SubTask"]`).first().type(`{enter}`);
-    cy.get(`[data-testid="SubTask"]`).first().type(`{enter}`);
     cy.get(`[data-testid="SubCheck"]`).first().check();
     cy.get(`[data-testid="SubCheck"]`).last().should(`be.checked`);
     cy.get(`[data-testid="SubCheck"]`).last().uncheck();
     cy.get(`[data-testid="SubCheck"]`).last().should(`not.be.checked`);
   });
   it(`mode`, () => {
-    cy.get(`[data-testid="SubTask"]`).first().type(`{enter}`);
-    cy.get(`[data-testid="SubTask"]`).first().type(`{enter}`);
-    cy.get(`[data-testid="SubTask"]`).first().type(`sub1`);
-    cy.get(`[data-testid="SubTask"]`).eq(1).type(`sub2`);
-    cy.get(`[data-testid="SubTask"]`).last().type(`sub3`);
     cy.get(`[data-testid="SubMode"]`).click();
     cy.get(`[data-testid="SubMemo"]`).should(`have.value`, `sub1\nsub2\nsub3`);
   });
   it(`delete`, () => {
-    cy.get(`[data-testid="SubTask"]`).first().type(`{enter}`);
-    cy.get(`[data-testid="SubTask"]`).first().type(`{enter}`);
-    cy.get(`[data-testid="SubTask"]`).last().focus();
-    cy.get(`[data-testid="SubTrash"]`).last().trigger(`touchstart`);
+    cy.get(`[data-testid="SubTask"]`).last().click();
+    cy.get(`[data-testid="SubTrash"]`).trigger(`touchstart`);
     cy.get(`[data-testid="SubItem"]`).should(`have.length`, 2);
   });
   it(`calendar`, () => {

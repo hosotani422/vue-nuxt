@@ -1,19 +1,24 @@
-import {test, expect} from '@playwright/test';
+import {test as base, expect} from '@playwright/test';
 import Fixture from '../fixture/fixture';
 
+const test = base.extend<{fixture: Fixture;}>({
+  fixture: async({page}, use) => {
+    const fixture = new Fixture(page);
+    await use(fixture);
+  },
+});
+
 test.describe(`main`, () => {
-  let fixture: Fixture | null = null;
-  test.beforeEach(async({page}) => {
-    fixture = new Fixture(page);
-    await fixture!.startMain();
+  test.beforeEach(async({fixture}) => {
+    await fixture.initMain();
   });
-  test(`create`, async({page}) => {
+  test(`create`, async({page, fixture}) => {
     await page.getByTestId(`MainPlus`).click();
-    await fixture!.textDialog(`main2`);
+    await fixture.textDialog(`main4`);
     await expect(page.getByTestId(`MainItem`)).toHaveCount(4);
   });
-  test(`clone`, async({page}) => {
-    await fixture!.longClick(page.getByTestId(`MainItem`).first());
+  test(`clone`, async({page, fixture}) => {
+    await fixture.longClick(page.getByTestId(`MainItem`).first());
     await page.getByTestId(`MainClone`).click();
     await expect(page.getByTestId(`MainItem`)).toHaveCount(4);
   });
@@ -29,14 +34,14 @@ test.describe(`main`, () => {
     await page.getByTestId(`MainCheck`).last().uncheck();
     await expect(page.getByTestId(`MainCheck`).last()).not.toBeChecked();
   });
-  test(`move`, async({page}) => {
-    await fixture!.longClick(page.getByTestId(`MainItem`).first());
+  test(`move`, async({page, fixture}) => {
+    await fixture.longClick(page.getByTestId(`MainItem`).first());
     await page.getByTestId(`MainMove`).click();
-    await fixture!.checkDialog(page.getByTestId(`DialogRadio`).last());
+    await fixture.checkDialog(page.getByTestId(`DialogRadio`).last());
     await expect(page.getByTestId(`MainItem`)).toHaveCount(2);
   });
-  test(`delete`, async({page}) => {
-    await fixture!.longClick(page.getByTestId(`MainItem`).first());
+  test(`delete`, async({page, fixture}) => {
+    await fixture.longClick(page.getByTestId(`MainItem`).first());
     await page.getByTestId(`MainTrash`).click();
     await expect(page.getByTestId(`MainItem`)).toHaveCount(2);
     await page.getByTestId(`NoticeBack`).click();

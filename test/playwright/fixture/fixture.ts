@@ -2,20 +2,20 @@ import {Page, Locator} from '@playwright/test';
 
 export default class Fixture {
   public constructor(private readonly page: Page) {}
-  private async init(): Promise<void> {
+  private async loadData(): Promise<void> {
     await this.page.goto(`/list0000000000000`);
     await this.page.getByTestId(`MainConf`).click();
     await this.page.getByTestId(`ConfLoad`).setInputFiles(`./test/memotea.bak`);
   }
-  public async startList(): Promise<void> {
-    await this.init();
+  public async initList(): Promise<void> {
+    await this.loadData();
     await this.page.getByTestId(`MainList`).click();
   }
-  public async startMain(): Promise<void> {
-    await this.init();
+  public async initMain(): Promise<void> {
+    await this.loadData();
   }
-  public async startSub(): Promise<void> {
-    await this.init();
+  public async initSub(): Promise<void> {
+    await this.loadData();
     await this.page.getByTestId(`MainItem`).first().click();
   }
   public async longClick(locator: Locator): Promise<void> {
