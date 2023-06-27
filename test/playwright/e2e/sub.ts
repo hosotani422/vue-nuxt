@@ -3,8 +3,7 @@ import Fixture from '../fixture/fixture';
 
 const test = base.extend<{fixture: Fixture;}>({
   fixture: async({page}, use) => {
-    const fixture = new Fixture(page);
-    await use(fixture);
+    await use(new Fixture(page));
   },
 });
 

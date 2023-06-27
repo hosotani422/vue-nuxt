@@ -31,19 +31,19 @@ defineEmits([
       <li class="h-16 flex items-center p-3 gap-4
         border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
         <p class="flex-even">{{lang().conf.size.title}}</p>
-        <ItemInputRange class="flex-even" min="1" max="3" step="1" v-model="state.size" />
+        <ItemInputRange class="flex-even" :min="1" :max="3" :step="1" v-model="state.size" />
         <p class="flex-auto">{{lang().conf.size.value[state.size]}}</p>
       </li>
       <li class="h-16 flex items-center p-3 gap-4
         border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
         <p class="flex-even">{{lang().conf.speed.title}}</p>
-        <ItemInputRange class="flex-even" min="1" max="3" step="1" v-model="state.speed" />
+        <ItemInputRange class="flex-even" :min="1" :max="3" :step="1" v-model="state.speed" />
         <p class="flex-auto">{{lang().conf.speed.value[state.speed]}}</p>
       </li>
       <li class="h-16 flex items-center p-3 gap-4
         border-b-solid border-b-[0.1rem] border-b-font-dark theme-back-color">
         <p class="flex-even">{{lang().conf.volume.title}}</p>
-        <ItemInputRange class="flex-even" min="0" max="3" step="1" v-model="state.volume" />
+        <ItemInputRange class="flex-even" :min="0" :max="3" :step="1" v-model="state.volume" />
         <p class="flex-auto">{{lang().conf.volume.value[state.volume]}}</p>
       </li>
       <li class="h-16 flex items-center p-3 gap-4

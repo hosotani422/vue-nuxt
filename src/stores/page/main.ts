@@ -278,7 +278,7 @@ const useStore = defineStore(`main`, () => {
           top: [`${prop.drag.clone!.getBoundingClientRect().top}px`,
             `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`],
         }, constant.base.duration[conf.state.data.speed]).addEventListener(`finish`, () => {
-          delete state.status[prop.drag.id!];
+          state.status[prop.drag.id!] = ``;
           prop.drag.clone!.remove();
           prop.drag = {};
         });
