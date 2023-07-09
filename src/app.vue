@@ -28,7 +28,7 @@ onMounted(() => {
       <div class="fixed z-[1] top-0 right-0 bottom-0 left-0 flex flex-col">
         <div class="flex-even">
           <NuxtPage pageKey="pageKey" />
-          <TempPopupCalendar
+          <PopupCalendar
             :refer="calendar.refer"
             :state="calendar.state"
             :textWeek="calendar.getter.textWeek"
@@ -41,20 +41,20 @@ onMounted(() => {
             @swipeMove="calendar.action.swipeMove"
             @swipeEnd="calendar.action.swipeEnd"
           />
-          <TempPopupClock
+          <PopupClock
             :refer="clock.refer"
             :state="clock.state"
             @close="clock.action.close"
             @inputHour="clock.action.inputHour"
             @inputMinute="clock.action.inputMinute"
           />
-          <TempPopupDialog
+          <PopupDialog
             :state="dialog.state"
             :lang="app.getter.lang"
             :stateCheckAll="dialog.getter.stateCheckAll"
             @clickCheckAll="dialog.action.clickCheckAll"
           />
-          <TempPopupNotice
+          <PopupNotice
             :state="notice.state"
           />
         </div>

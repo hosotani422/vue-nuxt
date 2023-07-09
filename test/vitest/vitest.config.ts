@@ -19,7 +19,7 @@ export default defineConfig(() => ({
   plugins: [
     AutoImport({
       imports: [`vue`, `pinia`],
-      dts: `test/vitest/auto-import.d.ts`,
+      dts: `test/vitest/auto-imports.d.ts`,
     }),
   ],
 }));

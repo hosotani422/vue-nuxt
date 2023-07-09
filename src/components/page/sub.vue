@@ -45,14 +45,14 @@ props.refer.titles = titles;
   @touchend="$emit(`dragEnd`), $emit(`swipeEnd`, {event: $event})">
   <div ref="home" class="absolute z-[1] top-0 bottom-0 left-[57%] w-[43%] flex flex-col theme-grad-color theme-shadow-reverse">
     <div class="relative z-[9] flex-auto flex items-center p-3 gap-3 theme-grad-color theme-shadow-normal">
-      <ItemIconRight data-testid="SubRight" class="flex-auto" @click="$emit(`routerBack`)" />
-      <ItemInputTextbox data-testid="SubTitle" class="flex-even text-xl"
+      <IconRight data-testid="SubRight" class="flex-auto" @click="$emit(`routerBack`)" />
+      <InputTextbox data-testid="SubTitle" class="flex-even text-xl"
         :placeholder="lang().placeholder.main" v-model="mainUnit().title" />
-      <ItemIconMode data-testid="SubMode" class="flex-auto" @click="$emit(`switchItem`)" />
+      <IconMode data-testid="SubMode" class="flex-auto" @click="$emit(`switchItem`)" />
     </div>
     <div class="flex-even p-3 overflow-auto">
       <transition mode="out-in">
-        <ItemInputTextarea data-testid="SubMemo" class="w-full h-full theme-back-color fade-normal"
+        <InputTextarea data-testid="SubMemo" class="w-full h-full theme-back-color fade-normal"
           :placeholder="lang().placeholder.memo" v-if="!mainUnit().task"
           :modelValue="textMemo()" @input="$emit(`inputMemo`, {event: $event})" />
         <ul ref="wrap" class="fade-normal" v-else>
@@ -65,17 +65,17 @@ props.refer.titles = titles;
               :class="classItem(subId)" v-for="(subId, index) of stateFull().sort"
               :ref="(el: Vue.ComponentPublicInstance<any>) => {if (el) {items[subId] = el;}}"
               :key="`list${listId()}main${mainId()}sub${subId}`">
-              <ItemInputCheck data-testid="SubCheck" class="flex-auto" :modelValue="stateUnit(``, ``, subId).check"
+              <InputCheck data-testid="SubCheck" class="flex-auto" :modelValue="stateUnit(``, ``, subId).check"
                 @change="$emit(`checkItem`, {event: $event, subId})" />
-              <ItemInputTextarea data-testid="SubTask" class="flex-even !p-0" :placeholder="lang().placeholder.sub"
+              <InputTextarea data-testid="SubTask" class="flex-even !p-0" :placeholder="lang().placeholder.sub"
                 :ref="(el: Vue.ComponentPublicInstance<any>) => {if (el) {titles[subId] = el;}}"
                 v-model="stateUnit(``, ``, subId).title" @click="$emit(`switchEdit`, {subId})"
                 @keydown.enter.prevent="$emit(`enterItem`, {event: $event, subId})"
                 @keydown.backspace="index > 0 && $emit(`backItem`, {event: $event, subId})"
                 @input="$emit(`inputItem`, {event: $event, subId})" v-height />
-              <ItemIconDrag data-testid="SubDrag" @touchstart="$emit(`dragInit`, {event: $event, subId})" />
+              <IconDrag data-testid="SubDrag" @touchstart="$emit(`dragInit`, {event: $event, subId})" />
               <transition>
-                <ItemIconTrash data-testid="SubTrash" class="absolute right-3 slide-right theme-back-color"
+                <IconTrash data-testid="SubTrash" class="absolute right-3 slide-right theme-back-color"
                   v-if="stateFull().sort.length > 1 && classItem(subId).edit"
                   @touchstart="$emit(`deleteItem`, {subId})" />
               </transition>
@@ -85,11 +85,11 @@ props.refer.titles = titles;
       </transition>
     </div>
     <div class="relative z-[9] flex-auto flex items-center p-3 gap-3 theme-grad-color theme-shadow-reverse">
-      <ItemInputTextbox data-testid="SubCalendar" class="flex-even w-full" :class="classLimit()" :placeholder="lang().placeholder.date"
+      <InputTextbox data-testid="SubCalendar" class="flex-even w-full" :class="classLimit()" :placeholder="lang().placeholder.date"
         :modelValue="mainUnit().date" @focus="$emit(`openCalendar`, {date: mainUnit().date})" readonly />
-      <ItemInputTextbox data-testid="SubClock" class="flex-even w-full" :class="classLimit()" :placeholder="lang().placeholder.time"
+      <InputTextbox data-testid="SubClock" class="flex-even w-full" :class="classLimit()" :placeholder="lang().placeholder.time"
         :modelValue="mainUnit().time" @focus="$emit(`openClock`, {time: mainUnit().time})" readonly />
-      <ItemInputTextbox data-testid="SubDialog" class="flex-even w-full" :class="classLimit()" :placeholder="lang().placeholder.alarm"
+      <InputTextbox data-testid="SubDialog" class="flex-even w-full" :class="classLimit()" :placeholder="lang().placeholder.alarm"
         :modelValue="textAlarm()" @focus="$emit(`openAlarm`)" readonly />
     </div>
   </div>

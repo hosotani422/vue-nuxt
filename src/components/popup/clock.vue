@@ -28,13 +28,13 @@ props.refer.minute = minute;
       @touchmove="$emit(`inputMinute`, {event: $event})" />
   </div>
   <div class="flex-auto flex items-center justify-end gap-4">
-    <ItemInputButton data-testid="ClockCancel" class="flex-auto text-theme-fine" @click="$emit(`close`)">
-      {{state.cancel}}</ItemInputButton>
-    <ItemInputButton data-testid="ClockClear" class="flex-auto text-theme-warn" @click="state.callback()">
-      {{state.clear}}</ItemInputButton>
-    <ItemInputButton data-testid="ClockOk" class="flex-auto text-theme-warn"
+    <InputButton data-testid="ClockCancel" class="flex-auto text-theme-fine" @click="$emit(`close`)">
+      {{state.cancel}}</InputButton>
+    <InputButton data-testid="ClockClear" class="flex-auto text-theme-warn" @click="state.callback()">
+      {{state.clear}}</InputButton>
+    <InputButton data-testid="ClockOk" class="flex-auto text-theme-warn"
       @click="state.callback(state.hour, state.minute)">
-      {{state.ok}}</ItemInputButton>
+      {{state.ok}}</InputButton>
   </div>
 </BasePopup>
 </template>

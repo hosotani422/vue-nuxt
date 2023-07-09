@@ -5,7 +5,7 @@ import main from '@/stores/page/main';
 </script>
 
 <template>
-<TempPageMain
+<PageMain
   :refer="main.refer"
   :status="main.state.status"
   :lang="app.getter.lang"

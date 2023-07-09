@@ -25,9 +25,9 @@ props.refer.area = area;
   @touchmove="$emit(`swipeStart`, {event: $event}), $emit(`swipeMove`, {event: $event})">
   <div class="flex flex-auto flex-col gap-4">
     <div class="flex items-center">
-      <ItemIconPrev data-testid="CalendarPrev" class="flex-auto" @click="$emit(`pageMove`, {prev: true})" />
+      <IconPrev data-testid="CalendarPrev" class="flex-auto" @click="$emit(`pageMove`, {prev: true})" />
       <p class="flex-even text-center">{{state.current}}</p>
-      <ItemIconNext data-testid="CalendarNext" class="flex-auto" @click="$emit(`pageMove`, {prev: false})" />
+      <IconNext data-testid="CalendarNext" class="flex-auto" @click="$emit(`pageMove`, {prev: false})" />
     </div>
     <ul class="flex">
       <li class="flex-even text-center text-xs" :key="`week${week}`" v-for="week of textWeek()">{{week}}</li>
@@ -50,10 +50,10 @@ props.refer.area = area;
     </div>
   </div>
   <div class="flex-auto flex justify-end gap-4">
-    <ItemInputButton data-testid="CalendarCancel" class="flex-auto text-theme-fine"
-      @click="$emit(`close`)">{{state.cancel}}</ItemInputButton>
-    <ItemInputButton data-testid="CalendarClear" class="flex-auto text-theme-warn"
-      @click="state.callback()">{{state.clear}}</ItemInputButton>
+    <InputButton data-testid="CalendarCancel" class="flex-auto text-theme-fine"
+      @click="$emit(`close`)">{{state.cancel}}</InputButton>
+    <InputButton data-testid="CalendarClear" class="flex-auto text-theme-warn"
+      @click="state.callback()">{{state.clear}}</InputButton>
   </div>
 </BasePopup>
 </template>
