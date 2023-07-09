@@ -134,7 +134,7 @@ const useStore = defineStore(`sub`, () => {
       await nextTick();
       // 要素が正しく描画されないので強制描画
       refer.titles!.value[payload.subId].$el.value = getter.stateFull.value().data[payload.subId]!.title;
-      refer.titles!.value[subId].$el.focus();
+      refer.titles!.value[subId]?.$el.focus();
       Dom.resize(refer.titles!.value[payload.subId].$el);
       refer.items!.value[payload.subId]!.addEventListener(`transitionend`, function listener() {
         refer.items!.value[payload.subId]!.removeEventListener(`transitionend`, listener);
@@ -159,14 +159,13 @@ const useStore = defineStore(`sub`, () => {
         payload.event.preventDefault();
       }
     },
-    deleteItem: async(payload: {subId: string;}) => {
+    deleteItem: (payload: {subId: string;}) => {
       const height = Dom.resize(refer.items!.value[payload.subId]);
       const backup = app.lib.lodash.cloneDeep(state.data);
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId), 1);
       delete getter.stateFull.value().data[payload.subId];
       delete state.status[payload.subId];
       constant.sound.play(`warn`);
-      await nextTick();
       notice.action.open({
         message: app.getter.lang().notice.message,
         button: app.getter.lang().notice.button,
@@ -327,7 +326,7 @@ const useStore = defineStore(`sub`, () => {
           top: [`${prop.drag.clone!.getBoundingClientRect().top}px`,
             `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`],
         }, constant.base.duration[conf.state.data.speed]).addEventListener(`finish`, () => {
-          delete state.status[prop.drag.id!];
+          state.status[prop.drag.id!] = ``;
           prop.drag.clone!.remove();
           prop.drag = {};
         });

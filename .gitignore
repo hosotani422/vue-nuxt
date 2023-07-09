@@ -10,3 +10,4 @@ dist
 /playwright-report/
 /playwright/.cache/
 test/testcafe/screenshots/
+test/vitest/coverage

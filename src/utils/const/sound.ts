@@ -16,7 +16,7 @@ export default class Sound {
     }
   }
   public static play(type: keyof typeof Sound.audio): void {
-    this.audio[type]!.play();
+    this.audio[type]?.play();
   }
   public static volume(volume: number): void {
     for (const audio of Object.values(this.audio)) {

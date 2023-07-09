@@ -34,8 +34,8 @@ const useStore = defineStore(`dialog`, () => {
     ok: string;
     cancel: string;
     callback: {
-      ok?: () => void;
-      cancel?: () => void;
+      ok: () => void;
+      cancel: () => void;
     };
   } = reactive(constant.init.dialog);
 
