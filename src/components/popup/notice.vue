@@ -15,8 +15,8 @@ defineProps<{
     speed1:active:duration-1000 speed2:active:duration-500 speed3:active:duration-200
     active:transition-transform fromto:!translate-y-[4rem] theme-back-color theme-shadow-normal">
     <div class="flex-even text-xs">{{state.message}}</div>
-    <ItemInputButton data-testid="NoticeBack" class="flex-auto text-theme-fine"
-      @click="state.callback()">{{state.button}}</ItemInputButton>
+    <InputButton data-testid="NoticeBack" class="flex-auto text-theme-fine"
+      @click="state.callback()">{{state.button}}</InputButton>
   </div>
 </transition>
 </template>

@@ -420,7 +420,7 @@ module.exports = {
     // ⇒ all: 外部変数/関数と同じ名前を許可しない
     // ⇒ never: 外部変数/関数と同じ名前を許可する
     // allow: 許可された識別子名の配列
-    'no-shadow': [`error`, {builtinGlobals: true, hoist: `all`}],
+    'no-shadow': [`off`],
     // グローバルオブジェクトや識別子の再定義を許可しない [recommend: ●, fix: ×]
     'no-shadow-restricted-names': [`error`],
     // 宣言されていない変数を許可しない [recommend: ●, fix: ×]
@@ -1305,7 +1305,7 @@ module.exports = {
       // [`private readonly`, `protected readonly`, `public readonly`]
       '@typescript-eslint/no-parameter-properties': [`off`],
       // requireの呼び出しを許可しません [recommend: ×, fix: ×, require: ×]
-      '@typescript-eslint/no-require-imports': [`error`],
+      '@typescript-eslint/no-require-imports': [`off`],
       // thisを変数に割り当てることを禁止します [recommend: ●, fix: ×, require: ×]
       // allowDestructuring: `const {props、state} = this`;を許可します
       // allowedNames: 許可する変数名のリスト
@@ -1356,7 +1356,7 @@ module.exports = {
       // ※ 動作不安定
       '@typescript-eslint/no-unused-vars-experimental': [`off`],
       // import以外のrequireの使用を禁止します [recommend: ●, fix: ×, require: ×]
-      '@typescript-eslint/no-var-requires': [`error`],
+      '@typescript-eslint/no-var-requires': [`off`],
       // リテラル型よりもas constの使用を推奨 [recommend: ×, fix: ●, require: ×]
       '@typescript-eslint/prefer-as-const': [`error`],
       // インデックスが配列参照のみに使用される場合、`for`より`for-of`を優先します [recommend: ×, fix: ×, require: ×]

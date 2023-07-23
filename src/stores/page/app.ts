@@ -33,11 +33,11 @@ const useStore = defineStore(`app`, () => {
   const getter = {
     isApp: computed(() => (): boolean => false),
     listId: computed(() => (): string => {
-      const listId = useRoute().params.listId;
+      const listId = useRoute()?.params?.listId;
       return listId && !Array.isArray(listId) ? listId : ``;
     }),
     mainId: computed(() => (): string => {
-      const mainId = useRoute().params.mainId;
+      const mainId = useRoute()?.params?.mainId;
       return mainId && !Array.isArray(mainId) ? mainId : ``;
     }),
     lang: computed(() => (): typeof lang[typeof conf[`state`][`data`][`lang`]] => lang[conf.state.data.lang]),

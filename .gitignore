@@ -11,3 +11,5 @@ dist
 /playwright/.cache/
 test/testcafe/screenshots/
 test/vitest/coverage
+auto-imports.d.ts
+components.d.ts

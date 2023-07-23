@@ -5,7 +5,7 @@ import conf from '@/stores/page/conf';
 </script>
 
 <template>
-<TempPageConf
+<PageConf
   :title="`${constant.base.title} ${constant.base.version}`"
   :state="conf.state.data"
   :lang="app.getter.lang"

@@ -38,9 +38,9 @@ props.refer.items = items;
   @touchend="$emit(`dragEnd`), $emit(`swipeEnd`, {event: $event})">
   <div class="absolute z-[1] top-0 bottom-0 left-0 w-[43%] flex flex-col theme-grad-color theme-shadow-normal">
     <div class="relative z-[9] flex-auto flex items-center p-3 gap-3 theme-grad-color theme-shadow-normal">
-      <ItemIconPlus data-testid="ListPlus" class="flex-auto" @click="$emit(`insertItem`)" />
+      <IconPlus data-testid="ListPlus" class="flex-auto" @click="$emit(`insertItem`)" />
       <p data-testid="ListTitle" class="flex-even text-xl line-clamp-1">{{title}}</p>
-      <ItemIconLeft data-testid="ListLeft" class="flex-auto" @click="$emit(`routerBack`)" />
+      <IconLeft data-testid="ListLeft" class="flex-auto" @click="$emit(`routerBack`)" />
     </div>
     <ul ref="wrap" class="flex-even p-3 overflow-auto select-none">
       <transition-group>
@@ -57,9 +57,9 @@ props.refer.items = items;
           <p data-testid="ListCount" class="flex-auto" :class="classLimit(listId)">{{textCount(listId)}}</p>
           <transition>
             <div class="absolute right-3 flex gap-3 slide-right theme-back-color" v-if="classItem(listId).edit">
-              <ItemIconClone data-testid="ListClone" v-if="listId !== trashId"
+              <IconClone data-testid="ListClone" v-if="listId !== trashId"
                 :class="classLimit(listId)" @click="$emit(`copyItem`, {event: $event, listId})" />
-              <ItemIconTrash data-testid="ListTrash" v-if="listId !== getListId() && listId !== trashId"
+              <IconTrash data-testid="ListTrash" v-if="listId !== getListId() && listId !== trashId"
                 :class="classLimit(listId)" @click="$emit(`deleteItem`, {event: $event, listId})" />
             </div>
           </transition>

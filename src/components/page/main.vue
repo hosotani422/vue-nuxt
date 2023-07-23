@@ -31,13 +31,13 @@ props.refer.items = items;
   @click="$emit(`switchEdit`)" @touchend="$emit(`dragEnd`)"
   @touchmove="$emit(`dragStart`, {event: $event}), $emit(`dragMove`, {event: $event})">
   <div class="relative z-[9] flex-auto flex items-center p-3 gap-3 theme-grad-color theme-shadow-normal">
-    <ItemIconList data-testid="MainList" class="flex-auto" @click="$emit(`routerList`)" />
-    <ClientOnly>
-      <ItemInputTextbox data-testid="MainTitle" class="flex-even text-xl"
+    <IconList data-testid="MainList" class="flex-auto" @click="$emit(`routerList`)" />
+    <ClientOnly class="flex-even">
+      <InputTextbox data-testid="MainTitle" class="flex-even text-xl"
         :placeholder="lang().placeholder.list" v-model="listUnit().title" />
     </ClientOnly>
-    <ItemIconConf data-testid="MainConf" class="flex-auto" @click="$emit(`routerConf`)" />
-    <ItemIconPlus data-testid="MainPlus" class="flex-auto" @click="$emit(`insertItem`)" />
+    <IconConf data-testid="MainConf" class="flex-auto" @click="$emit(`routerConf`)" />
+    <IconPlus data-testid="MainPlus" class="flex-auto" @click="$emit(`insertItem`)" />
   </div>
   <ul ref="wrap" class="flex-even p-3 overflow-auto select-none">
     <ClientOnly>
@@ -52,17 +52,17 @@ props.refer.items = items;
           :key="`list${listId()}main${mainId}`" v-for="mainId of stateFull().sort"
           @click="status[mainId] !== `edit` && $emit(`routerSub`, {mainId})"
           @touchlong="$emit(`switchEdit`, {mainId}), $emit(`dragInit`, {event: $event, mainId})">
-          <ItemInputCheck data-testid="MainCheck" class="flex-auto" :modelValue="stateUnit(``, mainId).check"
+          <InputCheck data-testid="MainCheck" class="flex-auto" :modelValue="stateUnit(``, mainId).check"
             @change="$emit(`checkItem`, {event: $event, mainId})" @click.stop />
           <div data-testid="MainTask" class="flex-even line-clamp-1" :class="classLimit(mainId)">{{stateUnit(``, mainId).title}}</div>
           <div data-testid="MainCount" class="flex-auto" :class="classLimit(mainId)">{{textCount(mainId)}}</div>
           <transition>
             <div class="absolute right-3 flex gap-3 slide-right theme-back-color" v-if="classItem(mainId).edit">
-              <ItemIconClone data-testid="MainClone" class="flex-auto" :class="classLimit(mainId)"
+              <IconClone data-testid="MainClone" class="flex-auto" :class="classLimit(mainId)"
                 @click="$emit(`copyItem`, {event: $event, mainId})" />
-              <ItemIconMove data-testid="MainMove" class="flex-auto" :class="classLimit(mainId)"
+              <IconMove data-testid="MainMove" class="flex-auto" :class="classLimit(mainId)"
                 @click="$emit(`moveItem`, {event: $event, mainId})" />
-              <ItemIconTrash data-testid="MainTrash" class="flex-auto" :class="classLimit(mainId)"
+              <IconTrash data-testid="MainTrash" class="flex-auto" :class="classLimit(mainId)"
                 @click="$emit(`deleteItem`, {event: $event, mainId})" />
             </div>
           </transition>
@@ -70,9 +70,9 @@ props.refer.items = items;
       </transition-group>
     </ClientOnly>
   </ul>
-  <router-view v-slot="{Component}">
+  <router-view v-slot="slot">
     <transition>
-      <component :is="Component" />
+      <component :is="slot?.Component" />
     </transition>
   </router-view>
 </div>

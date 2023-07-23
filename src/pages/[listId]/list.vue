@@ -5,7 +5,7 @@ import list from '@/stores/page/list';
 </script>
 
 <template>
-<TempPageList
+<PageList
   :refer="list.refer"
   :status="list.state.status"
   :title="constant.base.title"

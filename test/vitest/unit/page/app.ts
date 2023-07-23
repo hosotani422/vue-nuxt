@@ -26,7 +26,7 @@ describe(`app`, () => {
     expect(app.getter.classTop()).toBe(`dark speed2 text-base`);
   });
   test(`getter.classBottom`, () => {
-    expect(app.getter.classBottom()).toBe(`flex-[0_0_50px]`);
+    expect(app.getter.classBottom()).toBe(`flex-[0_0_90px]`);
   });
   test(`action.saveRoute`, () => {
     app.action.saveRoute({listId: fixture.getListId(0)});

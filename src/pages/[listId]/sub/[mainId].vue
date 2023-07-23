@@ -5,7 +5,7 @@ import sub from '@/stores/page/sub';
 </script>
 
 <template>
-<TempPageSub
+<PageSub
   :refer="sub.refer"
   :lang="app.getter.lang"
   :listId="app.getter.listId"

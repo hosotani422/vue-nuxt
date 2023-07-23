@@ -27,10 +27,5 @@ export default defineNuxtConfig({
       [`defineStore`, `definePiniaStore`],
     ],
   },
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
+  postcss: require(`./postcss.config.js`),
 });
