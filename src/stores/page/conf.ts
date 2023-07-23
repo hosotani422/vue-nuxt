@@ -194,11 +194,11 @@ const useStore = defineStore(`conf`, () => {
         },
       });
     },
-    swipeInit: (payload: {event: TouchEvent;}): void => {
+    swipeInit: (payload: {target: HTMLElement; clientX: number; clientY: number;}): void => {
       prop.swipe.status = prop.swipe.status === `end` ? `move` : `start`;
-      prop.swipe.target = payload.event.currentTarget as HTMLElement;
-      prop.swipe.x = payload.event.changedTouches[0]!.clientX;
-      prop.swipe.y = payload.event.changedTouches[0]!.clientY;
+      prop.swipe.target = payload.target;
+      prop.swipe.x = payload.clientX;
+      prop.swipe.y = payload.clientY;
       const item = prop.swipe.target.getBoundingClientRect();
       prop.swipe.top = item.top + (item.height / 2);
       // スワイプ終了前に再開時
@@ -208,25 +208,24 @@ const useStore = defineStore(`conf`, () => {
         prop.swipe.target.style.transform = `translateY(${prop.swipe.top}px)`;
       }
     },
-    swipeStart: (payload: {event: TouchEvent;}): void => {
+    swipeStart: (payload: {clientX: number; clientY: number;}): void => {
       if (prop.swipe.status === `start`) {
-        const changed = payload.event.changedTouches[0]!;
-        if (Math.abs(changed.clientX - prop.swipe.x!) + Math.abs(changed.clientY - prop.swipe.y!) > 15) {
-          Math.abs(changed.clientX - prop.swipe.x!) < Math.abs(changed.clientY - prop.swipe.y!) ?
+        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 15) {
+          Math.abs(payload.clientX - prop.swipe.x!) < Math.abs(payload.clientY - prop.swipe.y!) ?
             (prop.swipe.status = `move`) : (prop.swipe = {});
         }
       }
     },
-    swipeMove: (payload: {event: TouchEvent;}): void => {
+    swipeMove: (payload: {clientY: number;}): void => {
       if (prop.swipe.status === `move`) {
-        const y = prop.swipe.top! + payload.event.changedTouches[0]!.clientY - prop.swipe.y!;
+        const y = prop.swipe.top! + payload.clientY - prop.swipe.y!;
         prop.swipe.target!.style.transform = `translateY(${y > 0 ? y : 0}px)`;
       }
     },
-    swipeEnd: (payload: {event: TouchEvent;}): void => {
+    swipeEnd: (payload: {clientY: number;}): void => {
       if (prop.swipe.status === `move`) {
         prop.swipe.status = `end`;
-        if (prop.swipe.top! + payload.event.changedTouches[0]!.clientY - prop.swipe.y! > 100) {
+        if (prop.swipe.top! + payload.clientY - prop.swipe.y! > 100) {
           app.action.routerBack();
           prop.swipe = {};
         } else {

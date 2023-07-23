@@ -3,7 +3,7 @@ defineOptions({
   inheritAttrs: false,
 });
 withDefaults(defineProps<{
-  modelValue: string;
+  modelValue?: string;
 }>(), {
   modelValue: ``,
 });

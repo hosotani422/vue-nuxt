@@ -21,11 +21,14 @@ const config: StorybookConfig = {
   viteFinal: (config) => ({
     ...mergeConfig(config, {
       plugins: [
-        AutoImport({imports: [`vue`, `pinia`, `vue-router`], dts: `./storybook/auto-imports.d.ts`}),
+        AutoImport({
+          imports: [`vue`, `pinia`, `vue-router`],
+          dts: false,
+        }),
         Components({
           dirs: [`../src/components`],
           directoryAsNamespace: true,
-          dts: `./storybook/components.d.ts`,
+          dts: false,
         }),
       ],
       resolve: {

@@ -3,8 +3,8 @@ defineOptions({
   inheritAttrs: false,
 });
 withDefaults(defineProps<{
-  open: boolean;
-  max: boolean;
+  open?: boolean;
+  max?: boolean;
 }>(), {
   open: false,
   max: false,
@@ -13,7 +13,7 @@ withDefaults(defineProps<{
 
 <template>
 <transition>
-  <div v-if="open"
+  <div v-show="open"
     class="absolute z-[70] top-0 right-0 bottom-0 left-0
       flex items-center justify-center fade-normal theme-mask-color"
     v-bind="$attrs">

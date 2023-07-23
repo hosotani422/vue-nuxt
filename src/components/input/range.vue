@@ -3,10 +3,10 @@ defineOptions({
   inheritAttrs: false,
 });
 const prop = withDefaults(defineProps<{
-  min: number;
-  max: number;
-  step: number;
-  modelValue: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  modelValue?: number;
 }>(), {
   min: 0,
   max: 100,

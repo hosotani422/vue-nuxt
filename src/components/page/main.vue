@@ -29,7 +29,7 @@ props.refer.items = items;
 <template>
 <div data-testid="MainRoot" class="absolute z-[1] top-0 right-0 bottom-0 left-0 flex flex-col theme-grad-color"
   @click="$emit(`switchEdit`)" @touchend="$emit(`dragEnd`)"
-  @touchmove="$emit(`dragStart`, {event: $event}), $emit(`dragMove`, {event: $event})">
+  @touchmove.prevent="$emit(`dragStart`), $emit(`dragMove`, {clientY: $event.changedTouches[0]!.clientY})">
   <div class="relative z-[9] flex-auto flex items-center p-3 gap-3 theme-grad-color theme-shadow-normal">
     <IconList data-testid="MainList" class="flex-auto" @click="$emit(`routerList`)" />
     <ClientOnly class="flex-even">
@@ -51,19 +51,19 @@ props.refer.items = items;
           :ref="(el: Vue.ComponentPublicInstance<any>) => {if (el) {items[mainId] = el;}}"
           :key="`list${listId()}main${mainId}`" v-for="mainId of stateFull().sort"
           @click="status[mainId] !== `edit` && $emit(`routerSub`, {mainId})"
-          @touchlong="$emit(`switchEdit`, {mainId}), $emit(`dragInit`, {event: $event, mainId})">
+          @touchlong="$emit(`switchEdit`, {mainId}), $emit(`dragInit`, {mainId, clientY: $event.detail.changedTouches[0]!.clientY})">
           <InputCheck data-testid="MainCheck" class="flex-auto" :modelValue="stateUnit(``, mainId).check"
-            @change="$emit(`checkItem`, {event: $event, mainId})" @click.stop />
+            @change="$emit(`checkItem`, {event: $event, mainId, checked: $event.target.checked})" @click.stop />
           <div data-testid="MainTask" class="flex-even line-clamp-1" :class="classLimit(mainId)">{{stateUnit(``, mainId).title}}</div>
           <div data-testid="MainCount" class="flex-auto" :class="classLimit(mainId)">{{textCount(mainId)}}</div>
           <transition>
             <div class="absolute right-3 flex gap-3 slide-right theme-back-color" v-if="classItem(mainId).edit">
               <IconClone data-testid="MainClone" class="flex-auto" :class="classLimit(mainId)"
-                @click="$emit(`copyItem`, {event: $event, mainId})" />
+                @click.stop="$emit(`copyItem`, {mainId})" />
               <IconMove data-testid="MainMove" class="flex-auto" :class="classLimit(mainId)"
-                @click="$emit(`moveItem`, {event: $event, mainId})" />
+                @click.stop="$emit(`moveItem`, {mainId})" />
               <IconTrash data-testid="MainTrash" class="flex-auto" :class="classLimit(mainId)"
-                @click="$emit(`deleteItem`, {event: $event, mainId})" />
+                @click.stop="$emit(`deleteItem`, {mainId})" />
             </div>
           </transition>
         </li>

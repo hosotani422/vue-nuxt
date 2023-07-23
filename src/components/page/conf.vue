@@ -18,9 +18,11 @@ defineEmits([
 <div class="absolute z-[10] right-0 bottom-0 left-0 h-[200%] select-none theme-mask-color
   speed1:active:duration-1000 speed2:active:duration-500 speed3:active:duration-200
   active:transition fromto:!translate-y-[50%] fromto:!bg-transparent"
-  @touchstart.self="$emit(`swipeInit`, {event: $event})"
-  @touchmove="$emit(`swipeStart`, {event: $event}), $emit(`swipeMove`, {event: $event})"
-  @touchend="$emit(`swipeEnd`, {event: $event})">
+  @touchstart.self="$emit(`swipeInit`, {target: $event.currentTarget,
+    clientX: $event.changedTouches[0]!.clientX, clientY: $event.changedTouches[0]!.clientY})"
+  @touchmove="$emit(`swipeStart`, {clientX: $event.changedTouches[0]!.clientX, clientY: $event.changedTouches[0]!.clientY}),
+    $emit(`swipeMove`, {clientY: $event.changedTouches[0]!.clientY})"
+  @touchend="$emit(`swipeEnd`, {clientY: $event.changedTouches[0]!.clientY})">
   <div class="absolute z-[1] right-0 bottom-0 left-0 h-[45%] flex flex-col theme-grad-color theme-shadow-normal">
     <div class="relative z-[9] flex-auto flex items-center p-3 gap-3 theme-grad-color theme-shadow-normal">
       <IconDown class="flex-auto" @click="$emit(`routerBack`)" />

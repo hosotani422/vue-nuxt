@@ -21,7 +21,7 @@ defineEmits([
     <InputTextbox data-testid="DialogTitle" class="border-solid border-b-[0.1rem] border-b-theme-fine"
       :placeholder="state.text.placeholder" v-focus v-model="state.text.value" v-if="state.mode === `text`" />
     <InputCheck v-if="state.mode === `check` && state.check.all" :modelValue="stateCheckAll()"
-      @change="$emit(`clickCheckAll`, {event: $event})">{{lang().dialog.select.all}}</InputCheck>
+      @change="$emit(`clickCheckAll`, {checked: ($event.target as HTMLInputElement).checked})">{{lang().dialog.select.all}}</InputCheck>
     <InputCheck data-testid="DialogCheck" :key="`check${checkId}`" v-for="checkId of state.check.sort" v-if="state.mode === `check`"
       v-model="state.check.data[checkId]!.check">{{state.check.data[checkId]!.title}}</InputCheck>
     <InputRadio value="" :label="lang().dialog.select.none"

@@ -15,4 +15,6 @@ export const duration = {
 export const id = {
   inbox: `list0000000000000`,
   trash: `list9999999999999`,
+  main: `main0000000000000`,
+  sub: `sub0000000000000`,
 };

@@ -70,9 +70,9 @@ const useStore = defineStore(`dialog`, () => {
     close: (): void => {
       state.open = false;
     },
-    clickCheckAll: (payload: {event: Event;}): void => {
+    clickCheckAll: (payload: {checked: boolean;}): void => {
       for (const id of state.check.sort) {
-        state.check.data[id]!.check = (payload.event.target as HTMLInputElement).checked;
+        state.check.data[id]!.check = payload.checked;
       }
     },
   };

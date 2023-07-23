@@ -1,27 +1,29 @@
-import {expect, test, describe, beforeEach} from 'vitest';
+import {describe, it, expect} from 'vitest';
 import fixture from '../../fixture/fixture';
 import dialog from '@/stores/popup/dialog';
 
-describe(`dialog`, () => {
-  beforeEach(() => {
-    fixture.init();
+describe(`PopupDialog`, () => {
+  beforeEach(async() => {
+    await fixture.loadData();
+    await fixture.mountDialog();
+    fixture.entryMock();
   });
   afterEach(() => {
-    fixture.reset();
+    fixture.resetMock();
   });
-  test(`getter.stateCheckAll`, () => {
+  it(`getter.stateCheckAll`, () => {
     expect(dialog.getter.stateCheckAll()).toBe(false);
   });
-  test(`action.open`, () => {
+  it(`action.open`, () => {
     dialog.action.open({mode: `confirm`, title: ``, message: ``});
     expect(dialog.state.open).toBe(true);
   });
-  test(`action.close`, () => {
+  it(`action.close`, () => {
     dialog.action.close();
     expect(dialog.state.open).toBe(false);
   });
-  test(`action.clickCheckAll`, () => {
-    dialog.action.clickCheckAll({event: fixture.getEvent()});
+  it(`action.clickCheckAll`, () => {
+    dialog.action.clickCheckAll({checked: true});
     expect(dialog.state.check.data).toEqual({dialog: {check: true, title: ``}});
   });
 });

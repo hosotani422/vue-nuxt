@@ -121,12 +121,12 @@ const useStore = defineStore(`sub`, () => {
     saveItem: (): void => {
       Api.writeSub(state.data);
     },
-    inputItem: (payload: {event: Event; subId: string;}): void => {
+    inputItem: (payload: {subId: string;}): void => {
       Dom.resize(refer.titles!.value[payload.subId].$el);
     },
-    enterItem: async(payload: {event: KeyboardEvent; subId: string;}) => {
+    enterItem: async(payload: {subId: string; selectionStart: number;}) => {
       const subId = `sub${app.lib.dayjs().valueOf()}`;
-      const caret = (payload.event.target as HTMLInputElement).selectionStart;
+      const caret = payload.selectionStart;
       const title = getter.stateFull.value().data[payload.subId]!.title;
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId) + 1, 0, subId);
       getter.stateFull.value().data[payload.subId]!.title = title.slice(0, caret!);
@@ -141,23 +141,19 @@ const useStore = defineStore(`sub`, () => {
         refer.items!.value[payload.subId]!.style.height = ``;
       });
     },
-    backItem: async(payload: {event: KeyboardEvent; subId: string;}) => {
-      if ((payload.event.target as HTMLInputElement).selectionStart === 0) {
-        const subId = getter.stateFull.value().sort[getter.stateFull.value().sort.indexOf(payload.subId) - 1]!;
-        const caret = getter.stateUnit.value(``, ``, subId).title.length;
-        getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId), 1);
-        getter.stateFull.value().data[subId]!.title += getter.stateFull.value().data[payload.subId]!.title;
-        delete getter.stateFull.value().data[payload.subId];
-        await nextTick();
-        // 要素が正しく描画されないので強制描画
-        refer.titles!.value[subId].$el.value = getter.stateFull.value().data[subId]!.title;
-        Dom.resize(refer.titles!.value[subId].$el);
-        refer.titles!.value[subId].$el.focus();
-        refer.titles!.value[subId].$el.selectionStart = caret;
-        refer.titles!.value[subId].$el.selectionEnd = caret;
-        // 文字削除キャンセル
-        payload.event.preventDefault();
-      }
+    backItem: async(payload: {subId: string;}) => {
+      const subId = getter.stateFull.value().sort[getter.stateFull.value().sort.indexOf(payload.subId) - 1]!;
+      const caret = getter.stateUnit.value(``, ``, subId).title.length;
+      getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId), 1);
+      getter.stateFull.value().data[subId]!.title += getter.stateFull.value().data[payload.subId]!.title;
+      delete getter.stateFull.value().data[payload.subId];
+      await nextTick();
+      // 要素が正しく描画されないので強制描画
+      refer.titles!.value[subId].$el.value = getter.stateFull.value().data[subId]!.title;
+      Dom.resize(refer.titles!.value[subId].$el);
+      refer.titles!.value[subId].$el.focus();
+      refer.titles!.value[subId].$el.selectionStart = caret;
+      refer.titles!.value[subId].$el.selectionEnd = caret;
     },
     deleteItem: (payload: {subId: string;}) => {
       const height = Dom.resize(refer.items!.value[payload.subId]);
@@ -181,12 +177,11 @@ const useStore = defineStore(`sub`, () => {
         },
       });
     },
-    checkItem: (payload: {event: Event; subId: string;}): void => {
-      const target = payload.event.target as HTMLInputElement;
+    checkItem: (payload: {subId: string; checked: boolean;}): void => {
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId), 1);
-      getter.stateFull.value().sort[target.checked ? `push` : `unshift`](payload.subId);
-      getter.stateUnit.value(``, ``, payload.subId).check = target.checked;
-      constant.sound.play(target.checked ? `ok` : `cancel`);
+      getter.stateFull.value().sort[payload.checked ? `push` : `unshift`](payload.subId);
+      getter.stateUnit.value(``, ``, payload.subId).check = payload.checked;
+      constant.sound.play(payload.checked ? `ok` : `cancel`);
     },
     switchItem: (): void => {
       main.getter.stateUnit().task = !main.getter.stateUnit().task;
@@ -196,10 +191,10 @@ const useStore = defineStore(`sub`, () => {
         state.status[subId] = subId === payload?.subId ? `edit` : ``;
       }
     },
-    inputMemo: (payload: {event: Event;}): void => {
+    inputMemo: (payload: {value: string;}): void => {
       getter.stateFull.value().sort = [];
       getter.stateFull.value().data = {};
-      for (const [i, title] of (payload.event.target as HTMLInputElement).value.split(`\n`).entries()) {
+      for (const [i, title] of payload.value.split(`\n`).entries()) {
         const subId = `sub${app.lib.dayjs().valueOf()}${i}`;
         getter.stateFull.value().sort.push(subId);
         getter.stateFull.value().data[subId] = {check: false, title};
@@ -269,11 +264,11 @@ const useStore = defineStore(`sub`, () => {
         },
       });
     },
-    dragInit: (payload: {event: TouchEvent; subId: string;}): void => {
+    dragInit: (payload: {subId: string; clientY: number;}): void => {
       const item = refer.items!.value[payload.subId]!.getBoundingClientRect();
       prop.drag.status = `start`;
       prop.drag.id = payload.subId;
-      prop.drag.y = payload.event.changedTouches[0]!.clientY;
+      prop.drag.y = payload.clientY;
       prop.drag.top = item.top;
       prop.drag.left = item.left - refer.home!.value!.getBoundingClientRect().left;
       prop.drag.height = item.height;
@@ -281,7 +276,7 @@ const useStore = defineStore(`sub`, () => {
       state.status[payload.subId] = `edit`;
       conf.state.data.vibrate === `on` && navigator.vibrate(40);
     },
-    dragStart: (payload: {event: TouchEvent;}): void => {
+    dragStart: (): void => {
       if (prop.drag.status === `start`) {
         prop.drag.status = `move`;
         prop.drag.clone = refer.items!.value[prop.drag.id!]!.cloneNode(true) as HTMLElement;
@@ -293,14 +288,11 @@ const useStore = defineStore(`sub`, () => {
         prop.drag.clone.style.width = `${prop.drag.width}px`;
         refer.wrap!.value!.appendChild(prop.drag.clone);
         state.status[prop.drag.id!] = `hide`;
-        // スクロール解除
-        payload.event.preventDefault();
       }
     },
-    dragMove: (payload: {event: TouchEvent;}): void => {
+    dragMove: (payload: {clientY: number;}): void => {
       if (prop.drag.status === `move`) {
-        prop.drag.clone!.style.top =
-          `${prop.drag.top! + payload.event.changedTouches[0]!.clientY - prop.drag.y!}px`;
+        prop.drag.clone!.style.top = `${prop.drag.top! + payload.clientY - prop.drag.y!}px`;
         const index = getter.stateFull.value().sort.indexOf(prop.drag.id!);
         const clone = prop.drag.clone!.getBoundingClientRect();
         const wrap = refer.wrap!.value!.getBoundingClientRect();
@@ -314,8 +306,6 @@ const useStore = defineStore(`sub`, () => {
           (prev ? prev.top + prev.height : wrap.top) + ((current.height + next.height) / 2)) {
           getter.stateFull.value().sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
         }
-        // スクロール解除
-        payload.event.preventDefault();
       }
     },
     dragEnd: (): void => {
@@ -335,11 +325,11 @@ const useStore = defineStore(`sub`, () => {
         prop.drag = {};
       }
     },
-    swipeInit: (payload: {event: TouchEvent;}): void => {
+    swipeInit: (payload: {target: HTMLElement; clientX: number; clientY: number;}): void => {
       prop.swipe.status = prop.swipe.status === `end` ? `move` : `start`;
-      prop.swipe.target = payload.event.currentTarget as HTMLElement;
-      prop.swipe.x = payload.event.changedTouches[0]!.clientX;
-      prop.swipe.y = payload.event.changedTouches[0]!.clientY;
+      prop.swipe.target = payload.target;
+      prop.swipe.x = payload.clientX;
+      prop.swipe.y = payload.clientY;
       const item = prop.swipe.target.getBoundingClientRect();
       prop.swipe.right = item.left + (item.width / 2);
       // スワイプ終了前に再開時
@@ -349,25 +339,24 @@ const useStore = defineStore(`sub`, () => {
         prop.swipe.target.style.transform = `translateX(${prop.swipe.right}px)`;
       }
     },
-    swipeStart: (payload: {event: TouchEvent;}): void => {
+    swipeStart: (payload: {clientX: number; clientY: number;}): void => {
       if (prop.swipe.status === `start`) {
-        const changed = payload.event.changedTouches[0]!;
-        if (Math.abs(changed.clientX - prop.swipe.x!) + Math.abs(changed.clientY - prop.swipe.y!) > 15) {
-          Math.abs(changed.clientX - prop.swipe.x!) > Math.abs(changed.clientY - prop.swipe.y!) ?
+        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 15) {
+          Math.abs(payload.clientX - prop.swipe.x!) > Math.abs(payload.clientY - prop.swipe.y!) ?
             (prop.swipe.status = `move`) : (prop.swipe = {});
         }
       }
     },
-    swipeMove: (payload: {event: TouchEvent;}): void => {
+    swipeMove: (payload: {clientX: number;}): void => {
       if (prop.swipe.status === `move`) {
-        const x = prop.swipe.right! + payload.event.changedTouches[0]!.clientX - prop.swipe.x!;
+        const x = prop.swipe.right! + payload.clientX - prop.swipe.x!;
         prop.swipe.target!.style.transform = `translateX(${x > 0 ? x : 0}px)`;
       }
     },
-    swipeEnd: (payload: {event: TouchEvent;}): void => {
+    swipeEnd: (payload: {clientX: number;}): void => {
       if (prop.swipe.status === `move`) {
         prop.swipe.status = `end`;
-        if (prop.swipe.right! + payload.event.changedTouches[0]!.clientX - prop.swipe.x! > 100) {
+        if (prop.swipe.right! + payload.clientX - prop.swipe.x! > 100) {
           app.action.routerBack();
           prop.swipe = {};
         } else {

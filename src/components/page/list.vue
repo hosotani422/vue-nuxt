@@ -32,10 +32,12 @@ props.refer.items = items;
 <div data-testid="ListRoot" class="absolute z-[10] top-0 bottom-0 left-0 w-[200%] theme-mask-color
   speed1:active:duration-1000 speed2:active:duration-500 speed3:active:duration-200
   active:transition fromto:!translate-x-[-50%] fromto:!bg-transparent"
-  @click="$emit(`switchEdit`)" @touchstart.self="$emit(`swipeInit`, {event: $event})"
-  @touchmove="$emit(`dragStart`, {event: $event}), $emit(`dragMove`, {event: $event}),
-    $emit(`swipeStart`, {event: $event}), $emit(`swipeMove`, {event: $event})"
-  @touchend="$emit(`dragEnd`), $emit(`swipeEnd`, {event: $event})">
+  @click="$emit(`switchEdit`)" @touchstart.self="$emit(`swipeInit`, {target: $event.currentTarget,
+    clientX: $event.changedTouches[0]!.clientX, clientY: $event.changedTouches[0]!.clientY})"
+  @touchmove.prevent="$emit(`dragStart`), $emit(`dragMove`, {clientY: $event.changedTouches[0]!.clientY})"
+  @touchmove="$emit(`swipeStart`, {clientX: $event.changedTouches[0]!.clientX, clientY: $event.changedTouches[0]!.clientY}),
+    $emit(`swipeMove`, {clientX: $event.changedTouches[0]!.clientX})"
+  @touchend="$emit(`dragEnd`), $emit(`swipeEnd`, {clientX: $event.changedTouches[0]!.clientX})">
   <div class="absolute z-[1] top-0 bottom-0 left-0 w-[43%] flex flex-col theme-grad-color theme-shadow-normal">
     <div class="relative z-[9] flex-auto flex items-center p-3 gap-3 theme-grad-color theme-shadow-normal">
       <IconPlus data-testid="ListPlus" class="flex-auto" @click="$emit(`insertItem`)" />
@@ -50,7 +52,7 @@ props.refer.items = items;
           [&.edit]:z-[1] [&.edit]:scale-[1.03] [&.hide]:invisible"
           :class="classItem(listId)" :key="`list${listId}`" v-for="listId of stateFull().sort"
           :ref="(el: Vue.ComponentPublicInstance<any>) => {if (el) {items[listId] = el;}}"
-          @touchlong="$emit(`switchEdit`, {listId}), $emit(`dragInit`, {event: $event, listId})"
+          @touchlong="$emit(`switchEdit`, {listId}), $emit(`dragInit`, {listId, clientY: $event.detail.changedTouches[0]!.clientY})"
           @click="status[listId] !== `edit` && $emit(`routerBack`, {listId})" @contextmenu.prevent>
           <component :is="iconType(listId)" />
           <p data-testid="ListTask" class="flex-even line-clamp-1" :class="classLimit(listId)">{{stateUnit(listId).title}}</p>
@@ -58,9 +60,9 @@ props.refer.items = items;
           <transition>
             <div class="absolute right-3 flex gap-3 slide-right theme-back-color" v-if="classItem(listId).edit">
               <IconClone data-testid="ListClone" v-if="listId !== trashId"
-                :class="classLimit(listId)" @click="$emit(`copyItem`, {event: $event, listId})" />
+                :class="classLimit(listId)" @click.stop="$emit(`copyItem`, {listId})" />
               <IconTrash data-testid="ListTrash" v-if="listId !== getListId() && listId !== trashId"
-                :class="classLimit(listId)" @click="$emit(`deleteItem`, {event: $event, listId})" />
+                :class="classLimit(listId)" @click.stop="$emit(`deleteItem`, {listId})" />
             </div>
           </transition>
         </li>
