@@ -80,37 +80,35 @@ const useStore = defineStore(`calendar`, () => {
         state.current = app.lib.dayjs(state.current).add(payload.prev ? -1 : 1, `month`).format(`YYYY/MM`);
       });
     },
-    swipeInit: (payload: {event: TouchEvent;}): void => {
+    swipeInit: (payload: {target: HTMLElement; clientX: number; clientY: number;}): void => {
       prop.swipe.status = `start`;
-      prop.swipe.target = payload.event.currentTarget as HTMLElement;
-      prop.swipe.x = payload.event.changedTouches[0]!.clientX;
-      prop.swipe.y = payload.event.changedTouches[0]!.clientY;
+      prop.swipe.target = payload.target;
+      prop.swipe.x = payload.clientX;
+      prop.swipe.y = payload.clientY;
       prop.swipe.left = prop.swipe.target.getBoundingClientRect().left -
-      refer.body!.value!.parentElement.getBoundingClientRect().left;
+        refer.body!.value!.parentElement.getBoundingClientRect().left;
     },
-    swipeStart: (payload: {event: TouchEvent;}): void => {
+    swipeStart: (payload: {clientX: number; clientY: number;}): void => {
       if (prop.swipe.status === `start`) {
-        const touch = payload.event.changedTouches[0]!;
-        if (Math.abs(touch.clientX - prop.swipe.x!) + Math.abs(touch.clientY - prop.swipe.y!) > 10) {
-          Math.abs(touch.clientX - prop.swipe.x!) > Math.abs(touch.clientY - prop.swipe.y!) ?
+        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 10) {
+          Math.abs(payload.clientX - prop.swipe.x!) > Math.abs(payload.clientY - prop.swipe.y!) ?
             (prop.swipe.status = `move`) : (prop.swipe = {});
         }
       }
     },
-    swipeMove: (payload: {event: TouchEvent;}): void => {
+    swipeMove: (payload: {clientX: number;}): void => {
       if (prop.swipe.status === `move`) {
-        prop.swipe.target!.style.transform =
-          `translateX(${prop.swipe.left! + payload.event.changedTouches[0]!.clientX - prop.swipe.x!}px)`;
+        prop.swipe.target!.style.transform = `translateX(${prop.swipe.left! + payload.clientX - prop.swipe.x!}px)`;
       }
     },
-    swipeEnd: (payload: {event: TouchEvent;}): void => {
+    swipeEnd: (payload: {clientX: number;}): void => {
       if (prop.swipe.status === `move`) {
         prop.swipe.status = `end`;
         prop.swipe.target!.style.transform = ``;
-        if (payload.event.changedTouches[0]!.clientX - prop.swipe.x! >= 75) {
+        if (payload.clientX - prop.swipe.x! >= 75) {
           action.pageMove({prev: true});
           prop.swipe = {};
-        } else if (payload.event.changedTouches[0]!.clientX - prop.swipe.x! <= -75) {
+        } else if (payload.clientX - prop.swipe.x! <= -75) {
           action.pageMove({prev: false});
           prop.swipe = {};
         } else {

@@ -3,9 +3,9 @@ defineOptions({
   inheritAttrs: false,
 });
 withDefaults(defineProps<{
-  tag: string;
-  name: string;
-  viewBox: string;
+  tag?: string;
+  name?: string;
+  viewBox?: string;
 }>(), {
   tag: `i`,
   name: ``,

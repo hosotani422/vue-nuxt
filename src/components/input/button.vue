@@ -3,7 +3,7 @@ defineOptions({
   inheritAttrs: false,
 });
 withDefaults(defineProps<{
-  type: `button` | `reset` | `submit`;
+  type?: `button` | `reset` | `submit`;
 }>(), {
   type: `button`,
 });

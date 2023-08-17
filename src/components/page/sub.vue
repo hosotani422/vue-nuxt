@@ -39,10 +39,12 @@ props.refer.titles = titles;
   speed1:active:duration-1000 speed2:active:duration-500 speed3:active:duration-200
   active:transition fromto:!translate-x-[50%] fromto:!bg-transparent"
   @touchstart.capture="$emit(`switchEdit`)"
-  @touchstart.self="$emit(`swipeInit`, {event: $event})"
-  @touchmove="$emit(`dragStart`, {event: $event}), $emit(`dragMove`, {event: $event}),
-    $emit(`swipeStart`, {event: $event}), $emit(`swipeMove`, {event: $event})"
-  @touchend="$emit(`dragEnd`), $emit(`swipeEnd`, {event: $event})">
+  @touchstart.self="$emit(`swipeInit`, {target: $event.currentTarget,
+    clientX: $event.changedTouches[0]!.clientX, clientY: $event.changedTouches[0]!.clientY})"
+  @touchmove.prevent="$emit(`dragStart`), $emit(`dragMove`, {clientY: $event.changedTouches[0]!.clientY})"
+  @touchmove="$emit(`swipeStart`, {clientX: $event.changedTouches[0]!.clientX, clientY: $event.changedTouches[0]!.clientY}),
+    $emit(`swipeMove`, {clientX: $event.changedTouches[0]!.clientX})"
+  @touchend="$emit(`dragEnd`), $emit(`swipeEnd`, {clientX: $event.changedTouches[0]!.clientX})">
   <div ref="home" class="absolute z-[1] top-0 bottom-0 left-[57%] w-[43%] flex flex-col theme-grad-color theme-shadow-reverse">
     <div class="relative z-[9] flex-auto flex items-center p-3 gap-3 theme-grad-color theme-shadow-normal">
       <IconRight data-testid="SubRight" class="flex-auto" @click="$emit(`routerBack`)" />
@@ -54,7 +56,7 @@ props.refer.titles = titles;
       <transition mode="out-in">
         <InputTextarea data-testid="SubMemo" class="w-full h-full theme-back-color fade-normal"
           :placeholder="lang().placeholder.memo" v-if="!mainUnit().task"
-          :modelValue="textMemo()" @input="$emit(`inputMemo`, {event: $event})" />
+          :modelValue="textMemo()" @input="$emit(`inputMemo`, {value: ($event.target as HTMLInputElement).value})" />
         <ul ref="wrap" class="fade-normal" v-else>
           <transition-group>
             <li data-testid="SubItem" class="overflow-hidden relative flex items-start p-3 gap-3
@@ -66,14 +68,15 @@ props.refer.titles = titles;
               :ref="(el: Vue.ComponentPublicInstance<any>) => {if (el) {items[subId] = el;}}"
               :key="`list${listId()}main${mainId()}sub${subId}`">
               <InputCheck data-testid="SubCheck" class="flex-auto" :modelValue="stateUnit(``, ``, subId).check"
-                @change="$emit(`checkItem`, {event: $event, subId})" />
+                @change="$emit(`checkItem`, {subId, checked: ($event.target as HTMLInputElement).checked})" />
               <InputTextarea data-testid="SubTask" class="flex-even !p-0" :placeholder="lang().placeholder.sub"
                 :ref="(el: Vue.ComponentPublicInstance<any>) => {if (el) {titles[subId] = el;}}"
                 v-model="stateUnit(``, ``, subId).title" @click="$emit(`switchEdit`, {subId})"
-                @keydown.enter.prevent="$emit(`enterItem`, {event: $event, subId})"
-                @keydown.backspace="index > 0 && $emit(`backItem`, {event: $event, subId})"
-                @input="$emit(`inputItem`, {event: $event, subId})" v-height />
-              <IconDrag data-testid="SubDrag" @touchstart="$emit(`dragInit`, {event: $event, subId})" />
+                @keydown.enter.prevent="$emit(`enterItem`, {subId, selectionStart: ($event.target as HTMLInputElement).selectionStart})"
+                @keydown.backspace="index > 0 && ($event.target as HTMLInputElement).selectionStart === 0 &&
+                  ($event.preventDefault(), $emit(`backItem`, {subId}))"
+                @input="$emit(`inputItem`, {subId})" v-height />
+              <IconDrag data-testid="SubDrag" @touchstart="$emit(`dragInit`, {subId, clientY: $event.changedTouches[0]!.clientY})" />
               <transition>
                 <IconTrash data-testid="SubTrash" class="absolute right-3 slide-right theme-back-color"
                   v-if="stateFull().sort.length > 1 && classItem(subId).edit"

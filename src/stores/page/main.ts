@@ -137,17 +137,15 @@ const useStore = defineStore(`main`, () => {
         },
       });
     },
-    copyItem: (payload: {event: Event; mainId: string;}): void => {
+    copyItem: (payload: {mainId: string;}): void => {
       const mainId = `main${app.lib.dayjs().valueOf()}`;
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.mainId) + 1, 0, mainId);
       getter.stateFull.value().data[mainId] = app.lib.lodash.cloneDeep(getter.stateUnit.value(``, payload.mainId));
       sub.state.data[app.getter.listId()]!.data[mainId] =
         app.lib.lodash.cloneDeep(sub.getter.stateFull(``, payload.mainId));
       delete state.status[payload.mainId];
-      // 画面遷移キャンセル
-      payload.event.stopPropagation();
     },
-    moveItem: (payload: {event: Event; mainId: string;}): void => {
+    moveItem: (payload: {mainId: string;}): void => {
       dialog.action.open({
         mode: `radio`,
         title: app.getter.lang().dialog.title.move,
@@ -181,10 +179,8 @@ const useStore = defineStore(`main`, () => {
           },
         },
       });
-      // 画面遷移キャンセル
-      payload.event.stopPropagation();
     },
-    deleteItem: (payload: {event: Event; mainId: string;}): void => {
+    deleteItem: (payload: {mainId: string;}): void => {
       const backup = {
         main: app.lib.lodash.cloneDeep(state.data),
         sub: app.lib.lodash.cloneDeep(sub.state.data),
@@ -208,33 +204,30 @@ const useStore = defineStore(`main`, () => {
           notice.action.close();
         },
       });
-      // 画面遷移キャンセル
-      payload.event.stopPropagation();
     },
-    checkItem: (payload: {event: Event; mainId: string;}): void => {
-      const target = payload.event.target as HTMLInputElement;
+    checkItem: (payload: {mainId: string; checked: boolean;}): void => {
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.mainId), 1);
-      getter.stateFull.value().sort[target.checked ? `push` : `unshift`](payload.mainId);
-      getter.stateUnit.value(``, payload.mainId).check = target.checked;
-      constant.sound.play(target.checked ? `ok` : `cancel`);
+      getter.stateFull.value().sort[payload.checked ? `push` : `unshift`](payload.mainId);
+      getter.stateUnit.value(``, payload.mainId).check = payload.checked;
+      constant.sound.play(payload.checked ? `ok` : `cancel`);
     },
     switchEdit: (payload?: {mainId: string;}): void => {
       for (const mainId of getter.stateFull.value().sort) {
         state.status[mainId] = mainId === payload?.mainId ? `edit` : ``;
       }
     },
-    dragInit: (payload: {event: TouchEvent; mainId: string;}): void => {
+    dragInit: (payload: {mainId: string; clientY: number;}): void => {
       const item = refer.items!.value[payload.mainId]!.getBoundingClientRect();
       prop.drag.status = `start`;
       prop.drag.id = payload.mainId;
-      prop.drag.y = (payload.event.detail as unknown as TouchEvent).changedTouches[0]!.clientY;
+      prop.drag.y = payload.clientY;
       prop.drag.top = item.top;
       prop.drag.left = item.left;
       prop.drag.height = item.height;
       prop.drag.width = item.width;
       conf.state.data.vibrate === `on` && navigator.vibrate(40);
     },
-    dragStart: (payload: {event: TouchEvent;}): void => {
+    dragStart: (): void => {
       if (prop.drag.status === `start`) {
         prop.drag.status = `move`;
         prop.drag.clone = refer.items!.value[prop.drag.id!]!.cloneNode(true) as HTMLElement;
@@ -246,14 +239,11 @@ const useStore = defineStore(`main`, () => {
         prop.drag.clone.style.width = `${prop.drag.width}px`;
         refer.wrap!.value!.appendChild(prop.drag.clone);
         state.status[prop.drag.id!] = `hide`;
-        // スクロール解除
-        payload.event.preventDefault();
       }
     },
-    dragMove: (payload: {event: TouchEvent;}): void => {
+    dragMove: (payload: {clientY: number;}): void => {
       if (prop.drag.status === `move`) {
-        prop.drag.clone!.style.top =
-          `${prop.drag.top! + payload.event.changedTouches[0]!.clientY - prop.drag.y!}px`;
+        prop.drag.clone!.style.top = `${prop.drag.top! + payload.clientY - prop.drag.y!}px`;
         const index = getter.stateFull.value().sort.indexOf(prop.drag.id!);
         const clone = prop.drag.clone!.getBoundingClientRect();
         const prev = refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
@@ -266,8 +256,6 @@ const useStore = defineStore(`main`, () => {
           (prev ? prev.top + prev.height : current.top) + ((current.height + next.height) / 2)) {
           getter.stateFull.value().sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
         }
-        // スクロール解除
-        payload.event.preventDefault();
       }
     },
     dragEnd: (): void => {

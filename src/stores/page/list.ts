@@ -137,17 +137,15 @@ const useStore = defineStore(`list`, () => {
         },
       });
     },
-    copyItem: (payload: {event: Event; listId: string;}): void => {
+    copyItem: (payload: {listId: string;}): void => {
       const listId = `list${app.lib.dayjs().valueOf()}`;
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.listId) + 1, 0, listId);
       getter.stateFull.value().data[listId] = app.lib.lodash.cloneDeep(getter.stateUnit.value(payload.listId));
       delete state.status[payload.listId];
       main.state.data[listId] = app.lib.lodash.cloneDeep(main.getter.stateFull(payload.listId));
       sub.state.data[listId] = app.lib.lodash.cloneDeep(sub.state.data[payload.listId]!);
-      // 画面遷移キャンセル
-      payload.event.stopPropagation();
     },
-    deleteItem: (payload: {event: Event; listId: string;}): void => {
+    deleteItem: (payload: {listId: string;}): void => {
       dialog.action.open({
         mode: `confirm`,
         title: app.getter.lang().dialog.title.delete,
@@ -190,26 +188,24 @@ const useStore = defineStore(`list`, () => {
           },
         },
       });
-      // 画面遷移キャンセル
-      payload.event.stopPropagation();
     },
     switchEdit: (payload?: {listId: string;}): void => {
       for (const listId of getter.stateFull.value().sort) {
         state.status[listId] = listId === payload?.listId ? `edit` : ``;
       }
     },
-    dragInit: (payload: {event: TouchEvent; listId: string;}): void => {
+    dragInit: (payload: {listId: string; clientY: number;}): void => {
       const item = refer.items!.value[payload.listId]!.getBoundingClientRect();
       prop.drag.status = `start`;
       prop.drag.id = payload.listId;
-      prop.drag.y = (payload.event.detail as unknown as TouchEvent).changedTouches[0]!.clientY;
+      prop.drag.y = payload.clientY;
       prop.drag.top = item.top;
       prop.drag.left = item.left;
       prop.drag.height = item.height;
       prop.drag.width = item.width;
       conf.state.data.vibrate === `on` && navigator.vibrate(40);
     },
-    dragStart: (payload: {event: TouchEvent;}): void => {
+    dragStart: (): void => {
       if (prop.drag.status === `start`) {
         prop.drag.status = `move`;
         prop.drag.clone = refer.items!.value[prop.drag.id!]!.cloneNode(true) as HTMLElement;
@@ -221,14 +217,11 @@ const useStore = defineStore(`list`, () => {
         prop.drag.clone.style.width = `${prop.drag.width}px`;
         refer.wrap!.value!.appendChild(prop.drag.clone);
         state.status[prop.drag.id!] = `hide`;
-        // スクロール解除
-        payload.event.preventDefault();
       }
     },
-    dragMove: (payload: {event: TouchEvent;}): void => {
+    dragMove: (payload: {clientY: number;}): void => {
       if (prop.drag.status === `move`) {
-        prop.drag.clone!.style.top =
-          `${prop.drag.top! + payload.event.changedTouches[0]!.clientY - prop.drag.y!}px`;
+        prop.drag.clone!.style.top = `${prop.drag.top! + payload.clientY - prop.drag.y!}px`;
         const index = getter.stateFull.value().sort.indexOf(prop.drag.id!);
         const clone = prop.drag.clone!.getBoundingClientRect();
         const prev = refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
@@ -241,8 +234,6 @@ const useStore = defineStore(`list`, () => {
           (prev ? prev.top + prev.height : current.top) + ((current.height + next.height) / 2)) {
           getter.stateFull.value().sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
         }
-        // スクロール解除
-        payload.event.preventDefault();
       }
     },
     dragEnd: (): void => {
@@ -261,12 +252,12 @@ const useStore = defineStore(`list`, () => {
         prop.drag = {};
       }
     },
-    swipeInit: (payload: {event: TouchEvent;}): void => {
+    swipeInit: (payload: {target: HTMLElement; clientX: number; clientY: number;}): void => {
       prop.swipe.status = prop.swipe.status === `end` ? `move` : `start`;
-      prop.swipe.target = payload.event.currentTarget as HTMLElement;
-      prop.swipe.x = payload.event.changedTouches[0]!.clientX;
-      prop.swipe.y = payload.event.changedTouches[0]!.clientY;
-      prop.swipe.left = prop.swipe.target.getBoundingClientRect().left;
+      prop.swipe.target = payload.target;
+      prop.swipe.x = payload.clientX;
+      prop.swipe.y = payload.clientY;
+      prop.swipe.left = payload.target.getBoundingClientRect().left;
       // スワイプ終了前に再開時
       if (prop.swipe.status === `move`) {
         prop.swipe.target.removeEventListener(`transitionend`, prop.swipe.listener!);
@@ -274,25 +265,24 @@ const useStore = defineStore(`list`, () => {
         prop.swipe.target.style.transform = `translateX(${prop.swipe.left}px)`;
       }
     },
-    swipeStart: (payload: {event: TouchEvent;}): void => {
+    swipeStart: (payload: {clientX: number; clientY: number;}): void => {
       if (prop.swipe.status === `start`) {
-        const changed = payload.event.changedTouches[0]!;
-        if (Math.abs(changed.clientX - prop.swipe.x!) + Math.abs(changed.clientY - prop.swipe.y!) > 15) {
-          Math.abs(changed.clientX - prop.swipe.x!) > Math.abs(changed.clientY - prop.swipe.y!) ?
+        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 15) {
+          Math.abs(payload.clientX - prop.swipe.x!) > Math.abs(payload.clientY - prop.swipe.y!) ?
             (prop.swipe.status = `move`) : (prop.swipe = {});
         }
       }
     },
-    swipeMove: (payload: {event: TouchEvent;}): void => {
+    swipeMove: (payload: {clientX: number;}): void => {
       if (prop.swipe.status === `move`) {
-        const x = prop.swipe.left! + payload.event.changedTouches[0]!.clientX - prop.swipe.x!;
+        const x = prop.swipe.left! + payload.clientX - prop.swipe.x!;
         prop.swipe.target!.style.transform = `translateX(${x < 0 ? x : 0}px)`;
       }
     },
-    swipeEnd: (payload: {event: TouchEvent;}): void => {
+    swipeEnd: (payload: {clientX: number;}): void => {
       if (prop.swipe.status === `move`) {
         prop.swipe.status = `end`;
-        if (prop.swipe.left! + payload.event.changedTouches[0]!.clientX - prop.swipe.x! < -100) {
+        if (prop.swipe.left! + payload.clientX - prop.swipe.x! < -100) {
           app.action.routerBack();
           prop.swipe = {};
         } else {

@@ -3,8 +3,8 @@ defineOptions({
   inheritAttrs: false,
 });
 withDefaults(defineProps<{
-  type: `text` | `password`;
-  modelValue: string;
+  type?: `text` | `password`;
+  modelValue?: string;
 }>(), {
   type: `text`,
   modelValue: ``,

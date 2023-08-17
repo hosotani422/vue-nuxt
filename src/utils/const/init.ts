@@ -19,12 +19,19 @@ export const list: typeof lists[`state`][`data`] = {
 };
 
 export const main: typeof mains[`state`][`data`] = {
-  [base.id.inbox]: {sort: [], data: {}},
+  [base.id.inbox]: {sort: [base.id.main], data: {[base.id.main]: {
+    check: false,
+    title: `サンプル`,
+    date: ``,
+    time: ``,
+    alarm: [],
+    task: true,
+  }}},
   [base.id.trash]: {sort: [], data: {}},
 };
 
 export const sub: typeof subs[`state`][`data`] = {
-  [base.id.inbox]: {data: {}},
+  [base.id.inbox]: {data: {[base.id.main]: {sort: [base.id.sub], data: {[base.id.sub]: {check: false, title: ``}}}}},
   [base.id.trash]: {data: {}},
 };
 

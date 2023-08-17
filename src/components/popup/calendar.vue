@@ -21,8 +21,9 @@ props.refer.area = area;
 </script>
 
 <template>
-<BasePopup data-testid="CalendarPage" :open="state.open" @touchend="$emit(`swipeEnd`, {event: $event})"
-  @touchmove="$emit(`swipeStart`, {event: $event}), $emit(`swipeMove`, {event: $event})">
+<BasePopup data-testid="CalendarPage" :open="state.open" @touchend="$emit(`swipeEnd`, {clientX: $event.changedTouches[0]!.clientX})"
+  @touchmove="$emit(`swipeStart`, {clientX: $event.changedTouches[0]!.clientX, clientY: $event.changedTouches[0]!.clientY}),
+    $emit(`swipeMove`, {clientX: $event.changedTouches[0]!.clientX})">
   <div class="flex flex-auto flex-col gap-4">
     <div class="flex items-center">
       <IconPrev data-testid="CalendarPrev" class="flex-auto" @click="$emit(`pageMove`, {prev: true})" />
@@ -37,7 +38,8 @@ props.refer.area = area;
     <div ref="area" class="flex w-[300%] h-[15rem] translate-x-[-33.33%] current:transition-transform
       speed1:current:duration-1000 speed2:current:duration-500 speed3:current:duration-200
       [&.back]:translate-x-[-33.333%] [&.prev]:translate-x-0 [&.next]:translate-x-[-66.666%]"
-      @touchstart="$emit(`swipeInit`, {event: $event})">
+      @touchstart="$emit(`swipeInit`, {target: $event.currentTarget,
+        clientX: $event.changedTouches[0]!.clientX, clientY: $event.changedTouches[0]!.clientY})">
       <ul class="flex flex-even flex-wrap" :key="`month${month.id}`" v-for="month in textDay()">
         <li data-testid="CalendarItem" class="flex items-center justify-center p-2 text-base
           flex-[0_0_14.285%] border-solid border-[0.1rem] border-transparent [&.hide]:invisible
