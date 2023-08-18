@@ -1,14 +1,17 @@
-<script setup lang='ts'>
+<script setup lang="ts">
 defineOptions({
   inheritAttrs: false,
 });
-withDefaults(defineProps<{
-  modelValue?: string;
-}>(), {
-  modelValue: ``,
-});
+withDefaults(
+  defineProps<{
+    modelValue?: string;
+  }>(),
+  {
+    modelValue: ``,
+  },
+);
 const emit = defineEmits<{
-  'update:modelValue': [value: string];
+  "update:modelValue": [value: string];
 }>();
 const updateValue = ($event: Event): void => {
   emit(`update:modelValue`, ($event.target as HTMLInputElement).value);
@@ -16,10 +19,11 @@ const updateValue = ($event: Event): void => {
 </script>
 
 <template>
-<textarea
-  class="resize-none overflow-auto m-0 p-2 leading-8 text-base
-    bg-transparent border-0 outline-0 placeholder:text-theme-half"
-  v-text="modelValue"
-  @input="updateValue($event)"
-  v-bind="$attrs" />
+  <textarea
+    data-testid="InputTextarea"
+    class="m-0 resize-none overflow-auto border-0 bg-transparent p-2 text-base leading-8 outline-0 placeholder:text-theme-half"
+    v-bind="$attrs"
+    @input="updateValue($event)"
+    v-text="modelValue"
+  />
 </template>

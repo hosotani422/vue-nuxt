@@ -1,8 +1,8 @@
-import {StorybookConfig} from '@storybook/vue3-vite';
-import AutoImport from 'unplugin-auto-import/vite';
-import Components from 'unplugin-vue-components/vite';
-const {mergeConfig} = require(`vite`);
-const path = require(`path`);
+import { StorybookConfig } from "@storybook/vue3-vite";
+import AutoImport from "unplugin-auto-import/vite";
+import Components from "unplugin-vue-components/vite";
+import { mergeConfig } from "vite";
+import path from "path";
 
 const config: StorybookConfig = {
   framework: `@storybook/vue3-vite`,
@@ -33,15 +33,15 @@ const config: StorybookConfig = {
       ],
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, `../../src`),
-          '~': path.resolve(__dirname, `../../src`),
+          "@": path.resolve(__dirname, `../../src`),
+          "~": path.resolve(__dirname, `../../src`),
         },
       },
     }),
     define: {
       ...config.define,
       global: `window`,
-      process: {client: true},
+      process: { client: true },
     },
   }),
 };

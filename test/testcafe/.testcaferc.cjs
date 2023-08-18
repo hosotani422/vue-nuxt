@@ -9,6 +9,6 @@ module.exports = {
   screenshots: {
     path: `./test/testcafe/screenshots`,
     takeOnFails: false,
-    fullPage: true
+    fullPage: true,
   },
 };

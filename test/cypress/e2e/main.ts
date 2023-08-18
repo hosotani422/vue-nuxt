@@ -4,11 +4,11 @@ describe(`main`, () => {
   beforeEach(() => {
     cy.visit(`/list0000000000000`);
     cy.get(`[data-testid="MainConf"]`).click();
-    cy.get(`[data-testid="ConfLoad"]`).selectFile(`./test/memotea.bak`);
+    cy.get(`[data-testid="ConfBackupUpload"]`).selectFile(`./test/memotea.bak`);
   });
   it(`create`, () => {
     cy.get(`[data-testid="MainPlus"]`).click();
-    cy.get(`[data-testid="DialogTitle"]`).type(`main4`);
+    cy.get(`[data-testid="DialogText"]`).type(`main4`);
     cy.get(`[data-testid="DialogOk"]`).click();
     cy.get(`[data-testid="MainItem"]`).should(`have.length`, 4);
   });

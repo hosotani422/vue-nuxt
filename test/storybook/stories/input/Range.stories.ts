@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import InputRange from '@/components/input/range.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import InputRange from "@/components/input/range.vue";
 
 const meta: Meta<typeof InputRange> = {
   component: InputRange,
   render: () => ({
-    components: {InputRange},
+    components: { InputRange },
     setup() {
       return {};
     },
-    template:
-      `<InputRange
+    template: `<InputRange
         min="0"
         max="100"
         step="1"

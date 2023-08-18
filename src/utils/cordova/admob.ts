@@ -1,4 +1,4 @@
-import constant from '@/utils/const';
+import constant from "@/utils/const";
 
 // 基本設定
 const BaseConfig: BaseConfig = {
@@ -33,7 +33,7 @@ const BannerConfig: BannerConfig = {
  * バナー自動表示
  */
 export const showBanner = (): void => {
-  window.admob?.banner.config({...BaseConfig, ...BannerConfig});
+  window.admob?.banner.config({ ...BaseConfig, ...BannerConfig });
   window.admob?.banner.prepare();
 };
 

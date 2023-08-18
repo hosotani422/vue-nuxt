@@ -1,26 +1,32 @@
-<script setup lang='ts'>
+<script setup lang="ts">
 defineOptions({
   inheritAttrs: false,
 });
-withDefaults(defineProps<{
-  open?: boolean;
-  max?: boolean;
-}>(), {
-  open: false,
-  max: false,
-});
+withDefaults(
+  defineProps<{
+    open?: boolean;
+    max?: boolean;
+  }>(),
+  {
+    open: false,
+    max: false,
+  },
+);
 </script>
 
 <template>
-<transition>
-  <div v-show="open"
-    class="absolute z-[70] top-0 right-0 bottom-0 left-0
-      flex items-center justify-center fade-normal theme-mask-color"
-    v-bind="$attrs">
-    <div :class="{'h-[80%]': max}"
-      class="w-[80%] max-h-[80%] rounded flex flex-col p-4 gap-3 theme-back-color theme-shadow-normal">
-      <slot />
+  <transition>
+    <div
+      v-show="open"
+      class="fade-normal theme-mask-color absolute inset-0 z-[70] flex items-center justify-center"
+      v-bind="$attrs"
+    >
+      <div
+        :class="{ 'h-[80%]': max }"
+        class="theme-back-color theme-shadow-normal flex max-h-[80%] w-[80%] flex-col gap-3 rounded p-4"
+      >
+        <slot />
+      </div>
     </div>
-  </div>
-</transition>
+  </transition>
 </template>

@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import InputRadio from '@/components/input/radio.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import InputRadio from "@/components/input/radio.vue";
 
 const meta: Meta<typeof InputRadio> = {
   component: InputRadio,
   render: () => ({
-    components: {InputRadio},
+    components: { InputRadio },
     setup() {
       return {};
     },
-    template:
-      `<InputRadio>InputRadio</InputRadio>`,
+    template: `<InputRadio>InputRadio</InputRadio>`,
   }),
 };
 

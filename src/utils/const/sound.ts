@@ -1,9 +1,9 @@
-import ok from '@/assets/sound/ok.mp3';
-import cancel from '@/assets/sound/cancel.mp3';
-import warn from '@/assets/sound/warn.mp3';
+import ok from "@/assets/sound/ok.mp3";
+import cancel from "@/assets/sound/cancel.mp3";
+import warn from "@/assets/sound/warn.mp3";
 
 export default class Sound {
-  private static audio: {[K in `ok` | `cancel` | `warn`]: HTMLAudioElement | null} = {
+  private static audio: { [K in `ok` | `cancel` | `warn`]: HTMLAudioElement | null } = {
     ok: null,
     cancel: null,
     warn: null,

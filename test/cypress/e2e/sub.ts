@@ -4,7 +4,7 @@ describe(`sub`, () => {
   beforeEach(() => {
     cy.visit(`/list0000000000000`);
     cy.get(`[data-testid="MainConf"]`).click();
-    cy.get(`[data-testid="ConfLoad"]`).selectFile(`./test/memotea.bak`);
+    cy.get(`[data-testid="ConfBackupUpload"]`).selectFile(`./test/memotea.bak`);
     cy.get(`[data-testid="MainItem"]`).first().click();
   });
   it(`route`, () => {

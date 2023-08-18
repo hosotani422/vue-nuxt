@@ -1,10 +1,9 @@
-import {Selector, t} from 'testcafe';
+import { Selector, t } from "testcafe";
 
 export default class Page {
   private static async loadData(): Promise<void> {
-    await t
-      .click(`[data-testid="MainConf"]`)
-      .setFilesToUpload(`[data-testid="ConfLoad"]`, `../../memotea.bak`);
+    await t.click(`[data-testid="MainConf"]`).setFilesToUpload(`[data-testid="ConfBackupUpload"]`, `../../memotea.bak`);
+    await t.wait(1000);
   }
   public static async initList(): Promise<void> {
     await this.loadData();
@@ -20,20 +19,27 @@ export default class Page {
   public static getById(selector: string): Selector {
     return Selector(`[data-testid="${selector}"]`);
   }
-  public static async longClick(selector: string | Selector | NodeSnapshot | SelectorPromise | ((...args: any[]) => Node | Node[] | NodeList | HTMLCollection)): Promise<void> {
-    await t
-      .dispatchEvent(selector, `touchstart`)
-      .wait(1000)
-      .dispatchEvent(selector, `touchend`);
+  public static async longClick(
+    selector:
+      | string
+      | Selector
+      | NodeSnapshot
+      | SelectorPromise
+      | ((...args: unknown[]) => Node | Node[] | NodeList | HTMLCollection),
+  ): Promise<void> {
+    await t.dispatchEvent(selector, `touchstart`).wait(1000).dispatchEvent(selector, `touchend`);
   }
   public static async textDialog(text: string): Promise<void> {
-    await t
-      .typeText(Page.getById(`DialogTitle`), text)
-      .click(Page.getById(`DialogOk`));
+    await t.typeText(Page.getById(`DialogText`), text).click(Page.getById(`DialogOk`));
   }
-  public static async checkDialog(selector: string | Selector | NodeSnapshot | SelectorPromise | ((...args: any[]) => Node | Node[] | NodeList | HTMLCollection)): Promise<void> {
-    await t
-      .click(selector)
-      .click(Page.getById(`DialogOk`));
+  public static async checkDialog(
+    selector:
+      | string
+      | Selector
+      | NodeSnapshot
+      | SelectorPromise
+      | ((...args: unknown[]) => Node | Node[] | NodeList | HTMLCollection),
+  ): Promise<void> {
+    await t.click(selector).click(Page.getById(`DialogOk`));
   }
 }

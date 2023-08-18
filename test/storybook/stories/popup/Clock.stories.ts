@@ -1,11 +1,11 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import PopupClock from '@/components/popup/clock.vue';
-import clock from '@/stores/popup/clock';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import PopupClock from "@/components/popup/clock.vue";
+import clock from "@/stores/popup/clock";
 
 const meta: Meta<typeof PopupClock> = {
   component: PopupClock,
   render: () => ({
-    components: {PopupClock},
+    components: { PopupClock },
     setup() {
       clock.action.open({
         hour: 0,
@@ -13,7 +13,7 @@ const meta: Meta<typeof PopupClock> = {
         cancel: `cancel`,
         clear: `clear`,
         ok: `ok`,
-        callback: () => {},
+        callback: () => ``,
       });
       return {
         refer: clock.refer,
@@ -23,8 +23,7 @@ const meta: Meta<typeof PopupClock> = {
         inputMinute: clock.action.inputMinute,
       };
     },
-    template:
-      `<PopupClock
+    template: `<PopupClock
         :refer="refer"
         :state="state"
         @close="close"

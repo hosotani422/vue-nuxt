@@ -1,5 +1,4 @@
-import * as Pinia from 'pinia';
-import constant from '@/utils/const';
+import constant from "@/utils/const";
 
 const useStore = defineStore(`notice`, () => {
   const state: {
@@ -11,8 +10,11 @@ const useStore = defineStore(`notice`, () => {
   } = reactive(constant.init.notice);
 
   const action = {
-    open: (payload: {message: typeof state.message;
-      button: typeof state.button; callback: typeof state.callback;}): void => {
+    open: (payload: {
+      message: typeof state.message;
+      button: typeof state.button;
+      callback: typeof state.callback;
+    }): void => {
       state.open = true;
       state.message = payload.message;
       state.button = payload.button;
@@ -27,9 +29,9 @@ const useStore = defineStore(`notice`, () => {
     },
   };
 
-  return {state, action};
+  return { state, action };
 });
 
-const store = useStore(Pinia.createPinia());
+const store = useStore(createPinia());
 
-export default {state: store.state, action: store.action};
+export default { state: store.state, action: store.action };

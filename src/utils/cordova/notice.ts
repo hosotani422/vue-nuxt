@@ -6,15 +6,24 @@
  * @param scope コールバック関数のスコープ
  * @param args オプション
  */
-export const insert = (msgs: {title: string; message: string; date: Date;},
-  callback?: Function, scope?: object, args?: object): void => {
-  window.cordova?.plugins.notification.local.schedule({
-    title: msgs.title,
-    text: msgs.message,
-    trigger: {
-      at: msgs.date,
+export const insert = (
+  msgs: { title: string; message: string; date: Date },
+  callback?: () => void,
+  scope?: object,
+  args?: object,
+): void => {
+  window.cordova?.plugins.notification.local.schedule(
+    {
+      title: msgs.title,
+      text: msgs.message,
+      trigger: {
+        at: msgs.date,
+      },
     },
-  }, callback, scope, args);
+    callback,
+    scope,
+    args,
+  );
 };
 
 /**
@@ -24,7 +33,7 @@ export const insert = (msgs: {title: string; message: string; date: Date;},
  * @param callback コールバック関数
  * @param scope コールバック関数のスコープ
  */
-export const remove = (ids: number[], callback?: Function, scope?: object): void => {
+export const remove = (ids: number[], callback?: () => void, scope?: object): void => {
   window.cordova?.plugins.notification.local.cancel(ids, callback, scope);
 };
 
@@ -34,6 +43,6 @@ export const remove = (ids: number[], callback?: Function, scope?: object): void
  * @param callback コールバック関数
  * @param scope コールバック関数のスコープ
  */
-export const removeAll = (callback?: Function, scope?: object): void => {
+export const removeAll = (callback?: () => void, scope?: object): void => {
   window.cordova?.plugins.notification.local.cancelAll(callback, scope);
 };

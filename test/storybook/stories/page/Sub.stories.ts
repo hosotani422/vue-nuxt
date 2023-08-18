@@ -1,14 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import PageSub from '@/components/page/sub.vue';
-import app from '@/stores/page/app';
-import main from '@/stores/page/main';
-import sub from '@/stores/page/sub';
-import mock from '../../mock/mock';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import PageSub from "@/components/page/sub.vue";
+import app from "@/stores/page/app";
+import main from "@/stores/page/main";
+import sub from "@/stores/page/sub";
+import mock from "../../mock/mock";
 
 const meta: Meta<typeof PageSub> = {
   component: PageSub,
   render: () => ({
-    components: {PageSub},
+    components: { PageSub },
     setup() {
       mock();
       return {
@@ -45,8 +45,7 @@ const meta: Meta<typeof PageSub> = {
         swipeEnd: sub.action.swipeEnd,
       };
     },
-    template:
-      `<PageSub
+    template: `<PageSub
         :refer="refer"
         :lang="lang"
         :listId="lang"

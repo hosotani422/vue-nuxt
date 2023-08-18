@@ -1,16 +1,16 @@
 export default defineNuxtPlugin(() => {
   if (process.client) {
     let timeoutId = 0;
-    document.addEventListener(`touchstart`, (_event: Event): void => {
+    document.addEventListener(`touchstart`, (event: Event): void => {
       timeoutId = setTimeout(() => {
-        _event.target?.dispatchEvent(new CustomEvent(`touchlong`, {bubbles: true, detail: _event}));
+        event.target?.dispatchEvent(new CustomEvent(`touchlong`, { bubbles: true, detail: event }));
         clearTimeout(timeoutId);
       }, 500) as unknown as number;
     });
-    document.addEventListener(`touchend`, (_event: Event): void => {
+    document.addEventListener(`touchend`, (): void => {
       clearTimeout(timeoutId);
     });
-    document.addEventListener(`touchmove`, (_event: Event): void => {
+    document.addEventListener(`touchmove`, (): void => {
       clearTimeout(timeoutId);
     });
   }

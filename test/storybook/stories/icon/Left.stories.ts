@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import IconLeft from '@/components/icon/left.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import IconLeft from "@/components/icon/left.vue";
 
 const meta: Meta<typeof IconLeft> = {
   component: IconLeft,
   render: () => ({
-    components: {IconLeft},
+    components: { IconLeft },
     setup() {
       return {};
     },
-    template:
-      `<IconLeft v-bind="args" />`,
+    template: `<IconLeft v-bind="args" />`,
   }),
 };
 

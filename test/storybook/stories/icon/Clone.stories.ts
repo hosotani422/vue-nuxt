@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import IconClone from '@/components/icon/clone.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import IconClone from "@/components/icon/clone.vue";
 
 const meta: Meta<typeof IconClone> = {
   component: IconClone,
   render: () => ({
-    components: {IconClone},
+    components: { IconClone },
     setup() {
       return {};
     },
-    template:
-      `<IconClone />`,
+    template: `<IconClone />`,
   }),
 };
 

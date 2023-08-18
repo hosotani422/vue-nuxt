@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import IconMode from '@/components/icon/mode.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import IconMode from "@/components/icon/mode.vue";
 
 const meta: Meta<typeof IconMode> = {
   component: IconMode,
   render: () => ({
-    components: {IconMode},
+    components: { IconMode },
     setup() {
       return {};
     },
-    template:
-      `<IconMode v-bind="args" />`,
+    template: `<IconMode v-bind="args" />`,
   }),
 };
 

@@ -1,14 +1,13 @@
-import * as Pinia from 'pinia';
-import * as lodash from 'lodash';
-import dayjs from 'dayjs';
-import 'dayjs/locale/ja';
-import lang from '@/utils/lang/lang';
-import constant from '@/utils/const/index';
-import * as Api from '@/api/api';
-import list from '@/stores/page/list';
-import main from '@/stores/page/main';
-import sub from '@/stores/page/sub';
-import conf from '@/stores/page/conf';
+import * as lodash from "lodash";
+import dayjs from "dayjs";
+import "dayjs/locale/ja";
+import lang from "@/utils/lang/lang";
+import constant from "@/utils/const/index";
+import * as Api from "@/api/api";
+import list from "@/stores/page/list";
+import main from "@/stores/page/main";
+import sub from "@/stores/page/sub";
+import conf from "@/stores/page/conf";
 
 const lib: {
   lodash: typeof lodash;
@@ -40,25 +39,31 @@ const useStore = defineStore(`app`, () => {
       const mainId = useRoute()?.params?.mainId;
       return mainId && !Array.isArray(mainId) ? mainId : ``;
     }),
-    lang: computed(() => (): typeof lang[typeof conf[`state`][`data`][`lang`]] => lang[conf.state.data.lang]),
+    lang: computed(
+      () => (): (typeof lang)[(typeof conf)[`state`][`data`][`lang`]] => lang[conf.state.data.lang],
+    ),
     classTop: computed(() => (): string => {
       const classList: string[] = [conf.state.data.theme];
-      classList.push((() => {
-        if (conf.state.data.speed === 1) {
-          return `speed1`;
-        } else if (conf.state.data.speed === 3) {
-          return `speed3`;
-        }
-        return `speed2`;
-      })());
-      classList.push((() => {
-        if (conf.state.data.size === 1) {
-          return `text-sm`;
-        } else if (conf.state.data.size === 3) {
-          return `text-lg`;
-        }
-        return `text-base`;
-      })());
+      classList.push(
+        (() => {
+          if (conf.state.data.speed === 1) {
+            return `speed1`;
+          } else if (conf.state.data.speed === 3) {
+            return `speed3`;
+          }
+          return `speed2`;
+        })(),
+      );
+      classList.push(
+        (() => {
+          if (conf.state.data.size === 1) {
+            return `text-sm`;
+          } else if (conf.state.data.size === 3) {
+            return `text-lg`;
+          }
+          return `text-base`;
+        })(),
+      );
       return classList.join(` `);
     }),
     classBottom: computed(() => (): string => {
@@ -72,7 +77,7 @@ const useStore = defineStore(`app`, () => {
   };
 
   const action = {
-    initPage: async(): Promise<void> => {
+    initPage: async (): Promise<void> => {
       await conf.action.initPage();
       await sub.action.initPage();
       await main.action.initPage();
@@ -83,35 +88,35 @@ const useStore = defineStore(`app`, () => {
       sub.action.actPage();
       conf.action.actPage();
     },
-    saveRoute: (payload: {listId: string;}): void => {
+    saveRoute: (payload: { listId: string }): void => {
       Api.writeRoute(payload.listId);
     },
     routerList: (): void => {
       useRouter().push(`/${getter.listId.value()}/list`);
     },
-    routerMain: (payload: {listId: string;}): void => {
+    routerMain: (payload: { listId: string }): void => {
       useRouter().push(`/${payload.listId}`);
     },
-    routerSub: (payload: {mainId: string;}): void => {
+    routerSub: (payload: { mainId: string }): void => {
       useRouter().push(`/${getter.listId.value()}/sub/${payload.mainId}`);
     },
     routerConf: (): void => {
       useRouter().push(`/${getter.listId.value()}/conf`);
     },
-    routerBack: (payload?: {listId: string;}): void => {
+    routerBack: (payload?: { listId: string }): void => {
       state.backId = payload?.listId || ``;
-      payload?.listId && action.saveRoute({listId: state.backId});
+      payload?.listId && action.saveRoute({ listId: state.backId });
       useRouter().back();
     },
     clearTrash: (): void => {
-      main.state.data[constant.base.id.trash] = {sort: [], data: {}};
-      sub.state.data[constant.base.id.trash] = {data: {}};
+      main.state.data[constant.base.id.trash] = { sort: [], data: {} };
+      sub.state.data[constant.base.id.trash] = { data: {} };
     },
   };
 
-  return {state, getter, action};
+  return { state, getter, action };
 });
 
-const store = useStore(Pinia.createPinia());
+const store = useStore(createPinia());
 
-export default {lib, state: store.state, getter: store.getter, action: store.action};
+export default { lib, state: store.state, getter: store.getter, action: store.action };

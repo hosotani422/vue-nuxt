@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import InputTextbox from '@/components/input/textbox.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import InputTextbox from "@/components/input/textbox.vue";
 
 const meta: Meta<typeof InputTextbox> = {
   component: InputTextbox,
   render: (args) => ({
-    components: {InputTextbox},
+    components: { InputTextbox },
     setup() {
-      return {args};
+      return { args };
     },
-    template:
-      `<InputTextbox
+    template: `<InputTextbox
         v-bind="args"
         placeholder="placeholder"
         value="InputTextbox"

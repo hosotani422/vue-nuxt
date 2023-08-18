@@ -1,4 +1,4 @@
-import * as Dom from '@/utils/base/dom';
+import * as Dom from "@/utils/base/dom";
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.directive(`focus`, (el) => {

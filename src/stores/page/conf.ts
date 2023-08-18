@@ -1,13 +1,12 @@
-import * as Pinia from 'pinia';
-import * as Util from '@/utils/base/util';
-import constant from '@/utils/const';
-import * as Api from '@/api/api';
-import * as Cordova from '@/utils/cordova/cordova';
-import app from '@/stores/page/app';
-import list from '@/stores/page/list';
-import main from '@/stores/page/main';
-import sub from '@/stores/page/sub';
-import dialog from '@/stores/popup/dialog';
+import * as Util from "@/utils/base/util";
+import constant from "@/utils/const";
+import * as Api from "@/api/api";
+import * as Cordova from "@/utils/cordova/cordova";
+import app from "@/stores/page/app";
+import list from "@/stores/page/list";
+import main from "@/stores/page/main";
+import sub from "@/stores/page/sub";
+import dialog from "@/stores/popup/dialog";
 
 const prop: {
   swipe: {
@@ -38,7 +37,7 @@ const useStore = defineStore(`conf`, () => {
   });
 
   const action = {
-    initPage: async(): Promise<void> => {
+    initPage: async (): Promise<void> => {
       await action.loadItem();
     },
     actPage: (): void => {
@@ -47,7 +46,7 @@ const useStore = defineStore(`conf`, () => {
         () => {
           action.saveItem();
         },
-        {deep: true},
+        { deep: true },
       );
       watch(
         () => app.lib.lodash.cloneDeep(state.data.volume),
@@ -56,7 +55,7 @@ const useStore = defineStore(`conf`, () => {
         },
       );
     },
-    loadItem: async(): Promise<void> => {
+    loadItem: async (): Promise<void> => {
       state.data = await Api.readConf();
     },
     saveItem: (): void => {
@@ -76,9 +75,13 @@ const useStore = defineStore(`conf`, () => {
                 Cordova.Notice.insert({
                   title: app.getter.lang().dialog.title.alarm,
                   message: `${list.getter.stateUnit(listId).title} ⇒ ${mainUnit.title}`,
-                  date: app.lib.dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`)
-                    .minute(app.lib.dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`).minute() -
-                    app.getter.lang().dialog.alarm.data[alarmId]!.value).toDate(),
+                  date: app.lib
+                    .dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`)
+                    .minute(
+                      app.lib.dayjs(`${mainUnit.date} ${mainUnit.time || `00:00`}`).minute() -
+                        app.getter.lang().dialog.alarm.data[alarmId]!.value,
+                    )
+                    .toDate(),
                 });
               }
             }
@@ -86,8 +89,9 @@ const useStore = defineStore(`conf`, () => {
         }
       }
     },
-    downloadBackup: (payload: {event: Event;}): void => {
-      const data = `${app.getter.listId()}\n` +
+    downloadBackup: (payload: { event: Event }): void => {
+      const data =
+        `${app.getter.listId()}\n` +
         `${JSON.stringify(list.state.data)}\n${JSON.stringify(main.state.data)}\n` +
         `${JSON.stringify(sub.state.data)}\n${JSON.stringify(state.data)}`;
       if (!app.getter.isApp()) {
@@ -95,7 +99,9 @@ const useStore = defineStore(`conf`, () => {
         target.setAttribute(`download`, constant.base.backup);
         target.setAttribute(`href`, `data:text/plain,${encodeURIComponent(data)}`);
       } else {
-        Cordova.File.write(constant.base.backup, data,
+        Cordova.File.write(
+          constant.base.backup,
+          data,
           (filePath) => {
             dialog.action.open({
               mode: `alert`,
@@ -108,7 +114,8 @@ const useStore = defineStore(`conf`, () => {
                 },
               },
             });
-          }, (errorCode) => {
+          },
+          (errorCode) => {
             dialog.action.open({
               mode: `alert`,
               title: app.getter.lang().dialog.title.backupError,
@@ -120,10 +127,11 @@ const useStore = defineStore(`conf`, () => {
                 },
               },
             });
-          });
+          },
+        );
       }
     },
-    uploadBackup: (payload: {event: Event;}): void => {
+    uploadBackup: (payload: { event: Event }): void => {
       const reader = new FileReader();
       reader.onload = (_event: ProgressEvent<FileReader>) => {
         const fileList = (() => {
@@ -132,13 +140,18 @@ const useStore = defineStore(`conf`, () => {
           }
           return [];
         })();
-        if (fileList.length === 5 && Util.isJson(fileList[1]) &&
-          Util.isJson(fileList[2]) && Util.isJson(fileList[3]) && Util.isJson(fileList[4])) {
+        if (
+          fileList.length === 5 &&
+          Util.isJson(fileList[1]) &&
+          Util.isJson(fileList[2]) &&
+          Util.isJson(fileList[3]) &&
+          Util.isJson(fileList[4])
+        ) {
           state.data = JSON.parse(fileList[4]!);
           list.state.data = JSON.parse(fileList[1]!);
           main.state.data = JSON.parse(fileList[2]!);
           sub.state.data = JSON.parse(fileList[3]!);
-          app.action.routerBack({listId: fileList[0]!});
+          app.action.routerBack({ listId: fileList[0]! });
         } else {
           dialog.action.open({
             mode: `alert`,
@@ -164,8 +177,8 @@ const useStore = defineStore(`conf`, () => {
         cancel: app.getter.lang().button.cancel,
         callback: {
           ok: () => {
-            dialog.action.close();
             state.data = constant.init.conf;
+            dialog.action.close();
           },
           cancel: () => {
             dialog.action.close();
@@ -182,11 +195,11 @@ const useStore = defineStore(`conf`, () => {
         cancel: app.getter.lang().button.cancel,
         callback: {
           ok: () => {
-            dialog.action.close();
             list.state.data = constant.init.list;
             main.state.data = constant.init.main;
             sub.state.data = constant.init.sub;
-            app.action.routerBack({listId: constant.init.listId});
+            app.action.routerBack({ listId: constant.init.listId });
+            dialog.action.close();
           },
           cancel: () => {
             dialog.action.close();
@@ -194,13 +207,13 @@ const useStore = defineStore(`conf`, () => {
         },
       });
     },
-    swipeInit: (payload: {target: HTMLElement; clientX: number; clientY: number;}): void => {
+    swipeInit: (payload: { target: HTMLElement; clientX: number; clientY: number }): void => {
       prop.swipe.status = prop.swipe.status === `end` ? `move` : `start`;
       prop.swipe.target = payload.target;
       prop.swipe.x = payload.clientX;
       prop.swipe.y = payload.clientY;
       const item = prop.swipe.target.getBoundingClientRect();
-      prop.swipe.top = item.top + (item.height / 2);
+      prop.swipe.top = item.top + item.height / 2;
       // スワイプ終了前に再開時
       if (prop.swipe.status === `move`) {
         prop.swipe.target.removeEventListener(`transitionend`, prop.swipe.listener!);
@@ -208,21 +221,25 @@ const useStore = defineStore(`conf`, () => {
         prop.swipe.target.style.transform = `translateY(${prop.swipe.top}px)`;
       }
     },
-    swipeStart: (payload: {clientX: number; clientY: number;}): void => {
+    swipeStart: (payload: { clientX: number; clientY: number }): void => {
       if (prop.swipe.status === `start`) {
-        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 15) {
-          Math.abs(payload.clientX - prop.swipe.x!) < Math.abs(payload.clientY - prop.swipe.y!) ?
-            (prop.swipe.status = `move`) : (prop.swipe = {});
+        if (
+          Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) >
+          15
+        ) {
+          Math.abs(payload.clientX - prop.swipe.x!) < Math.abs(payload.clientY - prop.swipe.y!)
+            ? (prop.swipe.status = `move`)
+            : (prop.swipe = {});
         }
       }
     },
-    swipeMove: (payload: {clientY: number;}): void => {
+    swipeMove: (payload: { clientY: number }): void => {
       if (prop.swipe.status === `move`) {
         const y = prop.swipe.top! + payload.clientY - prop.swipe.y!;
         prop.swipe.target!.style.transform = `translateY(${y > 0 ? y : 0}px)`;
       }
     },
-    swipeEnd: (payload: {clientY: number;}): void => {
+    swipeEnd: (payload: { clientY: number }): void => {
       if (prop.swipe.status === `move`) {
         prop.swipe.status = `end`;
         if (prop.swipe.top! + payload.clientY - prop.swipe.y! > 100) {
@@ -231,11 +248,14 @@ const useStore = defineStore(`conf`, () => {
         } else {
           prop.swipe.target!.style.transform = ``;
           prop.swipe.target!.classList.add(`v-enter-active`);
-          prop.swipe.target!.addEventListener(`transitionend`, (prop.swipe.listener = () => {
-            prop.swipe.target!.removeEventListener(`transitionend`, prop.swipe.listener!);
-            prop.swipe.target!.classList.remove(`v-enter-active`);
-            prop.swipe = {};
-          }));
+          prop.swipe.target!.addEventListener(
+            `transitionend`,
+            (prop.swipe.listener = () => {
+              prop.swipe.target!.removeEventListener(`transitionend`, prop.swipe.listener!);
+              prop.swipe.target!.classList.remove(`v-enter-active`);
+              prop.swipe = {};
+            }),
+          );
         }
       } else {
         prop.swipe = {};
@@ -243,9 +263,9 @@ const useStore = defineStore(`conf`, () => {
     },
   };
 
-  return {state, action};
+  return { state, action };
 });
 
-const store = useStore(Pinia.createPinia());
+const store = useStore(createPinia());
 
-export default {prop, state: store.state, action: store.action};
+export default { prop, state: store.state, action: store.action };

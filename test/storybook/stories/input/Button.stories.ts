@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import InputButton from '@/components/input/button.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import InputButton from "@/components/input/button.vue";
 
 const meta: Meta<typeof InputButton> = {
   component: InputButton,
   render: (args) => ({
-    components: {InputButton},
+    components: { InputButton },
     setup() {
-      return {args};
+      return { args };
     },
-    template:
-      `<InputButton v-bind="args">InputButton</InputButton>`,
+    template: `<InputButton v-bind="args">InputButton</InputButton>`,
   }),
   args: {
     type: `button`,

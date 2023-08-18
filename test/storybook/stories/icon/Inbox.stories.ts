@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import IconInbox from '@/components/icon/inbox.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import IconInbox from "@/components/icon/inbox.vue";
 
 const meta: Meta<typeof IconInbox> = {
   component: IconInbox,
   render: () => ({
-    components: {IconInbox},
+    components: { IconInbox },
     setup() {
       return {};
     },
-    template:
-      `<IconInbox v-bind="args" />`,
+    template: `<IconInbox v-bind="args" />`,
   }),
 };
 

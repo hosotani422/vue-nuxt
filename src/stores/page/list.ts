@@ -1,17 +1,16 @@
-import * as Vue from 'vue';
-import * as Pinia from 'pinia';
-import constant from '@/utils/const';
-import * as Api from '@/api/api';
-import app from '@/stores/page/app';
-import main from '@/stores/page/main';
-import sub from '@/stores/page/sub';
-import conf from '@/stores/page/conf';
-import dialog from '@/stores/popup/dialog';
-import notice from '@/stores/popup/notice';
+import * as Vue from "vue";
+import constant from "@/utils/const";
+import * as Api from "@/api/api";
+import app from "@/stores/page/app";
+import main from "@/stores/page/main";
+import sub from "@/stores/page/sub";
+import conf from "@/stores/page/conf";
+import dialog from "@/stores/popup/dialog";
+import notice from "@/stores/popup/notice";
 
 const refer: {
-  wrap?: Vue.Ref<Vue.ComponentPublicInstance<any> | undefined>;
-  items?: Vue.Ref<{[K: string]: Vue.ComponentPublicInstance<any>;}>;
+  wrap?: Vue.Ref<Vue.ComponentPublicInstance<HTMLElement> | undefined>;
+  items?: Vue.Ref<{ [K: string]: Vue.ComponentPublicInstance<HTMLElement> }>;
 } = {};
 
 const prop: {
@@ -48,39 +47,50 @@ const useStore = defineStore(`list`, () => {
         };
       };
     };
-    status: {[K: string]: string;};
+    status: { [K: string]: string };
   } = reactive({
     data: constant.init.list,
     status: {},
   });
 
   const getter = {
-    stateFull: computed(() => (): typeof state[`data`] => state.data),
-    stateUnit: computed(() => (listId?: string): typeof state[`data`][`data`][string] =>
-      state.data.data[listId || app.getter.listId()]!),
-    classItem: computed(() => (listId: string): {[K in `select` | `edit` | `hide`]: boolean;} => ({
+    stateFull: computed(() => (): (typeof state)[`data`] => state.data),
+    stateUnit: computed(
+      () =>
+        (listId?: string): (typeof state)[`data`][`data`][string] =>
+          state.data.data[listId || app.getter.listId()]!,
+    ),
+    classItem: computed(() => (listId: string): { [K in `select` | `edit` | `hide`]: boolean } => ({
       select: app.getter.listId() === listId,
       edit: state.status[listId] === `edit`,
       hide: state.status[listId] === `hide`,
     })),
-    iconType: computed(() => (listId: string): `ItemIconInbox` | `ItemIconTrash` | `ItemIconList` => {
-      if (listId === constant.base.id.inbox) {
-        return `ItemIconInbox`;
-      } else if (listId === constant.base.id.trash) {
-        return `ItemIconTrash`;
-      }
-      return `ItemIconList`;
-    }),
-    classLimit: computed(() => (listId: string): {[K in `text-theme-care` | `text-theme-warn`]: boolean;} => {
-      const limit = {'text-theme-care': false, 'text-theme-warn': false};
-      for (const mainId of main.getter.stateFull(listId).sort) {
-        const unit = main.getter.stateUnit(listId, mainId);
-        const date = `${unit.date || `9999/99/99`} ${unit.time || `00:00`}`;
-        app.lib.dayjs(date).isBefore(app.lib.dayjs().add(2, `day`)) && (limit[`text-theme-care`] = true);
-        app.lib.dayjs(date).isBefore(app.lib.dayjs().add(1, `day`)) && (limit[`text-theme-warn`] = true);
-      }
-      return limit;
-    }),
+    iconType: computed(
+      () =>
+        (listId: string): `ItemIconInbox` | `ItemIconTrash` | `ItemIconList` => {
+          if (listId === constant.base.id.inbox) {
+            return `ItemIconInbox`;
+          } else if (listId === constant.base.id.trash) {
+            return `ItemIconTrash`;
+          }
+          return `ItemIconList`;
+        },
+    ),
+    classLimit: computed(
+      () =>
+        (listId: string): { [K in `text-theme-care` | `text-theme-warn`]: boolean } => {
+          const limit = { "text-theme-care": false, "text-theme-warn": false };
+          for (const mainId of main.getter.stateFull(listId).sort) {
+            const unit = main.getter.stateUnit(listId, mainId);
+            const date = `${unit.date || `9999/99/99`} ${unit.time || `00:00`}`;
+            app.lib.dayjs(date).isBefore(app.lib.dayjs().add(2, `day`)) &&
+              (limit[`text-theme-care`] = true);
+            app.lib.dayjs(date).isBefore(app.lib.dayjs().add(1, `day`)) &&
+              (limit[`text-theme-warn`] = true);
+          }
+          return limit;
+        },
+    ),
     textCount: computed(() => (listId: string): string => {
       let count = 0;
       for (const mainId of main.getter.stateFull(listId).sort) {
@@ -91,7 +101,7 @@ const useStore = defineStore(`list`, () => {
   };
 
   const action = {
-    initPage: async(): Promise<void> => {
+    initPage: async (): Promise<void> => {
       await action.loadItem();
     },
     actPage: (): void => {
@@ -100,10 +110,10 @@ const useStore = defineStore(`list`, () => {
         () => {
           action.saveItem();
         },
-        {deep: true},
+        { deep: true },
       );
     },
-    loadItem: async(): Promise<void> => {
+    loadItem: async (): Promise<void> => {
       state.data = await Api.readList();
     },
     saveItem: (): void => {
@@ -127,8 +137,8 @@ const useStore = defineStore(`list`, () => {
             getter.stateFull.value().data[listId] = {
               title: dialog.state.text.value,
             };
-            main.state.data[listId] = {sort: [], data: {}};
-            sub.state.data[listId] = {data: {}};
+            main.state.data[listId] = { sort: [], data: {} };
+            sub.state.data[listId] = { data: {} };
             dialog.action.close();
           },
           cancel: () => {
@@ -137,15 +147,19 @@ const useStore = defineStore(`list`, () => {
         },
       });
     },
-    copyItem: (payload: {listId: string;}): void => {
+    copyItem: (payload: { listId: string }): void => {
       const listId = `list${app.lib.dayjs().valueOf()}`;
-      getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.listId) + 1, 0, listId);
-      getter.stateFull.value().data[listId] = app.lib.lodash.cloneDeep(getter.stateUnit.value(payload.listId));
-      delete state.status[payload.listId];
+      getter.stateFull
+        .value()
+        .sort.splice(getter.stateFull.value().sort.indexOf(payload.listId) + 1, 0, listId);
+      getter.stateFull.value().data[listId] = app.lib.lodash.cloneDeep(
+        getter.stateUnit.value(payload.listId),
+      );
       main.state.data[listId] = app.lib.lodash.cloneDeep(main.getter.stateFull(payload.listId));
       sub.state.data[listId] = app.lib.lodash.cloneDeep(sub.state.data[payload.listId]!);
+      delete state.status[payload.listId];
     },
-    deleteItem: (payload: {listId: string;}): void => {
+    deleteItem: (payload: { listId: string }): void => {
       dialog.action.open({
         mode: `confirm`,
         title: app.getter.lang().dialog.title.delete,
@@ -161,14 +175,22 @@ const useStore = defineStore(`list`, () => {
             };
             for (const mainId of main.getter.stateFull(payload.listId).sort) {
               main.getter.stateFull(constant.base.id.trash).sort.push(mainId);
-              main.getter.stateFull(constant.base.id.trash).data[mainId] = main.getter.stateUnit(payload.listId, mainId);
-              sub.state.data[constant.base.id.trash]!.data[mainId] = sub.getter.stateFull(payload.listId, mainId);
+              main.getter.stateFull(constant.base.id.trash).data[mainId] = main.getter.stateUnit(
+                payload.listId,
+                mainId,
+              );
+              sub.state.data[constant.base.id.trash]!.data[mainId] = sub.getter.stateFull(
+                payload.listId,
+                mainId,
+              );
             }
-            getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.listId), 1);
+            getter.stateFull
+              .value()
+              .sort.splice(getter.stateFull.value().sort.indexOf(payload.listId), 1);
             delete getter.stateFull.value().data[payload.listId];
-            delete state.status[payload.listId];
             delete main.state.data[payload.listId];
             delete sub.state.data[payload.listId];
+            delete state.status[payload.listId];
             dialog.action.close();
             constant.sound.play(`warn`);
             notice.action.open({
@@ -189,12 +211,12 @@ const useStore = defineStore(`list`, () => {
         },
       });
     },
-    switchEdit: (payload?: {listId: string;}): void => {
+    switchEdit: (payload?: { listId: string }): void => {
       for (const listId of getter.stateFull.value().sort) {
         state.status[listId] = listId === payload?.listId ? `edit` : ``;
       }
     },
-    dragInit: (payload: {listId: string; clientY: number;}): void => {
+    dragInit: (payload: { listId: string; clientY: number }): void => {
       const item = refer.items!.value[payload.listId]!.getBoundingClientRect();
       prop.drag.status = `start`;
       prop.drag.id = payload.listId;
@@ -219,20 +241,33 @@ const useStore = defineStore(`list`, () => {
         state.status[prop.drag.id!] = `hide`;
       }
     },
-    dragMove: (payload: {clientY: number;}): void => {
+    dragMove: (payload: { clientY: number }): void => {
       if (prop.drag.status === `move`) {
         prop.drag.clone!.style.top = `${prop.drag.top! + payload.clientY - prop.drag.y!}px`;
         const index = getter.stateFull.value().sort.indexOf(prop.drag.id!);
         const clone = prop.drag.clone!.getBoundingClientRect();
-        const prev = refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
-        const current = refer.items!.value[getter.stateFull.value().sort[index]!]?.getBoundingClientRect();
-        const next = refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
-        if (prev && clone.top + (clone.height / 2) <
-          (next ? next.top : current.top + current.height) - ((prev.height + current.height) / 2)) {
-          getter.stateFull.value().sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
-        } else if (next && clone.top + (clone.height / 2) >
-          (prev ? prev.top + prev.height : current.top) + ((current.height + next.height) / 2)) {
-          getter.stateFull.value().sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
+        const prev =
+          refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
+        const current =
+          refer.items!.value[getter.stateFull.value().sort[index]!]!.getBoundingClientRect();
+        const next =
+          refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
+        if (
+          prev &&
+          clone.top + clone.height / 2 <
+            (next ? next.top : current.top + current.height) - (prev.height + current.height) / 2
+        ) {
+          getter.stateFull
+            .value()
+            .sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
+        } else if (
+          next &&
+          clone.top + clone.height / 2 >
+            (prev ? prev.top + prev.height : current.top) + (current.height + next.height) / 2
+        ) {
+          getter.stateFull
+            .value()
+            .sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
         }
       }
     },
@@ -240,19 +275,26 @@ const useStore = defineStore(`list`, () => {
       if (prop.drag.status === `move`) {
         prop.drag.status = `end`;
         prop.drag.clone!.classList.remove(`edit`);
-        prop.drag.clone!.animate({
-          top: [`${prop.drag.clone!.getBoundingClientRect().top}px`,
-            `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`],
-        }, constant.base.duration[conf.state.data.speed]).addEventListener(`finish`, () => {
-          state.status[prop.drag.id!] = ``;
-          prop.drag.clone!.remove();
-          prop.drag = {};
-        });
+        prop.drag
+          .clone!.animate(
+            {
+              top: [
+                `${prop.drag.clone!.getBoundingClientRect().top}px`,
+                `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`,
+              ],
+            },
+            constant.base.duration[conf.state.data.speed],
+          )
+          .addEventListener(`finish`, () => {
+            state.status[prop.drag.id!] = ``;
+            prop.drag.clone!.remove();
+            prop.drag = {};
+          });
       } else if (prop.drag.id && !prop.drag.clone) {
         prop.drag = {};
       }
     },
-    swipeInit: (payload: {target: HTMLElement; clientX: number; clientY: number;}): void => {
+    swipeInit: (payload: { target: HTMLElement; clientX: number; clientY: number }): void => {
       prop.swipe.status = prop.swipe.status === `end` ? `move` : `start`;
       prop.swipe.target = payload.target;
       prop.swipe.x = payload.clientX;
@@ -265,21 +307,25 @@ const useStore = defineStore(`list`, () => {
         prop.swipe.target.style.transform = `translateX(${prop.swipe.left}px)`;
       }
     },
-    swipeStart: (payload: {clientX: number; clientY: number;}): void => {
+    swipeStart: (payload: { clientX: number; clientY: number }): void => {
       if (prop.swipe.status === `start`) {
-        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 15) {
-          Math.abs(payload.clientX - prop.swipe.x!) > Math.abs(payload.clientY - prop.swipe.y!) ?
-            (prop.swipe.status = `move`) : (prop.swipe = {});
+        if (
+          Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) >
+          15
+        ) {
+          Math.abs(payload.clientX - prop.swipe.x!) > Math.abs(payload.clientY - prop.swipe.y!)
+            ? (prop.swipe.status = `move`)
+            : (prop.swipe = {});
         }
       }
     },
-    swipeMove: (payload: {clientX: number;}): void => {
+    swipeMove: (payload: { clientX: number }): void => {
       if (prop.swipe.status === `move`) {
         const x = prop.swipe.left! + payload.clientX - prop.swipe.x!;
         prop.swipe.target!.style.transform = `translateX(${x < 0 ? x : 0}px)`;
       }
     },
-    swipeEnd: (payload: {clientX: number;}): void => {
+    swipeEnd: (payload: { clientX: number }): void => {
       if (prop.swipe.status === `move`) {
         prop.swipe.status = `end`;
         if (prop.swipe.left! + payload.clientX - prop.swipe.x! < -100) {
@@ -288,11 +334,14 @@ const useStore = defineStore(`list`, () => {
         } else {
           prop.swipe.target!.style.transform = ``;
           prop.swipe.target!.classList.add(`v-enter-active`);
-          prop.swipe.target!.addEventListener(`transitionend`, (prop.swipe.listener = () => {
-            prop.swipe.target!.removeEventListener(`transitionend`, prop.swipe.listener!);
-            prop.swipe.target!.classList.remove(`v-enter-active`);
-            prop.swipe = {};
-          }));
+          prop.swipe.target!.addEventListener(
+            `transitionend`,
+            (prop.swipe.listener = () => {
+              prop.swipe.target!.removeEventListener(`transitionend`, prop.swipe.listener!);
+              prop.swipe.target!.classList.remove(`v-enter-active`);
+              prop.swipe = {};
+            }),
+          );
         }
       } else {
         prop.swipe = {};
@@ -300,9 +349,9 @@ const useStore = defineStore(`list`, () => {
     },
   };
 
-  return {state, getter, action};
+  return { state, getter, action };
 });
 
-const store = useStore(Pinia.createPinia());
+const store = useStore(createPinia());
 
-export default {refer, prop, state: store.state, getter: store.getter, action: store.action};
+export default { refer, prop, state: store.state, getter: store.getter, action: store.action };

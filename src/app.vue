@@ -1,10 +1,10 @@
-<script setup lang='ts'>
-import * as Cordova from '@/utils/cordova/cordova';
-import app from '@/stores/page/app';
-import calendar from '@/stores/popup/calendar';
-import clock from '@/stores/popup/clock';
-import dialog from '@/stores/popup/dialog';
-import notice from '@/stores/popup/notice';
+<script setup lang="ts">
+import * as Cordova from "@/utils/cordova/cordova";
+import app from "@/stores/page/app";
+import calendar from "@/stores/popup/calendar";
+import clock from "@/stores/popup/clock";
+import dialog from "@/stores/popup/dialog";
+import notice from "@/stores/popup/notice";
 await app.action.initPage();
 onBeforeMount(() => {
   Cordova.Admob.mountBanner();
@@ -15,51 +15,53 @@ onMounted(() => {
 </script>
 
 <template>
-  <Html class="theme-font-color" :class="app.getter.classTop()">
+  <Html data-testid="AppRoot" class="theme-font-color" :class="app.getter.classTop()">
     <Head>
-      <Title>Memotea</Title>
-      <Meta charset="utf-8" />
-      <Meta name="viewport" content="width=device-width, initial-scale=1" />
-      <Meta name="description" content="メモ帳、TODOアプリ" />
-      <Link rel="icon" href="/favicon.png" />
-      <NoScript>JavaScript is required</NoScript>
+      <Title data-testid="AppTitle">Memotea</Title>
+      <Meta data-testid="AppCharset" charset="utf-8" />
+      <Meta data-testid="AppViewport" name="viewport" content="width=device-width, initial-scale=1" />
+      <Meta data-testid="AppDescription" name="description" content="メモ帳、TODOアプリ" />
+      <Link data-testid="AppIcon" rel="icon" href="/favicon.png" />
+      <NoScript data-testid="AppNoScript">JavaScript is required</NoScript>
     </Head>
     <Body>
-      <div class="fixed z-[1] top-0 right-0 bottom-0 left-0 flex flex-col">
+      <div class="fixed inset-0 z-[1] flex flex-col">
         <div class="flex-even">
-          <NuxtPage pageKey="pageKey" />
+          <NuxtPage page-key="pageKey" />
           <PopupCalendar
             :refer="calendar.refer"
             :state="calendar.state"
-            :textWeek="calendar.getter.textWeek"
-            :textDay="calendar.getter.textDay"
-            :classDay="calendar.getter.classDay"
+            :text-week="calendar.getter.textWeek"
+            :text-day="calendar.getter.textDay"
+            :class-day="calendar.getter.classDay"
             @close="calendar.action.close"
-            @pageMove="calendar.action.pageMove"
-            @swipeInit="calendar.action.swipeInit"
-            @swipeStart="calendar.action.swipeStart"
-            @swipeMove="calendar.action.swipeMove"
-            @swipeEnd="calendar.action.swipeEnd"
+            @page-ove="calendar.action.pageMove"
+            @swipe-init="calendar.action.swipeInit"
+            @swipe-start="calendar.action.swipeStart"
+            @swipe-move="calendar.action.swipeMove"
+            @swipe-end="calendar.action.swipeEnd"
           />
           <PopupClock
             :refer="clock.refer"
             :state="clock.state"
             @close="clock.action.close"
-            @inputHour="clock.action.inputHour"
-            @inputMinute="clock.action.inputMinute"
+            @input-hour="clock.action.inputHour"
+            @input-minute="clock.action.inputMinute"
           />
           <PopupDialog
             :state="dialog.state"
             :lang="app.getter.lang"
-            :stateCheckAll="dialog.getter.stateCheckAll"
-            @clickCheckAll="dialog.action.clickCheckAll"
+            :state-check-all="dialog.getter.stateCheckAll"
+            @click-check-all="dialog.action.clickCheckAll"
           />
-          <PopupNotice
-            :state="notice.state"
-          />
+          <PopupNotice :state="notice.state" />
         </div>
-        <div v-if="app.getter.isApp()"
-          class="theme-back-color" :class="app.getter.classBottom()" />
+        <div
+          v-if="app.getter.isApp()"
+          data-testid="AppFoot"
+          class="theme-back-color"
+          :class="app.getter.classBottom()"
+        />
       </div>
     </Body>
   </Html>

@@ -1,4 +1,4 @@
-import {defineConfig, devices} from '@playwright/test';
+import { defineConfig, devices } from "@playwright/test";
 
 /**
  * Read environment variables from file.
@@ -51,7 +51,7 @@ export default defineConfig({
     // Emulates the user timezone.
     // timezoneId: `Europe/Paris`,
     // Viewport used for all pages in the context.
-    viewport: {width: 600, height: 900},
+    viewport: { width: 600, height: 900 },
     // Whether to automatically download all the attachments.
     // acceptDownloads: false,
     // An object containing additional HTTP headers to be sent with every request.
@@ -126,7 +126,7 @@ export default defineConfig({
     // },
     {
       name: `Google Chrome`,
-      use: {...devices[`Desktop Chrome`], channel: `chrome`},
+      use: { ...devices[`Desktop Chrome`], channel: `chrome` },
     },
   ],
   /* Run your local dev server before starting the tests */

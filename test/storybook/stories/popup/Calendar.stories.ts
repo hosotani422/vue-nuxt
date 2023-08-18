@@ -1,18 +1,18 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import PopupCalendar from '@/components/popup/calendar.vue';
-import calendar from '@/stores/popup/calendar';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import PopupCalendar from "@/components/popup/calendar.vue";
+import calendar from "@/stores/popup/calendar";
 
 const meta: Meta<typeof PopupCalendar> = {
   component: PopupCalendar,
   render: () => ({
-    components: {PopupCalendar},
+    components: { PopupCalendar },
     setup() {
       calendar.action.open({
         select: `1999/12/24`,
         current: `1999/12`,
         cancel: `cancel`,
         clear: `clear`,
-        callback: () => {},
+        callback: () => ``,
       });
       return {
         refer: calendar.refer,
@@ -28,8 +28,7 @@ const meta: Meta<typeof PopupCalendar> = {
         swipeEnd: calendar.action.swipeEnd,
       };
     },
-    template:
-      `<PopupCalendar
+    template: `<PopupCalendar
         :refer="refer"
         :state="state"
         :textWeek="textWeek"
