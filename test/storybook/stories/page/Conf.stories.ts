@@ -1,14 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import PageConf from '@/components/page/conf.vue';
-import constant from '@/utils/const';
-import app from '@/stores/page/app';
-import conf from '@/stores/page/conf';
-import mock from '../../mock/mock';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import PageConf from "@/components/page/conf.vue";
+import constant from "@/utils/const";
+import app from "@/stores/page/app";
+import conf from "@/stores/page/conf";
+import mock from "../../mock/mock";
 
 const meta: Meta<typeof PageConf> = {
   component: PageConf,
   render: () => ({
-    components: {PageConf},
+    components: { PageConf },
     setup() {
       mock();
       return {
@@ -26,8 +26,7 @@ const meta: Meta<typeof PageConf> = {
         swipeEnd: conf.action.swipeEnd,
       };
     },
-    template:
-      `<PageConf
+    template: `<PageConf
         :title="title"
         :state="state"
         :lang="lang"

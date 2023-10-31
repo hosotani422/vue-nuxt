@@ -1,14 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import PageList from '@/components/page/list.vue';
-import constant from '@/utils/const';
-import app from '@/stores/page/app';
-import list from '@/stores/page/list';
-import mock from '../../mock/mock';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import PageList from "@/components/page/list.vue";
+import constant from "@/utils/const";
+import app from "@/stores/page/app";
+import list from "@/stores/page/list";
+import mock from "../../mock/mock";
 
 const meta: Meta<typeof PageList> = {
   component: PageList,
   render: () => ({
-    components: {PageList},
+    components: { PageList },
     setup() {
       mock();
       return {
@@ -38,8 +38,7 @@ const meta: Meta<typeof PageList> = {
         swipeEnd: list.action.swipeEnd,
       };
     },
-    template:
-      `<PageList
+    template: `<PageList
         :refer="refer"
         :status="status"
         :title="title"

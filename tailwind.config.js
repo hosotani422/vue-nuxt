@@ -1,5 +1,7 @@
+import tailwind from "./src/assets/style/tailwind";
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
     "./src/app.vue",
     "./src/layouts/**/*.vue",
@@ -8,8 +10,6 @@ module.exports = {
     "./src/stores/**/*.ts",
     "./src/utils/**/*.ts",
   ],
-  darkMode: 'class',
-  presets: [
-    require(`./src/assets/style/tailwind`),
-  ],
-}
+  darkMode: "class",
+  presets: [tailwind],
+};

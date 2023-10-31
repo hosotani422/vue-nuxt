@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import IconPrev from '@/components/icon/prev.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import IconPrev from "@/components/icon/prev.vue";
 
 const meta: Meta<typeof IconPrev> = {
   component: IconPrev,
   render: () => ({
-    components: {IconPrev},
+    components: { IconPrev },
     setup() {
       return {};
     },
-    template:
-      `<IconPrev v-bind="args" />`,
+    template: `<IconPrev v-bind="args" />`,
   }),
 };
 

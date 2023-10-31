@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import IconTrash from '@/components/icon/trash.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import IconTrash from "@/components/icon/trash.vue";
 
 const meta: Meta<typeof IconTrash> = {
   component: IconTrash,
   render: () => ({
-    components: {IconTrash},
+    components: { IconTrash },
     setup() {
       return {};
     },
-    template:
-      `<IconTrash v-bind="args" />`,
+    template: `<IconTrash v-bind="args" />`,
   }),
 };
 

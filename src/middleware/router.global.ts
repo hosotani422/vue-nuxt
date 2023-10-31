@@ -1,7 +1,7 @@
-import * as Api from '@/api/api';
-import app from '@/stores/page/app';
+import * as Api from "@/api/api";
+import app from "@/stores/page/app";
 
-export default defineNuxtRouteMiddleware(async() => {
+export default defineNuxtRouteMiddleware(async () => {
   if (process.client) {
     if (!app.state.initClient) {
       app.state.initClient = true;
@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware(async() => {
     } else if (app.state.backId) {
       const backId = app.state.backId;
       app.state.backId = ``;
-      return navigateTo(`/${backId}`, {replace: true});
+      return navigateTo(`/${backId}`, { replace: true });
     }
   }
 });

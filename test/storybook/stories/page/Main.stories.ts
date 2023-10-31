@@ -1,14 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import PageMain from '@/components/page/main.vue';
-import app from '@/stores/page/app';
-import list from '@/stores/page/list';
-import main from '@/stores/page/main';
-import mock from '../../mock/mock';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import PageMain from "@/components/page/main.vue";
+import app from "@/stores/page/app";
+import list from "@/stores/page/list";
+import main from "@/stores/page/main";
+import mock from "../../mock/mock";
 
 const meta: Meta<typeof PageMain> = {
   component: PageMain,
   render: () => ({
-    components: {PageMain},
+    components: { PageMain },
     setup() {
       mock();
       return {
@@ -37,8 +37,7 @@ const meta: Meta<typeof PageMain> = {
         dragEnd: main.action.dragEnd,
       };
     },
-    template:
-      `<PageMain
+    template: `<PageMain
         :refer="refer"
         :status="status"
         :lang="lang"

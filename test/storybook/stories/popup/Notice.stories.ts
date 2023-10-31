@@ -1,23 +1,22 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import PopupNotice from '@/components/popup/notice.vue';
-import notice from '@/stores/popup/notice';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import PopupNotice from "@/components/popup/notice.vue";
+import notice from "@/stores/popup/notice";
 
 const meta: Meta<typeof PopupNotice> = {
   component: PopupNotice,
   render: () => ({
-    components: {PopupNotice},
+    components: { PopupNotice },
     setup() {
       notice.action.open({
         message: `message`,
         button: `button`,
-        callback: () => {},
+        callback: () => ``,
       });
       return {
         state: notice.state,
       };
     },
-    template:
-      `<PopupNotice
+    template: `<PopupNotice
         :state="state"
       />`,
   }),

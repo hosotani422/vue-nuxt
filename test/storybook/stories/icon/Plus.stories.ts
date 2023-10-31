@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import IconPlus from '@/components/icon/plus.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import IconPlus from "@/components/icon/plus.vue";
 
 const meta: Meta<typeof IconPlus> = {
   component: IconPlus,
   render: () => ({
-    components: {IconPlus},
+    components: { IconPlus },
     setup() {
       return {};
     },
-    template:
-      `<IconPlus v-bind="args" />`,
+    template: `<IconPlus v-bind="args" />`,
   }),
 };
 

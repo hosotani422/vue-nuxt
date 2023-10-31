@@ -1,9 +1,9 @@
-import jp from '@/utils/lang/jp';
-import en from '@/utils/lang/en';
-import conf from '@/stores/page/conf';
+import jp from "@/utils/lang/jp";
+import en from "@/utils/lang/en";
+import conf from "@/stores/page/conf";
 
 const lang: {
-  [K in typeof conf[`state`][`data`][`lang`]]: {
+  [K in (typeof conf)[`state`][`data`][`lang`]]: {
     button: {
       cancel: string;
       clear: string;
@@ -36,7 +36,7 @@ const lang: {
       alarm: {
         title: string;
         sort: string[];
-        data: {[L: string]: {label: string; value: number;};};
+        data: { [L: string]: { label: string; value: number } };
       };
     };
     calendar: {
@@ -50,31 +50,31 @@ const lang: {
       title: string;
       size: {
         title: string;
-        value: {[L in `1` | `2` | `3`]: string;};
+        value: { [L in `1` | `2` | `3`]: string };
       };
       speed: {
         title: string;
-        value: {[L in `1` | `2` | `3`]: string;};
+        value: { [L in `1` | `2` | `3`]: string };
       };
       volume: {
         title: string;
-        value: {[L in `0` | `1` | `2` | `3`]: string;};
+        value: { [L in `0` | `1` | `2` | `3`]: string };
       };
       vibrate: {
         title: string;
-        value: {[L in `off` | `on`]: string;};
+        value: { [L in `off` | `on`]: string };
       };
       theme: {
         title: string;
-        value: {[L in `light` | `dark`]: string;};
+        value: { [L in `light` | `dark`]: string };
       };
       lang: {
         title: string;
-        value: {[L in `en` | `jp`]: string;};
+        value: { [L in `en` | `jp`]: string };
       };
       save: {
         title: string;
-        value: {[L in `local` | `rest` | `gql`]: string;};
+        value: { [L in `local` | `rest` | `gql`]: string };
       };
       backup: {
         title: string;

@@ -1,4 +1,4 @@
-import * as path from 'pathe';
+import * as path from "pathe";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -13,7 +13,7 @@ export default defineNuxtConfig({
   vite: {
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, `src`),
+        "@": path.resolve(__dirname, `src`),
       },
     },
   },
@@ -22,10 +22,7 @@ export default defineNuxtConfig({
   },
   modules: [`@pinia/nuxt`],
   pinia: {
-    autoImports: [
-      `defineStore`,
-      [`defineStore`, `definePiniaStore`],
-    ],
+    autoImports: [`defineStore`, `createPinia`],
   },
   postcss: require(`./postcss.config.js`),
 });

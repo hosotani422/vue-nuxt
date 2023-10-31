@@ -1,21 +1,20 @@
-import * as Vue from 'vue';
-import * as Pinia from 'pinia';
-import * as Dom from '@/utils/base/dom';
-import constant from '@/utils/const';
-import * as Api from '@/api/api';
-import app from '@/stores/page/app';
-import main from '@/stores/page/main';
-import conf from '@/stores/page/conf';
-import calendar from '@/stores/popup/calendar';
-import clock from '@/stores/popup/clock';
-import dialog from '@/stores/popup/dialog';
-import notice from '@/stores/popup/notice';
+import * as Vue from "vue";
+import * as Dom from "@/utils/base/dom";
+import constant from "@/utils/const";
+import * as Api from "@/api/api";
+import app from "@/stores/page/app";
+import main from "@/stores/page/main";
+import conf from "@/stores/page/conf";
+import calendar from "@/stores/popup/calendar";
+import clock from "@/stores/popup/clock";
+import dialog from "@/stores/popup/dialog";
+import notice from "@/stores/popup/notice";
 
 const refer: {
-  home?: Vue.Ref<Vue.ComponentPublicInstance<any> | undefined>;
-  wrap?: Vue.Ref<Vue.ComponentPublicInstance<any> | undefined>;
-  items?: Vue.Ref<{[K: string]: Vue.ComponentPublicInstance<any>;}>;
-  titles?: Vue.Ref<{[K: string]: Vue.ComponentPublicInstance<any>;}>;
+  home?: Vue.Ref<Vue.ComponentPublicInstance<HTMLElement> | undefined>;
+  wrap?: Vue.Ref<Vue.ComponentPublicInstance<HTMLElement> | undefined>;
+  items?: Vue.Ref<{ [K: string]: Vue.ComponentPublicInstance<HTMLElement> }>;
+  titles?: Vue.Ref<{ [K: string]: Vue.ComponentPublicInstance<HTMLElement> }>;
 } = {};
 
 const prop: {
@@ -59,25 +58,38 @@ const useStore = defineStore(`sub`, () => {
         };
       };
     };
-    status: {[K: string]: string;};
+    status: { [K: string]: string };
   } = reactive({
     data: constant.init.sub,
     status: {},
   });
 
   const getter = {
-    stateFull: computed(() =>
-      (listId?: string, mainId?: string): typeof state[`data`][string][`data`][string] =>
-        state.data[listId || app.getter.listId()]!.data[mainId || app.getter.mainId()]!),
-    stateUnit: computed(() =>
-      (listId?: string, mainId?: string, subId?: string): typeof state[`data`][string][`data`][string][`data`][string] =>
-        state.data[listId || app.getter.listId()]!.data[mainId || app.getter.mainId()]!.data[subId || ``]!),
-    classItem: computed(() => (subId: string): {[K in `check` | `edit` | `drag` | `hide`]: boolean;} => ({
-      check: getter.stateUnit.value(``, ``, subId).check,
-      edit: state.status[subId] === `edit`,
-      drag: state.status[subId] === `drag`,
-      hide: state.status[subId] === `hide`,
-    })),
+    stateFull: computed(
+      () =>
+        (listId?: string, mainId?: string): (typeof state)[`data`][string][`data`][string] =>
+          state.data[listId || app.getter.listId()]!.data[mainId || app.getter.mainId()]!,
+    ),
+    stateUnit: computed(
+      () =>
+        (
+          listId?: string,
+          mainId?: string,
+          subId?: string,
+        ): (typeof state)[`data`][string][`data`][string][`data`][string] =>
+          state.data[listId || app.getter.listId()]!.data[mainId || app.getter.mainId()]!.data[
+            subId || ``
+          ]!,
+    ),
+    classItem: computed(
+      () =>
+        (subId: string): { [K in `check` | `edit` | `drag` | `hide`]: boolean } => ({
+          check: getter.stateUnit.value(``, ``, subId).check,
+          edit: state.status[subId] === `edit`,
+          drag: state.status[subId] === `drag`,
+          hide: state.status[subId] === `hide`,
+        }),
+    ),
     textMemo: computed(() => (): string => {
       const memo: string[] = [];
       for (const subId of getter.stateFull.value().sort) {
@@ -85,12 +97,12 @@ const useStore = defineStore(`sub`, () => {
       }
       return memo.join(`\n`);
     }),
-    classLimit: computed(() => (): {[K in `text-theme-care` | `text-theme-warn`]: boolean;} => {
+    classLimit: computed(() => (): { [K in `text-theme-care` | `text-theme-warn`]: boolean } => {
       const unit = main.getter.stateUnit();
       const date = `${unit.date || `9999/99/99`} ${unit.time || `00:00`}`;
       return {
-        'text-theme-care': app.lib.dayjs(date).isBefore(app.lib.dayjs().add(2, `day`)),
-        'text-theme-warn': app.lib.dayjs(date).isBefore(app.lib.dayjs().add(1, `day`)),
+        "text-theme-care": app.lib.dayjs(date).isBefore(app.lib.dayjs().add(2, `day`)),
+        "text-theme-warn": app.lib.dayjs(date).isBefore(app.lib.dayjs().add(1, `day`)),
       };
     }),
     textAlarm: computed(() => (): string => {
@@ -103,7 +115,7 @@ const useStore = defineStore(`sub`, () => {
   };
 
   const action = {
-    initPage: async(): Promise<void> => {
+    initPage: async (): Promise<void> => {
       await action.loadItem();
     },
     actPage: (): void => {
@@ -112,51 +124,56 @@ const useStore = defineStore(`sub`, () => {
         () => {
           action.saveItem();
         },
-        {deep: true},
+        { deep: true },
       );
     },
-    loadItem: async(): Promise<void> => {
+    loadItem: async (): Promise<void> => {
       state.data = await Api.readSub();
     },
     saveItem: (): void => {
       Api.writeSub(state.data);
     },
-    inputItem: (payload: {subId: string;}): void => {
-      Dom.resize(refer.titles!.value[payload.subId].$el);
+    inputItem: (payload: { subId: string }): void => {
+      Dom.resize(refer.titles!.value[payload.subId]!.$el);
     },
-    enterItem: async(payload: {subId: string; selectionStart: number;}) => {
+    enterItem: async (payload: { subId: string; selectionStart: number }) => {
       const subId = `sub${app.lib.dayjs().valueOf()}`;
       const caret = payload.selectionStart;
       const title = getter.stateFull.value().data[payload.subId]!.title;
-      getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId) + 1, 0, subId);
+      getter.stateFull
+        .value()
+        .sort.splice(getter.stateFull.value().sort.indexOf(payload.subId) + 1, 0, subId);
       getter.stateFull.value().data[payload.subId]!.title = title.slice(0, caret!);
-      getter.stateFull.value().data[subId] = {check: false, title: title.slice(caret!)};
+      getter.stateFull.value().data[subId] = { check: false, title: title.slice(caret!) };
       await nextTick();
       // 要素が正しく描画されないので強制描画
-      refer.titles!.value[payload.subId].$el.value = getter.stateFull.value().data[payload.subId]!.title;
+      refer.titles!.value[payload.subId]!.$el.value =
+        getter.stateFull.value().data[payload.subId]!.title;
       refer.titles!.value[subId]?.$el.focus();
-      Dom.resize(refer.titles!.value[payload.subId].$el);
+      Dom.resize(refer.titles!.value[payload.subId]!.$el);
       refer.items!.value[payload.subId]!.addEventListener(`transitionend`, function listener() {
         refer.items!.value[payload.subId]!.removeEventListener(`transitionend`, listener);
         refer.items!.value[payload.subId]!.style.height = ``;
       });
     },
-    backItem: async(payload: {subId: string;}) => {
-      const subId = getter.stateFull.value().sort[getter.stateFull.value().sort.indexOf(payload.subId) - 1]!;
+    backItem: async (payload: { subId: string }) => {
+      const subId =
+        getter.stateFull.value().sort[getter.stateFull.value().sort.indexOf(payload.subId) - 1]!;
       const caret = getter.stateUnit.value(``, ``, subId).title.length;
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId), 1);
-      getter.stateFull.value().data[subId]!.title += getter.stateFull.value().data[payload.subId]!.title;
+      getter.stateFull.value().data[subId]!.title +=
+        getter.stateFull.value().data[payload.subId]!.title;
       delete getter.stateFull.value().data[payload.subId];
       await nextTick();
       // 要素が正しく描画されないので強制描画
-      refer.titles!.value[subId].$el.value = getter.stateFull.value().data[subId]!.title;
-      Dom.resize(refer.titles!.value[subId].$el);
-      refer.titles!.value[subId].$el.focus();
-      refer.titles!.value[subId].$el.selectionStart = caret;
-      refer.titles!.value[subId].$el.selectionEnd = caret;
+      refer.titles!.value[subId]!.$el.value = getter.stateFull.value().data[subId]!.title;
+      Dom.resize(refer.titles!.value[subId]!.$el);
+      refer.titles!.value[subId]!.$el.focus();
+      refer.titles!.value[subId]!.$el.selectionStart = caret;
+      refer.titles!.value[subId]!.$el.selectionEnd = caret;
     },
-    deleteItem: (payload: {subId: string;}) => {
-      const height = Dom.resize(refer.items!.value[payload.subId]);
+    deleteItem: (payload: { subId: string }) => {
+      const height = Dom.resize(refer.items!.value[payload.subId]!);
       const backup = app.lib.lodash.cloneDeep(state.data);
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId), 1);
       delete getter.stateFull.value().data[payload.subId];
@@ -165,11 +182,11 @@ const useStore = defineStore(`sub`, () => {
       notice.action.open({
         message: app.getter.lang().notice.message,
         button: app.getter.lang().notice.button,
-        callback: async() => {
+        callback: async () => {
           notice.action.close();
           state.data = backup;
           await nextTick();
-          Dom.resize(refer.items!.value[payload.subId], height);
+          Dom.resize(refer.items!.value[payload.subId]!, height);
           refer.items!.value[payload.subId]!.addEventListener(`transitionend`, function listener() {
             refer.items!.value[payload.subId]!.removeEventListener(`transitionend`, listener);
             refer.items!.value[payload.subId]!.style.height = ``;
@@ -177,7 +194,7 @@ const useStore = defineStore(`sub`, () => {
         },
       });
     },
-    checkItem: (payload: {subId: string; checked: boolean;}): void => {
+    checkItem: (payload: { subId: string; checked: boolean }): void => {
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId), 1);
       getter.stateFull.value().sort[payload.checked ? `push` : `unshift`](payload.subId);
       getter.stateUnit.value(``, ``, payload.subId).check = payload.checked;
@@ -186,21 +203,21 @@ const useStore = defineStore(`sub`, () => {
     switchItem: (): void => {
       main.getter.stateUnit().task = !main.getter.stateUnit().task;
     },
-    switchEdit: (payload?: {subId: string;}): void => {
+    switchEdit: (payload?: { subId: string }): void => {
       for (const subId of getter.stateFull.value().sort) {
         state.status[subId] = subId === payload?.subId ? `edit` : ``;
       }
     },
-    inputMemo: (payload: {value: string;}): void => {
+    inputMemo: (payload: { value: string }): void => {
       getter.stateFull.value().sort = [];
       getter.stateFull.value().data = {};
       for (const [i, title] of payload.value.split(`\n`).entries()) {
         const subId = `sub${app.lib.dayjs().valueOf()}${i}`;
         getter.stateFull.value().sort.push(subId);
-        getter.stateFull.value().data[subId] = {check: false, title};
+        getter.stateFull.value().data[subId] = { check: false, title };
       }
     },
-    openCalendar: (payload: {date: string;}): void => {
+    openCalendar: (payload: { date: string }): void => {
       calendar.action.open({
         select: payload.date,
         current: app.lib.dayjs(payload.date || new Date()).format(`YYYY/MM`),
@@ -212,7 +229,7 @@ const useStore = defineStore(`sub`, () => {
         },
       });
     },
-    openClock: (payload: {time: string;}): void => {
+    openClock: (payload: { time: string }): void => {
       clock.action.open({
         hour: payload.time ? app.lib.dayjs(`2000/1/1 ${payload.time}`).hour() : 0,
         minute: payload.time ? app.lib.dayjs(`2000/1/1 ${payload.time}`).minute() : 0,
@@ -221,8 +238,10 @@ const useStore = defineStore(`sub`, () => {
         ok: app.getter.lang().button.ok,
         callback: (hour, minute) => {
           clock.action.close();
-          main.getter.stateUnit().time = hour != null && minute != null ?
-            app.lib.dayjs(`2000/1/1 ${hour}:${minute}`).format(`HH:mm`) : ``;
+          main.getter.stateUnit().time =
+            hour != null && minute != null
+              ? app.lib.dayjs(`2000/1/1 ${hour}:${minute}`).format(`HH:mm`)
+              : ``;
         },
       });
     },
@@ -235,7 +254,7 @@ const useStore = defineStore(`sub`, () => {
           all: true,
           sort: app.getter.lang().dialog.alarm.sort,
           data: (() => {
-            const data: typeof dialog[`state`][`check`][`data`] = {};
+            const data: (typeof dialog)[`state`][`check`][`data`] = {};
             for (const id of app.getter.lang().dialog.alarm.sort) {
               data[id] = {
                 check: main.getter.stateUnit().alarm.includes(id),
@@ -251,7 +270,7 @@ const useStore = defineStore(`sub`, () => {
           ok: () => {
             dialog.action.close();
             main.getter.stateUnit().alarm = (() => {
-              const alarm: typeof main[`state`][`data`][string][`data`][string][`alarm`] = [];
+              const alarm: (typeof main)[`state`][`data`][string][`data`][string][`alarm`] = [];
               for (const id of dialog.state.check.sort) {
                 dialog.state.check.data[id]!.check && alarm.push(id);
               }
@@ -264,7 +283,7 @@ const useStore = defineStore(`sub`, () => {
         },
       });
     },
-    dragInit: (payload: {subId: string; clientY: number;}): void => {
+    dragInit: (payload: { subId: string; clientY: number }): void => {
       const item = refer.items!.value[payload.subId]!.getBoundingClientRect();
       prop.drag.status = `start`;
       prop.drag.id = payload.subId;
@@ -290,21 +309,34 @@ const useStore = defineStore(`sub`, () => {
         state.status[prop.drag.id!] = `hide`;
       }
     },
-    dragMove: (payload: {clientY: number;}): void => {
+    dragMove: (payload: { clientY: number }): void => {
       if (prop.drag.status === `move`) {
         prop.drag.clone!.style.top = `${prop.drag.top! + payload.clientY - prop.drag.y!}px`;
         const index = getter.stateFull.value().sort.indexOf(prop.drag.id!);
         const clone = prop.drag.clone!.getBoundingClientRect();
         const wrap = refer.wrap!.value!.getBoundingClientRect();
-        const prev = refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
-        const current = refer.items!.value[getter.stateFull.value().sort[index]!]?.getBoundingClientRect();
-        const next = refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
-        if (prev && clone.top + (clone.height / 2) <
-          (next ? next.top : wrap.top + wrap.height) - ((prev.height + current.height) / 2)) {
-          getter.stateFull.value().sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
-        } else if (next && clone.top + (clone.height / 2) >
-          (prev ? prev.top + prev.height : wrap.top) + ((current.height + next.height) / 2)) {
-          getter.stateFull.value().sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
+        const prev =
+          refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
+        const current =
+          refer.items!.value[getter.stateFull.value().sort[index]!]!.getBoundingClientRect();
+        const next =
+          refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
+        if (
+          prev &&
+          clone.top + clone.height / 2 <
+            (next ? next.top : wrap.top + wrap.height) - (prev.height + current.height) / 2
+        ) {
+          getter.stateFull
+            .value()
+            .sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
+        } else if (
+          next &&
+          clone.top + clone.height / 2 >
+            (prev ? prev.top + prev.height : wrap.top) + (current.height + next.height) / 2
+        ) {
+          getter.stateFull
+            .value()
+            .sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
         }
       }
     },
@@ -312,26 +344,33 @@ const useStore = defineStore(`sub`, () => {
       if (prop.drag.status === `move`) {
         prop.drag.status = `end`;
         prop.drag.clone!.classList.remove(`edit`);
-        prop.drag.clone!.animate({
-          top: [`${prop.drag.clone!.getBoundingClientRect().top}px`,
-            `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`],
-        }, constant.base.duration[conf.state.data.speed]).addEventListener(`finish`, () => {
-          state.status[prop.drag.id!] = ``;
-          prop.drag.clone!.remove();
-          prop.drag = {};
-        });
+        prop.drag
+          .clone!.animate(
+            {
+              top: [
+                `${prop.drag.clone!.getBoundingClientRect().top}px`,
+                `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`,
+              ],
+            },
+            constant.base.duration[conf.state.data.speed],
+          )
+          .addEventListener(`finish`, () => {
+            state.status[prop.drag.id!] = ``;
+            prop.drag.clone!.remove();
+            prop.drag = {};
+          });
       } else if (prop.drag.id && !prop.drag.clone) {
         delete state.status[prop.drag.id];
         prop.drag = {};
       }
     },
-    swipeInit: (payload: {target: HTMLElement; clientX: number; clientY: number;}): void => {
+    swipeInit: (payload: { target: HTMLElement; clientX: number; clientY: number }): void => {
       prop.swipe.status = prop.swipe.status === `end` ? `move` : `start`;
       prop.swipe.target = payload.target;
       prop.swipe.x = payload.clientX;
       prop.swipe.y = payload.clientY;
       const item = prop.swipe.target.getBoundingClientRect();
-      prop.swipe.right = item.left + (item.width / 2);
+      prop.swipe.right = item.left + item.width / 2;
       // スワイプ終了前に再開時
       if (prop.swipe.status === `move`) {
         prop.swipe.target.removeEventListener(`transitionend`, prop.swipe.listener!);
@@ -339,21 +378,25 @@ const useStore = defineStore(`sub`, () => {
         prop.swipe.target.style.transform = `translateX(${prop.swipe.right}px)`;
       }
     },
-    swipeStart: (payload: {clientX: number; clientY: number;}): void => {
+    swipeStart: (payload: { clientX: number; clientY: number }): void => {
       if (prop.swipe.status === `start`) {
-        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 15) {
-          Math.abs(payload.clientX - prop.swipe.x!) > Math.abs(payload.clientY - prop.swipe.y!) ?
-            (prop.swipe.status = `move`) : (prop.swipe = {});
+        if (
+          Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) >
+          15
+        ) {
+          Math.abs(payload.clientX - prop.swipe.x!) > Math.abs(payload.clientY - prop.swipe.y!)
+            ? (prop.swipe.status = `move`)
+            : (prop.swipe = {});
         }
       }
     },
-    swipeMove: (payload: {clientX: number;}): void => {
+    swipeMove: (payload: { clientX: number }): void => {
       if (prop.swipe.status === `move`) {
         const x = prop.swipe.right! + payload.clientX - prop.swipe.x!;
         prop.swipe.target!.style.transform = `translateX(${x > 0 ? x : 0}px)`;
       }
     },
-    swipeEnd: (payload: {clientX: number;}): void => {
+    swipeEnd: (payload: { clientX: number }): void => {
       if (prop.swipe.status === `move`) {
         prop.swipe.status = `end`;
         if (prop.swipe.right! + payload.clientX - prop.swipe.x! > 100) {
@@ -362,11 +405,14 @@ const useStore = defineStore(`sub`, () => {
         } else {
           prop.swipe.target!.style.transform = ``;
           prop.swipe.target!.classList.add(`v-enter-active`);
-          prop.swipe.target!.addEventListener(`transitionend`, (prop.swipe.listener = () => {
-            prop.swipe.target!.removeEventListener(`transitionend`, prop.swipe.listener!);
-            prop.swipe.target!.classList.remove(`v-enter-active`);
-            prop.swipe = {};
-          }));
+          prop.swipe.target!.addEventListener(
+            `transitionend`,
+            (prop.swipe.listener = () => {
+              prop.swipe.target!.removeEventListener(`transitionend`, prop.swipe.listener!);
+              prop.swipe.target!.classList.remove(`v-enter-active`);
+              prop.swipe = {};
+            }),
+          );
         }
       } else {
         prop.swipe = {};
@@ -374,9 +420,9 @@ const useStore = defineStore(`sub`, () => {
     },
   };
 
-  return {state, getter, action};
+  return { state, getter, action };
 });
 
-const store = useStore(Pinia.createPinia());
+const store = useStore(createPinia());
 
-export default {refer, prop, state: store.state, getter: store.getter, action: store.action};
+export default { refer, prop, state: store.state, getter: store.getter, action: store.action };

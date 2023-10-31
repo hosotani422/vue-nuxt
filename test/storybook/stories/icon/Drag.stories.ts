@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import IconDrag from '@/components/icon/drag.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import IconDrag from "@/components/icon/drag.vue";
 
 const meta: Meta<typeof IconDrag> = {
   component: IconDrag,
   render: () => ({
-    components: {IconDrag},
+    components: { IconDrag },
     setup() {
       return {};
     },
-    template:
-      `<IconDrag v-bind="args" />`,
+    template: `<IconDrag v-bind="args" />`,
   }),
 };
 

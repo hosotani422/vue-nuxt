@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import IconMove from '@/components/icon/move.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import IconMove from "@/components/icon/move.vue";
 
 const meta: Meta<typeof IconMove> = {
   component: IconMove,
   render: () => ({
-    components: {IconMove},
+    components: { IconMove },
     setup() {
       return {};
     },
-    template:
-      `<IconMove v-bind="args" />`,
+    template: `<IconMove v-bind="args" />`,
   }),
 };
 

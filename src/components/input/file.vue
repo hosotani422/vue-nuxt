@@ -1,17 +1,14 @@
-<script setup lang='ts'>
+<script setup lang="ts">
 defineOptions({
   inheritAttrs: false,
 });
 </script>
 
 <template>
-<label class="relative z-[1]">
-  <input
-    class="absolute z-[2] top-0 right-0 bottom-0 left-0 opacity-0"
-    type="file"
-    v-bind="$attrs" />
-  <InputButton :class="$attrs.class">
-    <slot>ファイル選択</slot>
-  </InputButton>
-</label>
+  <label data-testid="InputFileLabel" class="relative z-[1]">
+    <input data-testid="InputFile" class="absolute inset-0 z-[2] opacity-0" type="file" v-bind="$attrs" />
+    <InputButton data-testid="InputFileButton" :class="$attrs.class">
+      <slot>InputFile</slot>
+    </InputButton>
+  </label>
 </template>

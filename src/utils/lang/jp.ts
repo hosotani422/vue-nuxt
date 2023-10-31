@@ -1,6 +1,6 @@
-import lang from '@/utils/lang/lang';
+import lang from "@/utils/lang/lang";
 
-const jp: typeof lang[`jp`] = {
+const jp: (typeof lang)[`jp`] = {
   button: {
     cancel: `キャンセル`,
     clear: `クリア`,
@@ -34,18 +34,18 @@ const jp: typeof lang[`jp`] = {
       title: `通知タイミングの選択`,
       sort: [`1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`],
       data: {
-        '1': {label: `時刻通り`, value: 0},
-        '2': {label: `5分前`, value: 5},
-        '3': {label: `10分前`, value: 10},
-        '4': {label: `15分前`, value: 15},
-        '5': {label: `30分前`, value: 30},
-        '6': {label: `1時間前`, value: 60},
-        '7': {label: `2時間前`, value: 120},
-        '8': {label: `3時間前`, value: 180},
-        '9': {label: `6時間前`, value: 360},
-        '10': {label: `12時間前`, value: 720},
-        '11': {label: `1日前`, value: 1440},
-        '12': {label: `2日前`, value: 2880},
+        "1": { label: `時刻通り`, value: 0 },
+        "2": { label: `5分前`, value: 5 },
+        "3": { label: `10分前`, value: 10 },
+        "4": { label: `15分前`, value: 15 },
+        "5": { label: `30分前`, value: 30 },
+        "6": { label: `1時間前`, value: 60 },
+        "7": { label: `2時間前`, value: 120 },
+        "8": { label: `3時間前`, value: 180 },
+        "9": { label: `6時間前`, value: 360 },
+        "10": { label: `12時間前`, value: 720 },
+        "11": { label: `1日前`, value: 1440 },
+        "12": { label: `2日前`, value: 2880 },
       },
     },
   },
@@ -61,26 +61,26 @@ const jp: typeof lang[`jp`] = {
     size: {
       title: `文字サイズ`,
       value: {
-        '1': `小`,
-        '2': `中`,
-        '3': `大`,
+        "1": `小`,
+        "2": `中`,
+        "3": `大`,
       },
     },
     speed: {
       title: `アニメ速度`,
       value: {
-        '1': `低`,
-        '2': `中`,
-        '3': `高`,
+        "1": `低`,
+        "2": `中`,
+        "3": `高`,
       },
     },
     volume: {
       title: `音量`,
       value: {
-        '0': `無`,
-        '1': `小`,
-        '2': `中`,
-        '3': `大`,
+        "0": `無`,
+        "1": `小`,
+        "2": `中`,
+        "3": `大`,
       },
     },
     vibrate: {

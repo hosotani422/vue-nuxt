@@ -1,15 +1,14 @@
-import type {Meta, StoryObj} from '@storybook/vue3';
-import IconList from '@/components/icon/list.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import IconList from "@/components/icon/list.vue";
 
 const meta: Meta<typeof IconList> = {
   component: IconList,
   render: () => ({
-    components: {IconList},
+    components: { IconList },
     setup() {
       return {};
     },
-    template:
-      `<IconList v-bind="args" />`,
+    template: `<IconList v-bind="args" />`,
   }),
 };
 
