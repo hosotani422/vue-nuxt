@@ -39,9 +39,7 @@ const useStore = defineStore(`app`, () => {
       const mainId = useRoute()?.params?.mainId;
       return mainId && !Array.isArray(mainId) ? mainId : ``;
     }),
-    lang: computed(
-      () => (): (typeof lang)[(typeof conf)[`state`][`data`][`lang`]] => lang[conf.state.data.lang],
-    ),
+    lang: computed(() => (): (typeof lang)[(typeof conf)[`state`][`data`][`lang`]] => lang[conf.state.data.lang]),
     classTop: computed(() => (): string => {
       const classList: string[] = [conf.state.data.theme];
       classList.push(

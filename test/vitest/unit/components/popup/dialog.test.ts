@@ -4,7 +4,7 @@ import fixture from "../../../fixture/popup/dialog";
 import dialog from "@/stores/popup/dialog";
 
 const it = test.extend<{ wrapper: VueWrapper }>({
-  wrapper: async ({ task }, use) => {
+  wrapper: async ({}, use) => {
     fixture.setAction();
     fixture.setRouter();
     await fixture.loadData();

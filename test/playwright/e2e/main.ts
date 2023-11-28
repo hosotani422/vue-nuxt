@@ -14,12 +14,12 @@ test.describe(`main`, () => {
   test(`create`, async ({ page, fixture }) => {
     await page.getByTestId(`MainPlus`).click();
     await fixture.textDialog(`main4`);
-    await expect(page.getByTestId(`MainItem`)).toHaveCount(4);
+    await expect(page.getByTestId(`MainItem`)).toHaveCount(3);
   });
   test(`clone`, async ({ page, fixture }) => {
     await fixture.longClick(page.getByTestId(`MainItem`).first());
     await page.getByTestId(`MainClone`).click();
-    await expect(page.getByTestId(`MainItem`)).toHaveCount(4);
+    await expect(page.getByTestId(`MainItem`)).toHaveCount(3);
   });
   test(`edit`, async ({ page }) => {
     await page.getByTestId(`MainItem`).first().click();
@@ -29,9 +29,9 @@ test.describe(`main`, () => {
   });
   test(`check`, async ({ page }) => {
     await page.getByTestId(`MainCheck`).first().check();
-    await expect(page.getByTestId(`MainCheck`).last()).toBeChecked();
+    await expect(page.getByTestId(`MainCheck`).first()).toBeChecked();
     await page.getByTestId(`MainCheck`).last().uncheck();
-    await expect(page.getByTestId(`MainCheck`).last()).not.toBeChecked();
+    await expect(page.getByTestId(`MainCheck`).first()).not.toBeChecked();
   });
   test(`move`, async ({ page, fixture }) => {
     await fixture.longClick(page.getByTestId(`MainItem`).first());
@@ -42,8 +42,8 @@ test.describe(`main`, () => {
   test(`delete`, async ({ page, fixture }) => {
     await fixture.longClick(page.getByTestId(`MainItem`).first());
     await page.getByTestId(`MainTrash`).click();
-    await expect(page.getByTestId(`MainItem`)).toHaveCount(2);
+    await expect(page.getByTestId(`MainItem`)).toHaveCount(1);
     await page.getByTestId(`NoticeBack`).click();
-    await expect(page.getByTestId(`MainItem`)).toHaveCount(3);
+    await expect(page.getByTestId(`MainItem`)).toHaveCount(2);
   });
 });

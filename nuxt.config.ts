@@ -21,8 +21,13 @@ export default defineNuxtConfig({
     shim: false,
   },
   modules: [`@pinia/nuxt`],
-  pinia: {
-    autoImports: [`defineStore`, `createPinia`],
+  imports: {
+    presets: [
+      {
+        from: `pinia`,
+        imports: [`createPinia`],
+      },
+    ],
   },
   postcss: require(`./postcss.config.js`),
 });

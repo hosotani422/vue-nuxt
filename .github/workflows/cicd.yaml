@@ -1,0 +1,44 @@
+name: CI/CD
+on: pull_request
+# GitHubPagesへのデプロイを許可
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  build:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+      - name: Setup Pnpm
+        run: npm install -g pnpm
+      - name: Setup Playwright
+        run: npx playwright install
+      - name: Install Dependency
+        run: pnpm install
+      - name: Build Storybook
+        run: pnpm run build:uiux
+      - name: Upload Storybook
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./.storybook
+      - name: Deploy Storybook
+        uses: actions/deploy-pages@v2
+      - name: Lint Prettier
+        run: pnpm run lint:format
+      - name: Lint Stylelint
+        run: pnpm run lint:style
+      - name: Lint Eslint
+        run: pnpm run lint:script
+      - name: Test Storybook
+        run: pnpm run test:uiux.ci
+      - name: Test Vitest
+        run: pnpm run test:unit
+      - name: Test Playwright
+        run: pnpm run test:e2e

@@ -55,35 +55,26 @@ const useStore = defineStore(`main`, () => {
     stateFull: computed(() => (listId?: string): (typeof state)[`data`][string] => {
       return state.data[listId || app.getter.listId()]!;
     }),
-    stateUnit: computed(
-      () =>
-        (listId?: string, mainId?: string): (typeof state)[`data`][string][`data`][string] => {
-          return state.data[listId || app.getter.listId()]!.data[mainId || app.getter.mainId()]!;
-        },
-    ),
-    classItem: computed(
-      () =>
-        (mainId: string): { [K in `select` | `check` | `edit` | `drag` | `hide`]: boolean } => {
-          return {
-            select: app.getter.mainId() === mainId,
-            check: getter.stateUnit.value(``, mainId).check,
-            edit: state.status[mainId] === `edit`,
-            drag: state.status[mainId] === `drag`,
-            hide: state.status[mainId] === `hide`,
-          };
-        },
-    ),
-    classLimit: computed(
-      () =>
-        (mainId: string): { [K in `text-theme-care` | `text-theme-warn`]: boolean } => {
-          const unit = getter.stateUnit.value(``, mainId);
-          const date = `${unit.date || `9999/99/99`} ${unit.time || `00:00`}`;
-          return {
-            "text-theme-care": app.lib.dayjs(date).isBefore(app.lib.dayjs().add(2, `day`)),
-            "text-theme-warn": app.lib.dayjs(date).isBefore(app.lib.dayjs().add(1, `day`)),
-          };
-        },
-    ),
+    stateUnit: computed(() => (listId?: string, mainId?: string): (typeof state)[`data`][string][`data`][string] => {
+      return state.data[listId || app.getter.listId()]!.data[mainId || app.getter.mainId()]!;
+    }),
+    classItem: computed(() => (mainId: string): { [K in `select` | `check` | `edit` | `drag` | `hide`]: boolean } => {
+      return {
+        select: app.getter.mainId() === mainId,
+        check: getter.stateUnit.value(``, mainId).check,
+        edit: state.status[mainId] === `edit`,
+        drag: state.status[mainId] === `drag`,
+        hide: state.status[mainId] === `hide`,
+      };
+    }),
+    classLimit: computed(() => (mainId: string): { [K in `text-theme-care` | `text-theme-warn`]: boolean } => {
+      const unit = getter.stateUnit.value(``, mainId);
+      const date = `${unit.date || `9999/99/99`} ${unit.time || `00:00`}`;
+      return {
+        "text-theme-care": app.lib.dayjs(date).isBefore(app.lib.dayjs().add(2, `day`)),
+        "text-theme-warn": app.lib.dayjs(date).isBefore(app.lib.dayjs().add(1, `day`)),
+      };
+    }),
     textCount: computed(() => (mainId: string): string => {
       let count = 0;
       for (const subId of sub.getter.stateFull(``, mainId).sort) {
@@ -151,12 +142,8 @@ const useStore = defineStore(`main`, () => {
     },
     copyItem: (payload: { mainId: string }): void => {
       const mainId = `main${app.lib.dayjs().valueOf()}`;
-      getter.stateFull
-        .value()
-        .sort.splice(getter.stateFull.value().sort.indexOf(payload.mainId) + 1, 0, mainId);
-      getter.stateFull.value().data[mainId] = app.lib.lodash.cloneDeep(
-        getter.stateUnit.value(``, payload.mainId),
-      );
+      getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.mainId) + 1, 0, mainId);
+      getter.stateFull.value().data[mainId] = app.lib.lodash.cloneDeep(getter.stateUnit.value(``, payload.mainId));
       sub.state.data[app.getter.listId()]!.data[mainId] = app.lib.lodash.cloneDeep(
         sub.getter.stateFull(``, payload.mainId),
       );
@@ -179,13 +166,15 @@ const useStore = defineStore(`main`, () => {
           ok: () => {
             if (dialog.state.radio.select !== app.getter.listId()) {
               getter.stateFull.value(dialog.state.radio.select).sort.unshift(payload.mainId);
-              getter.stateFull.value(dialog.state.radio.select).data[payload.mainId] =
-                getter.stateUnit.value(``, payload.mainId);
-              sub.state.data[dialog.state.radio.select]!.data[payload.mainId] =
-                sub.getter.stateFull(``, payload.mainId);
-              getter.stateFull
-                .value()
-                .sort.splice(getter.stateFull.value().sort.indexOf(payload.mainId), 1);
+              getter.stateFull.value(dialog.state.radio.select).data[payload.mainId] = getter.stateUnit.value(
+                ``,
+                payload.mainId,
+              );
+              sub.state.data[dialog.state.radio.select]!.data[payload.mainId] = sub.getter.stateFull(
+                ``,
+                payload.mainId,
+              );
+              getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.mainId), 1);
               delete getter.stateFull.value().data[payload.mainId];
               delete sub.state.data[app.getter.listId()]!.data[payload.mainId];
             }
@@ -206,16 +195,13 @@ const useStore = defineStore(`main`, () => {
       };
       if (app.getter.listId() !== constant.base.id.trash) {
         getter.stateFull.value(constant.base.id.trash).sort.push(payload.mainId);
-        getter.stateFull.value(constant.base.id.trash).data[payload.mainId] =
-          getter.stateUnit.value(``, payload.mainId);
-        sub.state.data[constant.base.id.trash]!.data[payload.mainId] = sub.getter.stateFull(
+        getter.stateFull.value(constant.base.id.trash).data[payload.mainId] = getter.stateUnit.value(
           ``,
           payload.mainId,
         );
+        sub.state.data[constant.base.id.trash]!.data[payload.mainId] = sub.getter.stateFull(``, payload.mainId);
       }
-      getter.stateFull
-        .value()
-        .sort.splice(getter.stateFull.value().sort.indexOf(payload.mainId), 1);
+      getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.mainId), 1);
       delete getter.stateFull.value().data[payload.mainId];
       delete sub.state.data[app.getter.listId()]!.data[payload.mainId];
       delete state.status[payload.mainId];
@@ -231,9 +217,7 @@ const useStore = defineStore(`main`, () => {
       });
     },
     checkItem: (payload: { mainId: string; checked: boolean }): void => {
-      getter.stateFull
-        .value()
-        .sort.splice(getter.stateFull.value().sort.indexOf(payload.mainId), 1);
+      getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.mainId), 1);
       getter.stateFull.value().sort[payload.checked ? `push` : `unshift`](payload.mainId);
       getter.stateUnit.value(``, payload.mainId).check = payload.checked;
       constant.sound.play(payload.checked ? `ok` : `cancel`);
@@ -273,28 +257,21 @@ const useStore = defineStore(`main`, () => {
         prop.drag.clone!.style.top = `${prop.drag.top! + payload.clientY - prop.drag.y!}px`;
         const index = getter.stateFull.value().sort.indexOf(prop.drag.id!);
         const clone = prop.drag.clone!.getBoundingClientRect();
-        const prev =
-          refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
-        const current =
-          refer.items!.value[getter.stateFull.value().sort[index]!]!.getBoundingClientRect();
-        const next =
-          refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
+        const prev = refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
+        const current = refer.items!.value[getter.stateFull.value().sort[index]!]!.getBoundingClientRect();
+        const next = refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
         if (
           prev &&
           clone.top + clone.height / 2 <
             (next ? next.top : current.top + current.height) - (prev.height + current.height) / 2
         ) {
-          getter.stateFull
-            .value()
-            .sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
+          getter.stateFull.value().sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
         } else if (
           next &&
           clone.top + clone.height / 2 >
             (prev ? prev.top + prev.height : current.top) + (current.height + next.height) / 2
         ) {
-          getter.stateFull
-            .value()
-            .sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
+          getter.stateFull.value().sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
         }
       }
     },

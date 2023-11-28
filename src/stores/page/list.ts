@@ -65,32 +65,24 @@ const useStore = defineStore(`list`, () => {
       edit: state.status[listId] === `edit`,
       hide: state.status[listId] === `hide`,
     })),
-    iconType: computed(
-      () =>
-        (listId: string): `ItemIconInbox` | `ItemIconTrash` | `ItemIconList` => {
-          if (listId === constant.base.id.inbox) {
-            return `ItemIconInbox`;
-          } else if (listId === constant.base.id.trash) {
-            return `ItemIconTrash`;
-          }
-          return `ItemIconList`;
-        },
-    ),
-    classLimit: computed(
-      () =>
-        (listId: string): { [K in `text-theme-care` | `text-theme-warn`]: boolean } => {
-          const limit = { "text-theme-care": false, "text-theme-warn": false };
-          for (const mainId of main.getter.stateFull(listId).sort) {
-            const unit = main.getter.stateUnit(listId, mainId);
-            const date = `${unit.date || `9999/99/99`} ${unit.time || `00:00`}`;
-            app.lib.dayjs(date).isBefore(app.lib.dayjs().add(2, `day`)) &&
-              (limit[`text-theme-care`] = true);
-            app.lib.dayjs(date).isBefore(app.lib.dayjs().add(1, `day`)) &&
-              (limit[`text-theme-warn`] = true);
-          }
-          return limit;
-        },
-    ),
+    iconType: computed(() => (listId: string): `IconInbox` | `IconTrash` | `IconList` => {
+      if (listId === constant.base.id.inbox) {
+        return `IconInbox`;
+      } else if (listId === constant.base.id.trash) {
+        return `IconTrash`;
+      }
+      return `IconList`;
+    }),
+    classLimit: computed(() => (listId: string): { [K in `text-theme-care` | `text-theme-warn`]: boolean } => {
+      const limit = { "text-theme-care": false, "text-theme-warn": false };
+      for (const mainId of main.getter.stateFull(listId).sort) {
+        const unit = main.getter.stateUnit(listId, mainId);
+        const date = `${unit.date || `9999/99/99`} ${unit.time || `00:00`}`;
+        app.lib.dayjs(date).isBefore(app.lib.dayjs().add(2, `day`)) && (limit[`text-theme-care`] = true);
+        app.lib.dayjs(date).isBefore(app.lib.dayjs().add(1, `day`)) && (limit[`text-theme-warn`] = true);
+      }
+      return limit;
+    }),
     textCount: computed(() => (listId: string): string => {
       let count = 0;
       for (const mainId of main.getter.stateFull(listId).sort) {
@@ -149,12 +141,8 @@ const useStore = defineStore(`list`, () => {
     },
     copyItem: (payload: { listId: string }): void => {
       const listId = `list${app.lib.dayjs().valueOf()}`;
-      getter.stateFull
-        .value()
-        .sort.splice(getter.stateFull.value().sort.indexOf(payload.listId) + 1, 0, listId);
-      getter.stateFull.value().data[listId] = app.lib.lodash.cloneDeep(
-        getter.stateUnit.value(payload.listId),
-      );
+      getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.listId) + 1, 0, listId);
+      getter.stateFull.value().data[listId] = app.lib.lodash.cloneDeep(getter.stateUnit.value(payload.listId));
       main.state.data[listId] = app.lib.lodash.cloneDeep(main.getter.stateFull(payload.listId));
       sub.state.data[listId] = app.lib.lodash.cloneDeep(sub.state.data[payload.listId]!);
       delete state.status[payload.listId];
@@ -179,14 +167,9 @@ const useStore = defineStore(`list`, () => {
                 payload.listId,
                 mainId,
               );
-              sub.state.data[constant.base.id.trash]!.data[mainId] = sub.getter.stateFull(
-                payload.listId,
-                mainId,
-              );
+              sub.state.data[constant.base.id.trash]!.data[mainId] = sub.getter.stateFull(payload.listId, mainId);
             }
-            getter.stateFull
-              .value()
-              .sort.splice(getter.stateFull.value().sort.indexOf(payload.listId), 1);
+            getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.listId), 1);
             delete getter.stateFull.value().data[payload.listId];
             delete main.state.data[payload.listId];
             delete sub.state.data[payload.listId];
@@ -246,28 +229,21 @@ const useStore = defineStore(`list`, () => {
         prop.drag.clone!.style.top = `${prop.drag.top! + payload.clientY - prop.drag.y!}px`;
         const index = getter.stateFull.value().sort.indexOf(prop.drag.id!);
         const clone = prop.drag.clone!.getBoundingClientRect();
-        const prev =
-          refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
-        const current =
-          refer.items!.value[getter.stateFull.value().sort[index]!]!.getBoundingClientRect();
-        const next =
-          refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
+        const prev = refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
+        const current = refer.items!.value[getter.stateFull.value().sort[index]!]!.getBoundingClientRect();
+        const next = refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
         if (
           prev &&
           clone.top + clone.height / 2 <
             (next ? next.top : current.top + current.height) - (prev.height + current.height) / 2
         ) {
-          getter.stateFull
-            .value()
-            .sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
+          getter.stateFull.value().sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
         } else if (
           next &&
           clone.top + clone.height / 2 >
             (prev ? prev.top + prev.height : current.top) + (current.height + next.height) / 2
         ) {
-          getter.stateFull
-            .value()
-            .sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
+          getter.stateFull.value().sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
         }
       }
     },
@@ -309,10 +285,7 @@ const useStore = defineStore(`list`, () => {
     },
     swipeStart: (payload: { clientX: number; clientY: number }): void => {
       if (prop.swipe.status === `start`) {
-        if (
-          Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) >
-          15
-        ) {
+        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 15) {
           Math.abs(payload.clientX - prop.swipe.x!) > Math.abs(payload.clientY - prop.swipe.y!)
             ? (prop.swipe.status = `move`)
             : (prop.swipe = {});

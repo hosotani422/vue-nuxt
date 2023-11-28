@@ -1,7 +1,6 @@
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import * as Vue from "vue";
 import fs from "fs";
-import constant from "@/utils/const";
 import app from "@/stores/page/app";
 import list from "@/stores/page/list";
 import main from "@/stores/page/main";
@@ -10,8 +9,6 @@ import conf from "@/stores/page/conf";
 import clock from "@/stores/popup/clock";
 
 beforeEach(async () => {
-  constant.base.id.inbox = `list000`;
-  constant.base.id.trash = `list900`;
   const backup = fs.readFileSync(`./test/memotea.bak`, `utf-8`).split(`\n`);
   app.state.backId = backup[0]!;
   list.state.data = JSON.parse(backup[1]!);
@@ -20,7 +17,7 @@ beforeEach(async () => {
   conf.state.data = JSON.parse(backup[4]!);
   vi.mock(`vue-router`, () => ({
     useRoute: () => ({
-      params: { listId: `list100`, mainId: `main110` },
+      params: { listId: `list1111111111111`, mainId: `main1111111111111` },
     }),
   }));
 });

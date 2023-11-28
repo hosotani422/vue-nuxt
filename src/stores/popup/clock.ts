@@ -46,8 +46,7 @@ const useStore = defineStore(`clock`, () => {
       const x = payload.event.touches[0]!.pageX - target.getBoundingClientRect().left;
       const y = payload.event.touches[0]!.pageY - target.getBoundingClientRect().top;
       const half = target.getBoundingClientRect().height / 2;
-      const angle =
-        (Math.atan((half - y) / (half - x)) * 360) / (Math.PI * 2) + (x >= half ? 90 : 270);
+      const angle = (Math.atan((half - y) / (half - x)) * 360) / (Math.PI * 2) + (x >= half ? 90 : 270);
       const inner = Math.sqrt((half - x) ** 2 + (half - y) ** 2) < half * 0.66;
       let hour = Math.round(angle / 30) + (inner ? 12 : 0);
       hour % 12 === 0 && (hour = inner ? 0 : 12);
@@ -59,8 +58,7 @@ const useStore = defineStore(`clock`, () => {
       const x = payload.event.touches[0]!.pageX - target.getBoundingClientRect().left;
       const y = payload.event.touches[0]!.pageY - target.getBoundingClientRect().top;
       const half = target.getBoundingClientRect().height / 2;
-      const angle =
-        (Math.atan((half - y) / (half - x)) * 360) / (Math.PI * 2) + (x >= half ? 90 : 270);
+      const angle = (Math.atan((half - y) / (half - x)) * 360) / (Math.PI * 2) + (x >= half ? 90 : 270);
       const minute = Math.round(angle / 6) === 60 ? 0 : Math.round(angle / 6);
       state.minute = minute;
       action.drawMinute({ target });

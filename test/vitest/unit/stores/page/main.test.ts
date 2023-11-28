@@ -12,29 +12,29 @@ import dialog from "@/stores/popup/dialog";
 import notice from "@/stores/popup/notice";
 
 beforeEach(async () => {
+  vi.useFakeTimers();
   const backup = fs.readFileSync(`./test/memotea.bak`, `utf-8`).split(`\n`);
   app.state.backId = backup[0]!;
   list.state.data = JSON.parse(backup[1]!);
   main.state.data = JSON.parse(backup[2]!);
   sub.state.data = JSON.parse(backup[3]!);
   conf.state.data = JSON.parse(backup[4]!);
-  constant.base.id.inbox = `list000`;
-  constant.base.id.trash = `list900`;
   vi.mock(`vue-router`, () => ({
     useRoute: () => ({
-      params: { listId: `list100`, mainId: `main110` },
+      params: { listId: `list1111111111111`, mainId: `main1111111111111` },
     }),
   }));
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.restoreAllMocks();
 });
 
 describe(`getter`, () => {
   it(`stateFull`, () => {
-    expect(main.getter.stateFull().sort).toEqual([`main110`, `main120`]);
-    expect(main.getter.stateFull(`list900`).sort).toEqual([]);
+    expect(main.getter.stateFull().sort).toEqual([`main1111111111111`, `main2222222222222`]);
+    expect(main.getter.stateFull(`list9999999999999`).sort).toEqual([]);
   });
   it(`stateUnit`, () => {
     expect(main.getter.stateUnit()).toEqual({
@@ -45,7 +45,7 @@ describe(`getter`, () => {
       alarm: [`2`, `6`],
       task: true,
     });
-    expect(main.getter.stateUnit(`list100`)).toEqual({
+    expect(main.getter.stateUnit(`list1111111111111`)).toEqual({
       check: false,
       title: `main1`,
       date: `2000/01/01`,
@@ -53,7 +53,7 @@ describe(`getter`, () => {
       alarm: [`2`, `6`],
       task: true,
     });
-    expect(main.getter.stateUnit(undefined, `main110`)).toEqual({
+    expect(main.getter.stateUnit(undefined, `main1111111111111`)).toEqual({
       check: false,
       title: `main1`,
       date: `2000/01/01`,
@@ -61,7 +61,7 @@ describe(`getter`, () => {
       alarm: [`2`, `6`],
       task: true,
     });
-    expect(main.getter.stateUnit(`list100`, `main120`)).toEqual({
+    expect(main.getter.stateUnit(`list1111111111111`, `main2222222222222`)).toEqual({
       check: true,
       title: `main2`,
       date: ``,
@@ -71,14 +71,14 @@ describe(`getter`, () => {
     });
   });
   it(`classItem`, () => {
-    expect(main.getter.classItem(`main110`)).toEqual({
+    expect(main.getter.classItem(`main1111111111111`)).toEqual({
       select: true,
       check: false,
       edit: false,
       drag: false,
       hide: false,
     });
-    expect(main.getter.classItem(`main120`)).toEqual({
+    expect(main.getter.classItem(`main2222222222222`)).toEqual({
       select: false,
       check: true,
       edit: false,
@@ -87,25 +87,25 @@ describe(`getter`, () => {
     });
   });
   it(`classLimit`, () => {
-    vi.setSystemTime(new Date(1999, 11, 30, 0, 0, 0));
-    expect(main.getter.classLimit(`main110`)).toEqual({
+    vi.setSystemTime(new Date(1999, 11, 30, 0, 0, 0, 0));
+    expect(main.getter.classLimit(`main1111111111111`)).toEqual({
       "text-theme-care": false,
       "text-theme-warn": false,
     });
-    vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0));
-    expect(main.getter.classLimit(`main110`)).toEqual({
+    vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0, 0));
+    expect(main.getter.classLimit(`main1111111111111`)).toEqual({
       "text-theme-care": true,
       "text-theme-warn": false,
     });
-    vi.setSystemTime(new Date(2000, 1, 1, 0, 0, 0));
-    expect(main.getter.classLimit(`main110`)).toEqual({
+    vi.setSystemTime(new Date(2000, 1, 1, 0, 0, 0, 0));
+    expect(main.getter.classLimit(`main1111111111111`)).toEqual({
       "text-theme-care": true,
       "text-theme-warn": true,
     });
   });
   it(`textCount`, () => {
-    expect(main.getter.textCount(`main110`)).toBe(`1/2`);
-    expect(main.getter.textCount(`main120`)).toBe(`1/1`);
+    expect(main.getter.textCount(`main1111111111111`)).toBe(`1/2`);
+    expect(main.getter.textCount(`main2222222222222`)).toBe(`1/1`);
   });
 });
 
@@ -119,7 +119,7 @@ describe(`action`, () => {
     vi.spyOn(main.action, `saveItem`).mockReturnValue();
     vi.spyOn(conf.action, `reactAlarm`).mockReturnValue();
     main.action.actPage();
-    main.state.data[`list100`]!.data[`main110`]!.task = false;
+    main.state.data[`list1111111111111`]!.data[`main1111111111111`]!.task = false;
     expect(await main.action.saveItem).toBeCalledTimes(1);
     expect(await conf.action.reactAlarm).toBeCalledTimes(1);
   });
@@ -139,7 +139,7 @@ describe(`action`, () => {
     expect(Api.writeMain).toBeCalledWith(writeMainData);
   });
   it(`insertItem`, () => {
-    vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0));
+    vi.setSystemTime(new Date(946566000000));
     vi.spyOn(dialog.action, `open`);
     vi.spyOn(dialog.action, `close`).mockReturnValue();
     main.action.insertItem();
@@ -158,8 +158,12 @@ describe(`action`, () => {
       app.getter.lang().button.cancel,
     );
     dialog.state.callback.ok!();
-    expect(main.state.data[`list100`]!.sort).toEqual([`main946566000000`, `main110`, `main120`]);
-    expect(main.state.data[`list100`]!.data[`main946566000000`]).toEqual({
+    expect(main.state.data[`list1111111111111`]!.sort).toEqual([
+      `main946566000000`,
+      `main1111111111111`,
+      `main2222222222222`,
+    ]);
+    expect(main.state.data[`list1111111111111`]!.data[`main946566000000`]).toEqual({
       check: false,
       title: ``,
       date: ``,
@@ -167,7 +171,7 @@ describe(`action`, () => {
       alarm: [],
       task: true,
     });
-    expect(sub.state.data[`list100`]!.data[`main946566000000`]).toEqual({
+    expect(sub.state.data[`list1111111111111`]!.data[`main946566000000`]).toEqual({
       sort: [`sub946566000000`],
       data: { sub946566000000: { check: false, title: `` } },
     });
@@ -176,10 +180,14 @@ describe(`action`, () => {
     expect(dialog.action.close).toBeCalledTimes(2);
   });
   it(`copyItem`, () => {
-    vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0));
-    main.action.copyItem({ mainId: `main120` });
-    expect(main.state.data[`list100`]!.sort).toEqual([`main110`, `main120`, `main946566000000`]);
-    expect(main.state.data[`list100`]!.data[`main946566000000`]).toEqual({
+    vi.setSystemTime(new Date(946566000000));
+    main.action.copyItem({ mainId: `main2222222222222` });
+    expect(main.state.data[`list1111111111111`]!.sort).toEqual([
+      `main1111111111111`,
+      `main2222222222222`,
+      `main946566000000`,
+    ]);
+    expect(main.state.data[`list1111111111111`]!.data[`main946566000000`]).toEqual({
       check: true,
       title: `main2`,
       date: ``,
@@ -187,7 +195,7 @@ describe(`action`, () => {
       alarm: [],
       task: true,
     });
-    expect(sub.state.data[`list100`]!.data[`main946566000000`]).toEqual({
+    expect(sub.state.data[`list1111111111111`]!.data[`main946566000000`]).toEqual({
       sort: [`sub121`],
       data: { sub121: { check: false, title: `` } },
     });
@@ -196,7 +204,7 @@ describe(`action`, () => {
   it(`moveItem`, () => {
     vi.spyOn(dialog.action, `open`);
     vi.spyOn(dialog.action, `close`).mockReturnValue();
-    main.action.moveItem({ mainId: `main120` });
+    main.action.moveItem({ mainId: `main2222222222222` });
     expect(dialog.action.open).toBeCalledTimes(1);
     expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.mode).toBe(`radio`);
     expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.title).toBe(
@@ -211,13 +219,13 @@ describe(`action`, () => {
     expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.cancel).toBe(
       app.getter.lang().button.cancel,
     );
-    dialog.state.radio.select = `list000`;
+    dialog.state.radio.select = `list0000000000000`;
     dialog.state.callback.ok!();
-    expect(main.state.data[`list100`]!.sort).toEqual([`main110`]);
-    expect(main.state.data[`list100`]!.data[`main120`]).toBeUndefined();
-    expect(sub.state.data[`list100`]!.data[`main120`]).toBeUndefined();
-    expect(main.state.data[`list000`]!.sort).toEqual([`main120`]);
-    expect(main.state.data[`list000`]!.data[`main120`]).toEqual({
+    expect(main.state.data[`list1111111111111`]!.sort).toEqual([`main1111111111111`]);
+    expect(main.state.data[`list1111111111111`]!.data[`main2222222222222`]).toBeUndefined();
+    expect(sub.state.data[`list1111111111111`]!.data[`main2222222222222`]).toBeUndefined();
+    expect(main.state.data[`list0000000000000`]!.sort).toEqual([`main2222222222222`]);
+    expect(main.state.data[`list0000000000000`]!.data[`main2222222222222`]).toEqual({
       check: true,
       title: `main2`,
       date: ``,
@@ -225,29 +233,28 @@ describe(`action`, () => {
       alarm: [],
       task: true,
     });
-    expect(sub.state.data[`list000`]!.data[`main120`]).toEqual({
+    expect(sub.state.data[`list0000000000000`]!.data[`main2222222222222`]).toEqual({
       sort: [`sub121`],
       data: { sub121: { check: false, title: `` } },
     });
-    expect(main.state.status[`main120`]).toBeUndefined();
+    expect(main.state.status[`main2222222222222`]).toBeUndefined();
     expect(dialog.action.close).toBeCalledTimes(1);
     dialog.state.callback.cancel!();
     expect(main.state.status[`main0000000000011`]).toBeUndefined();
-    expect(main.state.status[`main120`]).toBeUndefined();
+    expect(main.state.status[`main2222222222222`]).toBeUndefined();
     expect(dialog.action.close).toBeCalledTimes(2);
   });
   it(`deleteItem`, () => {
-    vi.spyOn(constant.base.id, `trash`, `get`).mockReturnValue(`list900`);
     vi.spyOn(constant.sound, `play`).mockReturnValue();
     vi.spyOn(notice.action, `open`);
     vi.spyOn(notice.action, `close`).mockReturnValue();
-    main.action.deleteItem({ mainId: `main120` });
-    expect(main.state.data[`list100`]!.sort).toEqual([`main110`]);
-    expect(main.state.data[`list100`]!.data[`main120`]).toBeUndefined();
-    expect(sub.state.data[`list100`]!.data[`main120`]).toBeUndefined();
-    expect(main.state.status[`main120`]).toBeUndefined();
-    expect(main.state.data[`list900`]!.sort).toEqual([`main120`]);
-    expect(main.state.data[`list900`]!.data[`main120`]).toEqual({
+    main.action.deleteItem({ mainId: `main2222222222222` });
+    expect(main.state.data[`list1111111111111`]!.sort).toEqual([`main1111111111111`]);
+    expect(main.state.data[`list1111111111111`]!.data[`main2222222222222`]).toBeUndefined();
+    expect(sub.state.data[`list1111111111111`]!.data[`main2222222222222`]).toBeUndefined();
+    expect(main.state.status[`main2222222222222`]).toBeUndefined();
+    expect(main.state.data[`list9999999999999`]!.sort).toEqual([`main2222222222222`]);
+    expect(main.state.data[`list9999999999999`]!.data[`main2222222222222`]).toEqual({
       check: true,
       title: `main2`,
       date: ``,
@@ -255,8 +262,8 @@ describe(`action`, () => {
       alarm: [],
       task: true,
     });
-    expect(sub.state.data[`list900`]!.data[`main120`]!.sort).toEqual([`sub121`]);
-    expect(sub.state.data[`list900`]!.data[`main120`]!.data[`sub121`]).toEqual({
+    expect(sub.state.data[`list9999999999999`]!.data[`main2222222222222`]!.sort).toEqual([`sub121`]);
+    expect(sub.state.data[`list9999999999999`]!.data[`main2222222222222`]!.data[`sub121`]).toEqual({
       check: false,
       title: ``,
     });
@@ -270,8 +277,8 @@ describe(`action`, () => {
       app.getter.lang().notice.button,
     );
     notice.state.callback();
-    expect(main.state.data[`list100`]!.sort).toEqual([`main110`, `main120`]);
-    expect(main.state.data[`list100`]!.data[`main120`]).toEqual({
+    expect(main.state.data[`list1111111111111`]!.sort).toEqual([`main1111111111111`, `main2222222222222`]);
+    expect(main.state.data[`list1111111111111`]!.data[`main2222222222222`]).toEqual({
       check: true,
       title: `main2`,
       date: ``,
@@ -279,47 +286,47 @@ describe(`action`, () => {
       alarm: [],
       task: true,
     });
-    expect(sub.state.data[`list100`]!.data[`main120`]!.sort).toEqual([`sub121`]);
-    expect(sub.state.data[`list100`]!.data[`main120`]!.data[`sub121`]).toEqual({
+    expect(sub.state.data[`list1111111111111`]!.data[`main2222222222222`]!.sort).toEqual([`sub121`]);
+    expect(sub.state.data[`list1111111111111`]!.data[`main2222222222222`]!.data[`sub121`]).toEqual({
       check: false,
       title: ``,
     });
-    expect(main.state.data[`list900`]).toEqual({ sort: [], data: {} });
-    expect(sub.state.data[`list900`]).toEqual({ data: {} });
+    expect(main.state.data[`list9999999999999`]).toEqual({ sort: [], data: {} });
+    expect(sub.state.data[`list9999999999999`]).toEqual({ data: {} });
     expect(notice.action.close).toBeCalledTimes(1);
   });
   it(`checkItem`, () => {
     vi.spyOn(constant.sound, `play`).mockReturnValue();
-    main.action.checkItem({ mainId: `main110`, checked: true });
-    expect(main.state.data[`list100`]!.sort).toEqual(["main120", "main110"]);
-    expect(main.state.data[`list100`]!.data[`main110`]?.check).toBe(true);
+    main.action.checkItem({ mainId: `main1111111111111`, checked: true });
+    expect(main.state.data[`list1111111111111`]!.sort).toEqual(["main2222222222222", "main1111111111111"]);
+    expect(main.state.data[`list1111111111111`]!.data[`main1111111111111`]?.check).toBe(true);
     expect(constant.sound.play).toBeCalledTimes(1);
     expect(constant.sound.play).toHaveBeenCalledWith(`ok`);
-    main.action.checkItem({ mainId: `main110`, checked: false });
-    expect(main.state.data[`list100`]!.sort).toEqual(["main110", "main120"]);
-    expect(main.state.data[`list100`]!.data[`main110`]?.check).toBe(false);
+    main.action.checkItem({ mainId: `main1111111111111`, checked: false });
+    expect(main.state.data[`list1111111111111`]!.sort).toEqual(["main1111111111111", "main2222222222222"]);
+    expect(main.state.data[`list1111111111111`]!.data[`main1111111111111`]?.check).toBe(false);
     expect(constant.sound.play).toBeCalledTimes(2);
     expect(constant.sound.play).toHaveBeenCalledWith(`cancel`);
   });
   it(`switchEdit`, () => {
-    main.action.switchEdit({ mainId: `main110` });
-    expect(main.state.status).toEqual({ main110: `edit`, main120: `` });
-    main.action.switchEdit({ mainId: `main120` });
-    expect(main.state.status).toEqual({ main110: ``, main120: `edit` });
+    main.action.switchEdit({ mainId: `main1111111111111` });
+    expect(main.state.status).toEqual({ main1111111111111: `edit`, main2222222222222: `` });
+    main.action.switchEdit({ mainId: `main2222222222222` });
+    expect(main.state.status).toEqual({ main1111111111111: ``, main2222222222222: `edit` });
     main.action.switchEdit();
-    expect(main.state.status).toEqual({ main110: ``, main120: `` });
+    expect(main.state.status).toEqual({ main1111111111111: ``, main2222222222222: `` });
   });
   it(`dragInit`, () => {
     main.refer.items = {
       value: {
-        main110: { getBoundingClientRect: () => ({ top: 40, left: 60, height: 40, width: 120 }) },
+        main1111111111111: { getBoundingClientRect: () => ({ top: 40, left: 60, height: 40, width: 120 }) },
       },
     } as unknown as Vue.Ref<{ [K: string]: Vue.ComponentPublicInstance<HTMLElement> }>;
     vi.stubGlobal(`navigator`, { vibrate: vi.fn() });
-    main.action.dragInit({ mainId: `main110`, clientY: 0 });
+    main.action.dragInit({ mainId: `main1111111111111`, clientY: 0 });
     expect(main.prop.drag).toEqual({
       status: `start`,
-      id: `main110`,
+      id: `main1111111111111`,
       y: 0,
       top: 40,
       left: 60,
@@ -330,7 +337,7 @@ describe(`action`, () => {
     expect(navigator.vibrate).toBeCalledWith(40);
   });
   it(`dragStart`, () => {
-    main.refer.items!.value!.main110!.cloneNode = () => ({ style: {} }) as unknown as Node;
+    main.refer.items!.value!.main1111111111111!.cloneNode = () => ({ style: {} }) as unknown as Node;
     main.refer.wrap = { value: { appendChild: vi.fn() } } as unknown as Vue.Ref<
       Vue.ComponentPublicInstance<HTMLElement> | undefined
     >;
@@ -347,17 +354,17 @@ describe(`action`, () => {
         width: `120px`,
       },
     });
-    expect(main.state.status[`main110`]).toBe(`hide`);
+    expect(main.state.status[`main1111111111111`]).toBe(`hide`);
   });
   it(`dragMove`, () => {
     main.prop.drag.clone!.getBoundingClientRect = () => ({ top: 80, height: 40 }) as DOMRect;
-    main.refer.items!.value!.main110!.getBoundingClientRect = () =>
+    main.refer.items!.value!.main1111111111111!.getBoundingClientRect = () =>
       ({ top: 40, left: 60, height: 40, width: 120 }) as DOMRect;
-    main.refer.items!.value!.main120 = {
+    main.refer.items!.value!.main2222222222222 = {
       getBoundingClientRect: () => ({ top: 80, left: 60, height: 40, width: 120 }),
     } as Vue.ComponentPublicInstance<HTMLElement>;
     main.action.dragMove({ clientY: 0 });
-    expect(main.state.data[`list100`]!.sort).toEqual([`main120`, `main110`]);
+    expect(main.state.data[`list1111111111111`]!.sort).toEqual([`main2222222222222`, `main1111111111111`]);
   });
   it(`dragEnd`, () => {
     const removeClassMock = (() => {
@@ -387,7 +394,7 @@ describe(`action`, () => {
     expect(removeClassMock).toBeCalledWith(`edit`);
     expect(animateMock).toBeCalledTimes(1);
     expect(animateMock).toBeCalledWith({ top: [`80px`, `40px`] }, 150);
-    expect(main.state.status[`main110`]).toBe(``);
+    expect(main.state.status[`main1111111111111`]).toBe(``);
     expect(removeCloneMock).toBeCalledTimes(1);
     expect(main.prop.drag).toEqual({});
   });

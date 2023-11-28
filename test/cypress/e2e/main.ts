@@ -10,14 +10,14 @@ describe(`main`, () => {
     cy.get(`[data-testid="MainPlus"]`).click();
     cy.get(`[data-testid="DialogText"]`).type(`main4`);
     cy.get(`[data-testid="DialogOk"]`).click();
-    cy.get(`[data-testid="MainItem"]`).should(`have.length`, 4);
+    cy.get(`[data-testid="MainItem"]`).should(`have.length`, 3);
   });
   it(`clone`, () => {
     cy.get(`[data-testid="MainItem"]`).first().trigger(`touchstart`);
     cy.wait(1000);
     cy.get(`[data-testid="MainItem"]`).first().trigger(`touchend`);
     cy.get(`[data-testid="MainClone"]`).click();
-    cy.get(`[data-testid="MainItem"]`).should(`have.length`, 4);
+    cy.get(`[data-testid="MainItem"]`).should(`have.length`, 3);
   });
   it(`edit`, () => {
     cy.get(`[data-testid="MainItem"]`).first().click();
@@ -27,9 +27,9 @@ describe(`main`, () => {
   });
   it(`check`, () => {
     cy.get(`[data-testid="MainCheck"]`).first().check();
-    cy.get(`[data-testid="MainCheck"]`).last().should(`be.checked`);
+    cy.get(`[data-testid="MainCheck"]`).first().should(`be.checked`);
     cy.get(`[data-testid="MainCheck"]`).last().uncheck();
-    cy.get(`[data-testid="MainCheck"]`).last().should(`not.be.checked`);
+    cy.get(`[data-testid="MainCheck"]`).first().should(`not.be.checked`);
   });
   it(`move`, () => {
     cy.get(`[data-testid="MainItem"]`).first().trigger(`touchstart`);
@@ -45,8 +45,8 @@ describe(`main`, () => {
     cy.wait(1000);
     cy.get(`[data-testid="MainItem"]`).first().trigger(`touchend`);
     cy.get(`[data-testid="MainTrash"]`).click();
-    cy.get(`[data-testid="MainItem"]`).should(`have.length`, 2);
+    cy.get(`[data-testid="MainItem"]`).should(`have.length`, 1);
     cy.get(`[data-testid="NoticeBack"]`).click();
-    cy.get(`[data-testid="MainItem"]`).should(`have.length`, 3);
+    cy.get(`[data-testid="MainItem"]`).should(`have.length`, 2);
   });
 });

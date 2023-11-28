@@ -5,7 +5,7 @@ import main from "@/stores/page/main";
 import sub from "@/stores/page/sub";
 
 const it = test.extend<{ wrapper: VueWrapper }>({
-  wrapper: async ({ task }, use) => {
+  wrapper: async ({}, use) => {
     fixture.setRouter();
     await fixture.loadData();
     await use(fixture.getWrapper());
@@ -49,7 +49,7 @@ describe(`dom`, () => {
     expect(wrapper.findByTestId(`SubDialog`).classes()).toContain(`classLimit`);
   });
   it(`memo`, async ({ wrapper }) => {
-    await (main.state.data[`list100`]!.data[`main110`]!.task = false);
+    await (main.state.data[`list1111111111111`]!.data[`main1111111111111`]!.task = false);
     expect(wrapper.findByTestIdAll(`SubMemo`).length).toBe(1);
     expect(wrapper.findByTestIdAll(`SubItem`).length).toBe(0);
     expect(wrapper.findByTestId<HTMLInputElement>(`SubMemo`).element.value).toEqual(`sub1\nsub2`);
@@ -58,6 +58,13 @@ describe(`dom`, () => {
 });
 
 describe(`event`, () => {
+  it(`memo`, async ({ wrapper }) => {
+    await (main.state.data[`list1111111111111`]!.data[`main1111111111111`]!.task = false);
+    wrapper.findByTestId(`SubMemo`).trigger(`input`);
+    expect(wrapper.emitted(`inputMemo`)).toHaveLength(1);
+    expect(wrapper.emitted(`inputMemo`)![0]).toEqual([{ value: `sub1\nsub2` }]);
+    await (main.state.data[`list1111111111111`]!.data[`main1111111111111`]!.task = true);
+  });
   it(`header`, ({ wrapper }) => {
     wrapper.findByTestId(`SubRoot`).trigger(`touchstart`);
     expect(wrapper.emitted(`switchEdit`)).toHaveLength(1);
@@ -84,26 +91,26 @@ describe(`event`, () => {
   it(`contents`, async ({ wrapper }) => {
     wrapper.findByTestId(`SubCheck`).trigger(`change`);
     expect(wrapper.emitted(`checkItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`checkItem`)![0]).toEqual([{ subId: `sub111`, checked: false }]);
+    expect(wrapper.emitted(`checkItem`)![0]).toEqual([{ subId: `sub1111111111111`, checked: false }]);
     wrapper.findByTestId(`SubTask`).trigger(`click`);
     expect(wrapper.emitted(`switchEdit`)).toHaveLength(1);
-    expect(wrapper.emitted(`switchEdit`)![0]).toEqual([{ subId: `sub111` }]);
+    expect(wrapper.emitted(`switchEdit`)![0]).toEqual([{ subId: `sub1111111111111` }]);
     wrapper.findByTestId(`SubTask`).trigger(`input`);
     expect(wrapper.emitted(`inputItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`inputItem`)![0]).toEqual([{ subId: `sub111` }]);
+    expect(wrapper.emitted(`inputItem`)![0]).toEqual([{ subId: `sub1111111111111` }]);
     wrapper.findByTestId(`SubTask`).trigger(`keydown.enter.prevent`);
     expect(wrapper.emitted(`enterItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`enterItem`)![0]).toEqual([{ subId: `sub111`, selectionStart: 4 }]);
-    await (sub.state.data[`list100`]!.data[`main110`]!.data[`sub112`]!.title = ``);
+    expect(wrapper.emitted(`enterItem`)![0]).toEqual([{ subId: `sub1111111111111`, selectionStart: 4 }]);
+    await (sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.data[`sub2222222222222`]!.title = ``);
     wrapper.findByTestIdAll(`SubTask`)[1]!.trigger(`keydown.backspace`);
     expect(wrapper.emitted(`backItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`backItem`)![0]).toEqual([{ subId: `sub112` }]);
+    expect(wrapper.emitted(`backItem`)![0]).toEqual([{ subId: `sub2222222222222` }]);
     wrapper.findByTestIdAll(`SubDrag`)[1]!.trigger(`touchstart`);
     expect(wrapper.emitted(`dragInit`)).toHaveLength(1);
-    expect(wrapper.emitted(`dragInit`)![0]).toEqual([{ subId: `sub112`, clientY: 0 }]);
+    expect(wrapper.emitted(`dragInit`)![0]).toEqual([{ subId: `sub2222222222222`, clientY: 0 }]);
     wrapper.findByTestId(`SubTrash`).trigger(`touchstart`);
     expect(wrapper.emitted(`deleteItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`deleteItem`)![0]).toEqual([{ subId: `sub111` }]);
+    expect(wrapper.emitted(`deleteItem`)![0]).toEqual([{ subId: `sub1111111111111` }]);
   });
   it(`footer`, ({ wrapper }) => {
     wrapper.findByTestId(`SubCalendar`).trigger(`focus`);
@@ -114,11 +121,5 @@ describe(`event`, () => {
     expect(wrapper.emitted(`openClock`)![0]).toEqual([{ time: `00:00` }]);
     wrapper.findByTestId(`SubDialog`).trigger(`focus`);
     expect(wrapper.emitted(`openAlarm`)).toHaveLength(1);
-  });
-  it(`memo`, async ({ wrapper }) => {
-    await (main.state.data[`list100`]!.data[`main110`]!.task = false);
-    wrapper.findByTestId(`SubMemo`).trigger(`input`);
-    expect(wrapper.emitted(`inputMemo`)).toHaveLength(1);
-    expect(wrapper.emitted(`inputMemo`)![0]).toEqual([{ value: `sub1\nsub2` }]);
   });
 });

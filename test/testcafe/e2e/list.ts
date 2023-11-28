@@ -37,17 +37,9 @@ test(`delete`, async (t) => {
 });
 test(`current`, async (t) => {
   await Page.longClick(Page.getById(`ListItem`).nth(0));
-  await t
-    .expect(Page.getById(`ListClone`).count)
-    .eql(1)
-    .expect(Page.getById(`ListTrash`).count)
-    .eql(0);
+  await t.expect(Page.getById(`ListClone`).count).eql(1).expect(Page.getById(`ListTrash`).count).eql(0);
 });
 test(`trash`, async (t) => {
   await Page.longClick(Page.getById(`ListItem`).nth(-1));
-  await t
-    .expect(Page.getById(`ListClone`).count)
-    .eql(0)
-    .expect(Page.getById(`ListTrash`).count)
-    .eql(0);
+  await t.expect(Page.getById(`ListClone`).count).eql(0).expect(Page.getById(`ListTrash`).count).eql(0);
 });

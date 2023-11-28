@@ -77,19 +77,14 @@ const useStore = defineStore(`sub`, () => {
           mainId?: string,
           subId?: string,
         ): (typeof state)[`data`][string][`data`][string][`data`][string] =>
-          state.data[listId || app.getter.listId()]!.data[mainId || app.getter.mainId()]!.data[
-            subId || ``
-          ]!,
+          state.data[listId || app.getter.listId()]!.data[mainId || app.getter.mainId()]!.data[subId || ``]!,
     ),
-    classItem: computed(
-      () =>
-        (subId: string): { [K in `check` | `edit` | `drag` | `hide`]: boolean } => ({
-          check: getter.stateUnit.value(``, ``, subId).check,
-          edit: state.status[subId] === `edit`,
-          drag: state.status[subId] === `drag`,
-          hide: state.status[subId] === `hide`,
-        }),
-    ),
+    classItem: computed(() => (subId: string): { [K in `check` | `edit` | `drag` | `hide`]: boolean } => ({
+      check: getter.stateUnit.value(``, ``, subId).check,
+      edit: state.status[subId] === `edit`,
+      drag: state.status[subId] === `drag`,
+      hide: state.status[subId] === `hide`,
+    })),
     textMemo: computed(() => (): string => {
       const memo: string[] = [];
       for (const subId of getter.stateFull.value().sort) {
@@ -140,15 +135,12 @@ const useStore = defineStore(`sub`, () => {
       const subId = `sub${app.lib.dayjs().valueOf()}`;
       const caret = payload.selectionStart;
       const title = getter.stateFull.value().data[payload.subId]!.title;
-      getter.stateFull
-        .value()
-        .sort.splice(getter.stateFull.value().sort.indexOf(payload.subId) + 1, 0, subId);
+      getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId) + 1, 0, subId);
       getter.stateFull.value().data[payload.subId]!.title = title.slice(0, caret!);
       getter.stateFull.value().data[subId] = { check: false, title: title.slice(caret!) };
       await nextTick();
       // 要素が正しく描画されないので強制描画
-      refer.titles!.value[payload.subId]!.$el.value =
-        getter.stateFull.value().data[payload.subId]!.title;
+      refer.titles!.value[payload.subId]!.$el.value = getter.stateFull.value().data[payload.subId]!.title;
       refer.titles!.value[subId]?.$el.focus();
       Dom.resize(refer.titles!.value[payload.subId]!.$el);
       refer.items!.value[payload.subId]!.addEventListener(`transitionend`, function listener() {
@@ -157,12 +149,10 @@ const useStore = defineStore(`sub`, () => {
       });
     },
     backItem: async (payload: { subId: string }) => {
-      const subId =
-        getter.stateFull.value().sort[getter.stateFull.value().sort.indexOf(payload.subId) - 1]!;
+      const subId = getter.stateFull.value().sort[getter.stateFull.value().sort.indexOf(payload.subId) - 1]!;
       const caret = getter.stateUnit.value(``, ``, subId).title.length;
       getter.stateFull.value().sort.splice(getter.stateFull.value().sort.indexOf(payload.subId), 1);
-      getter.stateFull.value().data[subId]!.title +=
-        getter.stateFull.value().data[payload.subId]!.title;
+      getter.stateFull.value().data[subId]!.title += getter.stateFull.value().data[payload.subId]!.title;
       delete getter.stateFull.value().data[payload.subId];
       await nextTick();
       // 要素が正しく描画されないので強制描画
@@ -239,9 +229,7 @@ const useStore = defineStore(`sub`, () => {
         callback: (hour, minute) => {
           clock.action.close();
           main.getter.stateUnit().time =
-            hour != null && minute != null
-              ? app.lib.dayjs(`2000/1/1 ${hour}:${minute}`).format(`HH:mm`)
-              : ``;
+            hour != null && minute != null ? app.lib.dayjs(`2000/1/1 ${hour}:${minute}`).format(`HH:mm`) : ``;
         },
       });
     },
@@ -315,28 +303,19 @@ const useStore = defineStore(`sub`, () => {
         const index = getter.stateFull.value().sort.indexOf(prop.drag.id!);
         const clone = prop.drag.clone!.getBoundingClientRect();
         const wrap = refer.wrap!.value!.getBoundingClientRect();
-        const prev =
-          refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
-        const current =
-          refer.items!.value[getter.stateFull.value().sort[index]!]!.getBoundingClientRect();
-        const next =
-          refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
+        const prev = refer.items!.value[getter.stateFull.value().sort[index - 1]!]?.getBoundingClientRect();
+        const current = refer.items!.value[getter.stateFull.value().sort[index]!]!.getBoundingClientRect();
+        const next = refer.items!.value[getter.stateFull.value().sort[index + 1]!]?.getBoundingClientRect();
         if (
           prev &&
-          clone.top + clone.height / 2 <
-            (next ? next.top : wrap.top + wrap.height) - (prev.height + current.height) / 2
+          clone.top + clone.height / 2 < (next ? next.top : wrap.top + wrap.height) - (prev.height + current.height) / 2
         ) {
-          getter.stateFull
-            .value()
-            .sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
+          getter.stateFull.value().sort.splice(index - 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
         } else if (
           next &&
-          clone.top + clone.height / 2 >
-            (prev ? prev.top + prev.height : wrap.top) + (current.height + next.height) / 2
+          clone.top + clone.height / 2 > (prev ? prev.top + prev.height : wrap.top) + (current.height + next.height) / 2
         ) {
-          getter.stateFull
-            .value()
-            .sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
+          getter.stateFull.value().sort.splice(index + 1, 0, ...getter.stateFull.value().sort.splice(index, 1));
         }
       }
     },
@@ -380,10 +359,7 @@ const useStore = defineStore(`sub`, () => {
     },
     swipeStart: (payload: { clientX: number; clientY: number }): void => {
       if (prop.swipe.status === `start`) {
-        if (
-          Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) >
-          15
-        ) {
+        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 15) {
           Math.abs(payload.clientX - prop.swipe.x!) > Math.abs(payload.clientY - prop.swipe.y!)
             ? (prop.swipe.status = `move`)
             : (prop.swipe = {});

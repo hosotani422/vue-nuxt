@@ -4,7 +4,7 @@ import fixture from "../../../fixture/popup/calendar";
 import calendar from "@/stores/popup/calendar";
 
 const it = test.extend<{ wrapper: VueWrapper }>({
-  wrapper: async ({ task }, use) => {
+  wrapper: async ({}, use) => {
     fixture.setAction();
     fixture.setRouter();
     await fixture.loadData();

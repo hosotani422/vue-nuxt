@@ -3,7 +3,7 @@ import { VueWrapper } from "@vue/test-utils";
 import fixture from "../../../fixture/page/list";
 
 const it = test.extend<{ wrapper: VueWrapper }>({
-  wrapper: async ({ task }, use) => {
+  wrapper: async ({}, use) => {
     fixture.setRouter();
     await fixture.loadData();
     await use(fixture.getWrapper());
@@ -69,17 +69,17 @@ describe(`event`, () => {
   it(`contents`, ({ wrapper }) => {
     wrapper.findByTestId(`ListItem`).trigger(`touchlong`);
     expect(wrapper.emitted(`switchEdit`)).toHaveLength(1);
-    expect(wrapper.emitted(`switchEdit`)![0]).toEqual([{ listId: `list100` }]);
+    expect(wrapper.emitted(`switchEdit`)![0]).toEqual([{ listId: `list1111111111111` }]);
     expect(wrapper.emitted(`dragInit`)).toHaveLength(1);
-    expect(wrapper.emitted(`dragInit`)![0]).toEqual([{ listId: `list100`, clientY: 0 }]);
+    expect(wrapper.emitted(`dragInit`)![0]).toEqual([{ listId: `list1111111111111`, clientY: 0 }]);
     wrapper.findByTestId(`ListItem`).trigger(`click`);
     expect(wrapper.emitted(`routerBack`)).toHaveLength(1);
-    expect(wrapper.emitted(`routerBack`)![0]).toEqual([{ listId: `list100` }]);
+    expect(wrapper.emitted(`routerBack`)![0]).toEqual([{ listId: `list1111111111111` }]);
     wrapper.findByTestId(`ListClone`).trigger(`click`);
     expect(wrapper.emitted(`copyItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`copyItem`)![0]).toEqual([{ listId: `list000` }]);
+    expect(wrapper.emitted(`copyItem`)![0]).toEqual([{ listId: `list0000000000000` }]);
     wrapper.findByTestId(`ListTrash`).trigger(`click`);
     expect(wrapper.emitted(`deleteItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`deleteItem`)![0]).toEqual([{ listId: `list000` }]);
+    expect(wrapper.emitted(`deleteItem`)![0]).toEqual([{ listId: `list0000000000000` }]);
   });
 });

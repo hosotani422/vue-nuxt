@@ -26,7 +26,7 @@
 - JDK8をインストール
 - AndroidStudioをインストール
 - gradleをインストール（C:\Program Files\Android\Android Studio\gradleにコピー）
-- cordovaをインストール（npm install -g cordova）
+- cordovaをインストール（pnpm install -g cordova）
 - 環境変数の設定
 
 1. JAVA_HOME - C:\Program Files\Java\jdk1.8.0_301
@@ -57,13 +57,13 @@
 
 ## Firebase
 
-- firebase-cliをインストール（npm install -g firebase-tools）
+- firebase-cliをインストール（pnpm install -g firebase-tools）
 - ログイン（firebase login）
 
 ## パッケージ
 
 ```
-npm i
+pnpm i
 ```
 
 ## ビルド
@@ -71,23 +71,23 @@ npm i
 ### 開発環境構築
 
 ```
-npm run dev
+pnpm run dev
 ```
 
 ### 本番資材生成
 
 ```
-npm run build
+pnpm run build
 ```
 
 ### アプリ資材生成
 
 ```
-npm run app
+pnpm run app
 ```
 
 ### クラウドデプロイ
 
 ```
-npm run web
+pnpm run web
 ```
