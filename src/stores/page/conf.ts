@@ -223,10 +223,7 @@ const useStore = defineStore(`conf`, () => {
     },
     swipeStart: (payload: { clientX: number; clientY: number }): void => {
       if (prop.swipe.status === `start`) {
-        if (
-          Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) >
-          15
-        ) {
+        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 15) {
           Math.abs(payload.clientX - prop.swipe.x!) < Math.abs(payload.clientY - prop.swipe.y!)
             ? (prop.swipe.status = `move`)
             : (prop.swipe = {});

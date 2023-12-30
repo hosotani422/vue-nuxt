@@ -32,41 +32,36 @@ const useStore = defineStore(`calendar`, () => {
 
   const getter = {
     textWeek: computed(() => (): string[] => app.getter.lang().calendar.week),
-    textDay: computed(
-      () => (): { id: string; day: { month: string; day: string; text: string }[] }[] => {
-        const month: ReturnType<typeof getter.textDay.value> = [];
+    textDay: computed(() => (): { id: string; day: { month: string; day: string; text: string }[] }[] => {
+      const month: ReturnType<typeof getter.textDay.value> = [];
+      for (
+        let curMonth = app.lib.dayjs(state.current).subtract(1, `month`),
+          limMonth = app.lib.dayjs(state.current).add(2, `month`);
+        curMonth.isBefore(limMonth);
+        curMonth = curMonth.add(1, `month`)
+      ) {
+        const day: (typeof month)[number][`day`] = [];
         for (
-          let curMonth = app.lib.dayjs(state.current).subtract(1, `month`),
-            limMonth = app.lib.dayjs(state.current).add(2, `month`);
-          curMonth.isBefore(limMonth);
-          curMonth = curMonth.add(1, `month`)
+          let curDay = curMonth.date(1).subtract(curMonth.date(1).day(), `day`),
+            limDay = curMonth.add(1, `month`).date(1);
+          curDay.isBefore(limDay);
+          curDay = curDay.add(1, `day`)
         ) {
-          const day: (typeof month)[number][`day`] = [];
-          for (
-            let curDay = curMonth.date(1).subtract(curMonth.date(1).day(), `day`),
-              limDay = curMonth.add(1, `month`).date(1);
-            curDay.isBefore(limDay);
-            curDay = curDay.add(1, `day`)
-          ) {
-            day.push({
-              month: curMonth.format(`YYYY/MM`),
-              day: curDay.format(`YYYY/MM/DD`),
-              text: curDay.format(`D`),
-            });
-          }
-          month.push({ id: curMonth.format(`YYYY/MM`), day });
+          day.push({
+            month: curMonth.format(`YYYY/MM`),
+            day: curDay.format(`YYYY/MM/DD`),
+            text: curDay.format(`D`),
+          });
         }
-        return month;
-      },
-    ),
-    classDay: computed(
-      () =>
-        (month: string, day: string): { [K in `select` | `today` | `hide`]: boolean } => ({
-          select: day === state.select,
-          today: day === app.lib.dayjs().format(`YYYY/MM/DD`),
-          hide: month !== app.lib.dayjs(day).format(`YYYY/MM`),
-        }),
-    ),
+        month.push({ id: curMonth.format(`YYYY/MM`), day });
+      }
+      return month;
+    }),
+    classDay: computed(() => (month: string, day: string): { [K in `select` | `today` | `hide`]: boolean } => ({
+      select: day === state.select,
+      today: day === app.lib.dayjs().format(`YYYY/MM/DD`),
+      hide: month !== app.lib.dayjs(day).format(`YYYY/MM`),
+    })),
   };
 
   const action = {
@@ -104,15 +99,11 @@ const useStore = defineStore(`calendar`, () => {
       prop.swipe.x = payload.clientX;
       prop.swipe.y = payload.clientY;
       prop.swipe.left =
-        prop.swipe.target.getBoundingClientRect().left -
-        refer.body!.value!.parentElement!.getBoundingClientRect().left;
+        prop.swipe.target.getBoundingClientRect().left - refer.body!.value!.parentElement!.getBoundingClientRect().left;
     },
     swipeStart: (payload: { clientX: number; clientY: number }): void => {
       if (prop.swipe.status === `start`) {
-        if (
-          Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) >
-          10
-        ) {
+        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 10) {
           Math.abs(payload.clientX - prop.swipe.x!) > Math.abs(payload.clientY - prop.swipe.y!)
             ? (prop.swipe.status = `move`)
             : (prop.swipe = {});
@@ -121,9 +112,7 @@ const useStore = defineStore(`calendar`, () => {
     },
     swipeMove: (payload: { clientX: number }): void => {
       if (prop.swipe.status === `move`) {
-        prop.swipe.target!.style.transform = `translateX(${
-          prop.swipe.left! + payload.clientX - prop.swipe.x!
-        }px)`;
+        prop.swipe.target!.style.transform = `translateX(${prop.swipe.left! + payload.clientX - prop.swipe.x!}px)`;
       }
     },
     swipeEnd: (payload: { clientX: number }): void => {

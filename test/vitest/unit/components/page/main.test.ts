@@ -4,7 +4,7 @@ import fixture from "../../../fixture/page/main";
 import main from "@/stores/page/main";
 
 const it = test.extend<{ wrapper: VueWrapper }>({
-  wrapper: async ({ task }, use) => {
+  wrapper: async ({}, use) => {
     fixture.setRouter();
     await fixture.loadData();
     await use(fixture.getWrapper());
@@ -39,14 +39,14 @@ describe(`dom`, () => {
     expect(wrapper.findByTestIdAll(`MainClone`).length).toBe(0);
     expect(wrapper.findByTestIdAll(`MainMove`).length).toBe(0);
     expect(wrapper.findByTestIdAll(`MainTrash`).length).toBe(0);
-    await (main.state.status[`main110`] = `edit`);
+    await (main.state.status[`main1111111111111`] = `edit`);
     expect(wrapper.findByTestIdAll(`MainClone`).length).toBe(1);
     expect(wrapper.findByTestId(`MainClone`).classes()).to.toContain(`classLimit`);
     expect(wrapper.findByTestIdAll(`MainMove`).length).toBe(1);
     expect(wrapper.findByTestId(`MainMove`).classes()).to.toContain(`classLimit`);
     expect(wrapper.findByTestIdAll(`MainTrash`).length).toBe(1);
     expect(wrapper.findByTestId(`MainTrash`).classes()).to.toContain(`classLimit`);
-    await (main.state.status[`main110`] = ``);
+    await (main.state.status[`main1111111111111`] = ``);
   });
 });
 
@@ -62,32 +62,32 @@ describe(`event`, () => {
     expect(wrapper.emitted(`insertItem`)).toHaveLength(1);
     wrapper.findByTestId(`MainItem`).trigger(`click`);
     expect(wrapper.emitted(`routerSub`)).toHaveLength(1);
-    expect(wrapper.emitted(`routerSub`)![0]).toEqual([{ mainId: `main110` }]);
+    expect(wrapper.emitted(`routerSub`)![0]).toEqual([{ mainId: `main1111111111111` }]);
     wrapper.findByTestId(`MainItem`).trigger(`touchlong`, { detail: { changedTouches: [{ clientY: 0 }] } });
     expect(wrapper.emitted(`switchEdit`)).toHaveLength(6);
-    expect(wrapper.emitted(`switchEdit`)![5]).toEqual([{ mainId: `main110` }]);
+    expect(wrapper.emitted(`switchEdit`)![5]).toEqual([{ mainId: `main1111111111111` }]);
     wrapper.findByTestId(`MainCheck`).trigger(`change`);
     expect(wrapper.emitted(`checkItem`)).toHaveLength(1);
-    expect((wrapper.emitted(`checkItem`)![0]![0]! as { [K in string]: string }).mainId).toBe(`main110`);
+    expect((wrapper.emitted(`checkItem`)![0]![0]! as { [K in string]: string }).mainId).toBe(`main1111111111111`);
     expect((wrapper.emitted(`checkItem`)![0]![0]! as { [K in string]: number }).checked).toBe(false);
   });
   it(`hidden`, async ({ wrapper }) => {
-    await (main.state.status[`main110`] = `edit`);
+    await (main.state.status[`main1111111111111`] = `edit`);
     wrapper.findByTestId(`MainClone`).trigger(`click`);
     expect(wrapper.emitted(`copyItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`copyItem`)![0]).toEqual([{ mainId: `main110` }]);
+    expect(wrapper.emitted(`copyItem`)![0]).toEqual([{ mainId: `main1111111111111` }]);
     wrapper.findByTestId(`MainMove`).trigger(`click`);
     expect(wrapper.emitted(`moveItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`moveItem`)![0]).toEqual([{ mainId: `main110` }]);
+    expect(wrapper.emitted(`moveItem`)![0]).toEqual([{ mainId: `main1111111111111` }]);
     wrapper.findByTestId(`MainTrash`).trigger(`click`);
     expect(wrapper.emitted(`deleteItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`deleteItem`)![0]).toEqual([{ mainId: `main110` }]);
-    await (main.state.status[`main110`] = ``);
+    expect(wrapper.emitted(`deleteItem`)![0]).toEqual([{ mainId: `main1111111111111` }]);
+    await (main.state.status[`main1111111111111`] = ``);
   });
   it(`drag`, ({ wrapper }) => {
     wrapper.findByTestId(`MainItem`).trigger(`touchlong`, { detail: { changedTouches: [{ clientY: 0 }] } });
     expect(wrapper.emitted(`dragInit`)).toHaveLength(1);
-    expect(wrapper.emitted(`dragInit`)![0]).toEqual([{ mainId: `main110`, clientY: 0 }]);
+    expect(wrapper.emitted(`dragInit`)![0]).toEqual([{ mainId: `main1111111111111`, clientY: 0 }]);
     wrapper.findByTestId(`MainRoot`).trigger(`touchmove.prevent`, { changedTouches: [{ clientY: 0 }] });
     expect(wrapper.emitted(`dragStart`)).toHaveLength(1);
     expect(wrapper.emitted(`dragMove`)).toHaveLength(1);

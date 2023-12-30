@@ -50,9 +50,7 @@ props.refer.items = items;
       emit(`dragMove`, { clientY: $event.changedTouches[0]!.clientY });
     "
   >
-    <div
-      class="theme-grad-color theme-shadow-normal relative z-[9] flex flex-auto items-center gap-3 p-3"
-    >
+    <div class="theme-grad-color theme-shadow-normal relative z-[9] flex flex-auto items-center gap-3 p-3">
       <IconList data-testid="MainList" class="flex-auto" @click="emit(`routerList`)" />
       <ClientOnly class="flex-even">
         <InputTextbox
@@ -102,10 +100,7 @@ props.refer.items = items;
               {{ textCount(mainId) }}
             </div>
             <transition>
-              <div
-                v-if="classItem(mainId).edit"
-                class="slide-right theme-back-color absolute right-3 flex gap-3"
-              >
+              <div v-if="classItem(mainId).edit" class="slide-right theme-back-color absolute right-3 flex gap-3">
                 <IconClone
                   data-testid="MainClone"
                   class="flex-auto"

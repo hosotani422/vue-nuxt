@@ -24,6 +24,7 @@ module.exports = {
   rules: {
     "no-console": [`error`],
     "no-undef": [`off`],
+    "no-empty-pattern": [`off`],
     "@typescript-eslint/no-non-null-assertion": [`off`],
     "vue/multi-word-component-names": [`off`],
     "vue/no-mutating-props": [`off`],

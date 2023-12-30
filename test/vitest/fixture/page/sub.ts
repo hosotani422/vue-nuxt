@@ -16,13 +16,12 @@ export default class Sub extends Base {
         mainUnit: main.getter.stateUnit,
         stateFull: sub.getter.stateFull,
         stateUnit: sub.getter.stateUnit,
-        classItem: (subId: string) =>
-          ({
-            classItem: true,
-            edit: subId === `sub111`,
-          }) as any,
+        classItem: ((subId: string) => ({
+          classItem: true,
+          edit: subId === `sub1111111111111`,
+        })) as unknown as typeof sub.getter.classItem,
         textMemo: sub.getter.textMemo,
-        classLimit: () => ({ classLimit: true }) as any,
+        classLimit: (() => ({ classLimit: true })) as unknown as typeof sub.getter.classLimit,
         textAlarm: sub.getter.textAlarm,
       },
       global: {

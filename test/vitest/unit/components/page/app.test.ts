@@ -3,7 +3,7 @@ import { VueWrapper } from "@vue/test-utils";
 import fixture from "../../../fixture/page/app";
 
 const it = test.extend<{ wrapper: VueWrapper }>({
-  wrapper: async ({ task }, use) => {
+  wrapper: async ({}, use) => {
     fixture.setRouter();
     await fixture.loadData();
     await use(await fixture.getWrapper());

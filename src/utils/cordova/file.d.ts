@@ -70,10 +70,7 @@ interface Entry {
    * @param successCallback A callback that is called with the time of the last modification.
    * @param errorCallback   A callback that is called when errors happen.
    */
-  getMetadata: (
-    successCallback: (metadata: Metadata) => void,
-    errorCallback?: (error: FileError) => void,
-  ) => void;
+  getMetadata: (successCallback: (metadata: Metadata) => void, errorCallback?: (error: FileError) => void) => void;
   /**
    * Move an entry to a different location on the file system. It is an error to try to:
    *     move a directory inside itself or to any child at any depth;
@@ -147,10 +144,7 @@ interface Entry {
    * @param successCallback A callback that is called with the time of the last modification.
    * @param errorCallback   A callback that is called when errors happen.
    */
-  getParent: (
-    successCallback: (entry: Entry) => void,
-    errorCallback?: (error: FileError) => void,
-  ) => void;
+  getParent: (successCallback: (entry: Entry) => void, errorCallback?: (error: FileError) => void) => void;
 }
 
 /** This interface supplies information about the state of a file or directory. */
@@ -227,10 +221,7 @@ interface DirectoryEntry extends Entry {
    * @param successCallback A callback that is called on success.
    * @param errorCallback   A callback that is called when errors happen.
    */
-  removeRecursively: (
-    successCallback: () => void,
-    errorCallback?: (error: FileError) => void,
-  ) => void;
+  removeRecursively: (successCallback: () => void, errorCallback?: (error: FileError) => void) => void;
 }
 
 /**
@@ -273,10 +264,7 @@ interface DirectoryReader {
    * @param errorCallback   A callback indicating that
    *                        there was an error reading from the Directory.
    */
-  readEntries: (
-    successCallback: (entries: Entry[]) => void,
-    errorCallback?: (error: FileError) => void,
-  ) => void;
+  readEntries: (successCallback: (entries: Entry[]) => void, errorCallback?: (error: FileError) => void) => void;
 }
 
 /** This interface represents a file on a file system. */
@@ -287,10 +275,7 @@ interface FileEntry extends Entry {
    * @param successCallback A callback that is called with the new FileWriter.
    * @param errorCallback   A callback that is called when errors happen.
    */
-  createWriter: (
-    successCallback: (writer: FileWriter) => void,
-    errorCallback?: (error: FileError) => void,
-  ) => void;
+  createWriter: (successCallback: (writer: FileWriter) => void, errorCallback?: (error: FileError) => void) => void;
   /**
    * Returns a File that represents the current state of the file that this FileEntry represents.
    *

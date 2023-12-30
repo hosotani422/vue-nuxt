@@ -12,23 +12,23 @@ test.describe(`sub`, () => {
     await fixture.initSub();
   });
   test(`route`, async ({ page }) => {
-    await expect(page).toHaveURL(`/list1685704768236/sub/main1685704776101`);
+    await expect(page).toHaveURL(`/list1111111111111/sub/main1111111111111`);
     await page.getByTestId(`SubRight`).click();
     await expect(page.getByTestId(`SubRoot`)).toHaveCount(0);
   });
   test(`create`, async ({ page }) => {
     await page.getByTestId(`SubTask`).first().press(`Enter`);
-    await expect(page.getByTestId(`SubItem`)).toHaveCount(4);
+    await expect(page.getByTestId(`SubItem`)).toHaveCount(3);
   });
   test(`check`, async ({ page }) => {
     await page.getByTestId(`SubCheck`).first().check();
-    await expect(page.getByTestId(`SubCheck`).last()).toBeChecked();
+    await expect(page.getByTestId(`SubCheck`).first()).toBeChecked();
     await page.getByTestId(`SubCheck`).last().uncheck();
-    await expect(page.getByTestId(`SubCheck`).last()).not.toBeChecked();
+    await expect(page.getByTestId(`SubCheck`).first()).not.toBeChecked();
   });
   test(`mode`, async ({ page }) => {
     await page.getByTestId(`SubMode`).click();
-    await expect(page.getByTestId(`SubMemo`)).toHaveValue(`sub1\nsub2\nsub3`);
+    await expect(page.getByTestId(`SubMemo`)).toHaveValue(`sub1\nsub2`);
   });
   test(`delete`, async ({ page }) => {
     await page.getByTestId(`SubTask`).last().click();
@@ -37,8 +37,8 @@ test.describe(`sub`, () => {
   });
   test(`calendar`, async ({ page }) => {
     await page.getByTestId(`SubCalendar`).click();
-    await page.getByTestId(`CalendarItem`).nth(45).click();
-    await expect(page.getByTestId(`SubCalendar`)).not.toHaveValue(``);
+    await page.getByTestId(`CalendarDay`).nth(41).click();
+    await expect(page.getByTestId(`SubCalendar`)).toHaveValue(`2000/01/02`);
     await page.getByTestId(`SubCalendar`).click();
     await page.getByTestId(`CalendarClear`).click();
     await expect(page.getByTestId(`SubCalendar`)).toHaveValue(``);
@@ -54,6 +54,6 @@ test.describe(`sub`, () => {
   test(`dialog`, async ({ page, fixture }) => {
     await page.getByTestId(`SubDialog`).click();
     await fixture.checkDialog(page.getByTestId(`DialogCheck`).last());
-    await expect(page.getByTestId(`SubDialog`)).toHaveValue(`2日前`);
+    await expect(page.getByTestId(`SubDialog`)).toHaveValue(`5分前,1時間前,2日前`);
   });
 });

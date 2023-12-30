@@ -1,3 +1,4 @@
+import path from "path";
 import vue from "@vitejs/plugin-vue";
 import { defineConfig } from "vitest/config";
 import AutoImport from "unplugin-auto-import/vite";
@@ -11,10 +12,8 @@ export default defineConfig(() => ({
     coverage: {
       reportsDirectory: `./test/vitest/coverage`,
     },
-  },
-  resolve: {
     alias: {
-      "@": `src`,
+      "@": path.join(__dirname, `../../src`),
     },
   },
   plugins: [

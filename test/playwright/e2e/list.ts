@@ -12,7 +12,7 @@ test.describe(`list`, () => {
     await fixture.initList();
   });
   test(`route`, async ({ page }) => {
-    await expect(page).toHaveURL(`/list1685704768236/list`);
+    await expect(page).toHaveURL(`/list1111111111111/list`);
     await page.getByTestId(`ListLeft`).click();
     await expect(page.getByTestId(`ListRoot`)).toHaveCount(0);
   });

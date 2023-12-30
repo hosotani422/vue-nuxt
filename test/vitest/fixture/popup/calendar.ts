@@ -5,7 +5,8 @@ import PopupCalendar from "@/components/popup/calendar.vue";
 
 export default class Calendar extends Base {
   public static getWrapper(): VueWrapper {
-    vi.setSystemTime(new Date(2023, 8, 22, 0, 0, 0));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2023, 8, 22, 0, 0, 0, 0));
     calendar.state.open = true;
     calendar.state.select = `2023/09/22`;
     calendar.state.current = `2023/09`;

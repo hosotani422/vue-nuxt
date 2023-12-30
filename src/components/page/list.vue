@@ -67,12 +67,8 @@ props.refer.items = items;
       emit(`swipeEnd`, { clientX: $event.changedTouches ? $event.changedTouches[0]!.clientX : 0 });
     "
   >
-    <div
-      class="theme-grad-color theme-shadow-normal absolute inset-y-0 left-0 z-[1] flex w-[43%] flex-col"
-    >
-      <div
-        class="theme-grad-color theme-shadow-normal relative z-[9] flex flex-auto items-center gap-3 p-3"
-      >
+    <div class="theme-grad-color theme-shadow-normal absolute inset-y-0 left-0 z-[1] flex w-[43%] flex-col">
+      <div class="theme-grad-color theme-shadow-normal relative z-[9] flex flex-auto items-center gap-3 p-3">
         <IconPlus data-testid="ListPlus" class="flex-auto" @click="emit(`insertItem`)" />
         <p data-testid="ListTitle" class="line-clamp-1 flex-even text-xl">{{ title }}</p>
         <IconLeft data-testid="ListLeft" class="flex-auto" @click="emit(`routerBack`)" />
@@ -110,10 +106,7 @@ props.refer.items = items;
               {{ textCount(listId) }}
             </p>
             <transition>
-              <div
-                v-if="classItem(listId).edit"
-                class="slide-right theme-back-color absolute right-3 flex gap-3"
-              >
+              <div v-if="classItem(listId).edit" class="slide-right theme-back-color absolute right-3 flex gap-3">
                 <IconClone
                   v-if="listId !== trashId"
                   data-testid="ListClone"

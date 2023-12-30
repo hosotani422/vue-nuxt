@@ -40,8 +40,7 @@ const config: StorybookConfig = {
     }),
     define: {
       ...config.define,
-      global: `window`,
-      process: { client: true },
+      "process.client": true,
     },
   }),
 };

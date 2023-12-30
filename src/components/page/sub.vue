@@ -83,9 +83,7 @@ props.refer.titles = titles;
       ref="home"
       class="theme-grad-color theme-shadow-reverse absolute inset-y-0 left-[57%] z-[1] flex w-[43%] flex-col"
     >
-      <div
-        class="theme-grad-color theme-shadow-normal relative z-[9] flex flex-auto items-center gap-3 p-3"
-      >
+      <div class="theme-grad-color theme-shadow-normal relative z-[9] flex flex-auto items-center gap-3 p-3">
         <IconRight data-testid="SubRight" class="flex-auto" @click="emit(`routerBack`)" />
         <InputTextbox
           v-model="mainUnit().title"
@@ -181,9 +179,7 @@ props.refer.titles = titles;
           </ul>
         </transition>
       </div>
-      <div
-        class="theme-grad-color theme-shadow-reverse relative z-[9] flex flex-auto items-center gap-3 p-3"
-      >
+      <div class="theme-grad-color theme-shadow-reverse relative z-[9] flex flex-auto items-center gap-3 p-3">
         <InputTextbox
           data-testid="SubCalendar"
           class="w-full flex-even"

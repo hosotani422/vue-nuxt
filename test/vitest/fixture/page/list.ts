@@ -16,10 +16,10 @@ export default class List extends Base {
         getListId: app.getter.listId,
         stateFull: list.getter.stateFull,
         stateUnit: list.getter.stateUnit,
-        classItem: (mainId: string) => ({ edit: mainId === `list000` }) as any,
+        classItem: ((mainId: string) => ({ edit: mainId === `list0000000000000` })) as typeof list.getter.classItem,
         iconType: list.getter.iconType,
-        classLimit: () => ({ classLimit: true }) as any,
-        textCount: () => `textCount` as any,
+        classLimit: (() => ({ classLimit: true })) as unknown as typeof list.getter.classLimit,
+        textCount: (() => `textCount`) as typeof list.getter.textCount,
       },
     });
     return wrapper;

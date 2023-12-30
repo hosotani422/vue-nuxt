@@ -1,7 +1,6 @@
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import fs from "fs";
 import * as Api from "@/api/api";
-import constant from "@/utils/const";
 import lang from "@/utils/lang/lang";
 import app from "@/stores/page/app";
 import list from "@/stores/page/list";
@@ -10,8 +9,6 @@ import sub from "@/stores/page/sub";
 import conf from "@/stores/page/conf";
 
 beforeEach(async () => {
-  constant.base.id.inbox = `list000`;
-  constant.base.id.trash = `list900`;
   const backup = fs.readFileSync(`./test/memotea.bak`, `utf-8`).split(`\n`);
   app.state.backId = backup[0]!;
   list.state.data = JSON.parse(backup[1]!);
@@ -20,7 +17,7 @@ beforeEach(async () => {
   conf.state.data = JSON.parse(backup[4]!);
   vi.mock(`vue-router`, () => ({
     useRoute: () => ({
-      params: { listId: `list100`, mainId: `main110` },
+      params: { listId: `list1111111111111`, mainId: `main1111111111111` },
     }),
     useRouter: () => ``,
   }));
@@ -35,10 +32,10 @@ describe(`getter`, () => {
     expect(app.getter.isApp()).toBe(false);
   });
   it(`listId`, () => {
-    expect(app.getter.listId()).toBe(`list100`);
+    expect(app.getter.listId()).toBe(`list1111111111111`);
   });
   it(`mainId`, () => {
-    expect(app.getter.mainId()).toBe(`main110`);
+    expect(app.getter.mainId()).toBe(`main1111111111111`);
   });
   it(`lang`, () => {
     expect(app.getter.lang()).toBe(lang[conf.state.data.lang]);
@@ -75,9 +72,9 @@ describe(`action`, () => {
   });
   it(`saveRoute`, () => {
     vi.spyOn(Api, `writeRoute`).mockReturnValue();
-    app.action.saveRoute({ listId: `list100` });
+    app.action.saveRoute({ listId: `list1111111111111` });
     expect(Api.writeRoute).toBeCalledTimes(1);
-    expect(Api.writeRoute).toBeCalledWith(`list100`);
+    expect(Api.writeRoute).toBeCalledWith(`list1111111111111`);
   });
   it(`routerList`, async () => {
     const pushRouterMock = await (async () => {
@@ -89,7 +86,7 @@ describe(`action`, () => {
     })();
     app.action.routerList();
     expect(pushRouterMock).toBeCalledTimes(1);
-    expect(pushRouterMock).toBeCalledWith(`/list100/list`);
+    expect(pushRouterMock).toBeCalledWith(`/list1111111111111/list`);
   });
   it(`routerMain`, async () => {
     const pushRouterMock = await (async () => {
@@ -99,9 +96,9 @@ describe(`action`, () => {
       } as ReturnType<typeof useRouter>);
       return mock;
     })();
-    app.action.routerMain({ listId: `list100` });
+    app.action.routerMain({ listId: `list1111111111111` });
     expect(pushRouterMock).toBeCalledTimes(1);
-    expect(pushRouterMock).toBeCalledWith(`/list100`);
+    expect(pushRouterMock).toBeCalledWith(`/list1111111111111`);
   });
   it(`routerSub`, async () => {
     const pushRouterMock = await (async () => {
@@ -111,9 +108,9 @@ describe(`action`, () => {
       } as ReturnType<typeof useRouter>);
       return mock;
     })();
-    app.action.routerSub({ mainId: `main110` });
+    app.action.routerSub({ mainId: `main1111111111111` });
     expect(pushRouterMock).toBeCalledTimes(1);
-    expect(pushRouterMock).toBeCalledWith(`/list100/sub/main110`);
+    expect(pushRouterMock).toBeCalledWith(`/list1111111111111/sub/main1111111111111`);
   });
   it(`routerConf`, async () => {
     const pushRouterMock = await (async () => {
@@ -125,7 +122,7 @@ describe(`action`, () => {
     })();
     app.action.routerConf();
     expect(pushRouterMock).toBeCalledTimes(1);
-    expect(pushRouterMock).toBeCalledWith(`/list100/conf`);
+    expect(pushRouterMock).toBeCalledWith(`/list1111111111111/conf`);
   });
   it(`routerBack`, async () => {
     vi.spyOn(app.action, `saveRoute`).mockReturnValue();
@@ -140,15 +137,15 @@ describe(`action`, () => {
     expect(app.state.backId).toBe(``);
     expect(app.action.saveRoute).toBeCalledTimes(0);
     expect(backRouterMock).toBeCalledTimes(1);
-    app.action.routerBack({ listId: `list000` });
-    expect(app.state.backId).toBe(`list000`);
+    app.action.routerBack({ listId: `list0000000000000` });
+    expect(app.state.backId).toBe(`list0000000000000`);
     expect(app.action.saveRoute).toBeCalledTimes(1);
-    expect(app.action.saveRoute).toBeCalledWith({ listId: `list000` });
+    expect(app.action.saveRoute).toBeCalledWith({ listId: `list0000000000000` });
     expect(backRouterMock).toBeCalledTimes(2);
   });
   it(`clearTrash`, () => {
     app.action.clearTrash();
-    expect(main.state.data[`list900`]).toEqual({ sort: [], data: {} });
-    expect(sub.state.data[`list900`]).toEqual({ data: {} });
+    expect(main.state.data[`list9999999999999`]).toEqual({ sort: [], data: {} });
+    expect(sub.state.data[`list9999999999999`]).toEqual({ data: {} });
   });
 });

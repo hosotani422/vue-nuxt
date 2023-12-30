@@ -12,8 +12,6 @@ import dialog from "@/stores/popup/dialog";
 
 beforeEach(async () => {
   process.client = true;
-  constant.base.id.inbox = `list000`;
-  constant.base.id.trash = `list900`;
   const backup = fs.readFileSync(`./test/memotea.bak`, `utf-8`).split(`\n`);
   app.state.backId = backup[0]!;
   list.state.data = JSON.parse(backup[1]!);
@@ -22,7 +20,7 @@ beforeEach(async () => {
   conf.state.data = JSON.parse(backup[4]!);
   vi.mock(`vue-router`, () => ({
     useRoute: () => ({
-      params: { listId: `list100`, mainId: `main110` },
+      params: { listId: `list1111111111111`, mainId: `main1111111111111` },
     }),
   }));
 });

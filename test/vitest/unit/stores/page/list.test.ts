@@ -12,8 +12,7 @@ import dialog from "@/stores/popup/dialog";
 import notice from "@/stores/popup/notice";
 
 beforeEach(async () => {
-  constant.base.id.inbox = `list000`;
-  constant.base.id.trash = `list900`;
+  vi.useFakeTimers();
   const backup = fs.readFileSync(`./test/memotea.bak`, `utf-8`).split(`\n`);
   app.state.backId = backup[0]!;
   list.state.data = JSON.parse(backup[1]!);
@@ -22,52 +21,53 @@ beforeEach(async () => {
   conf.state.data = JSON.parse(backup[4]!);
   vi.mock(`vue-router`, () => ({
     useRoute: () => ({
-      params: { listId: `list100`, mainId: `main110` },
+      params: { listId: `list1111111111111`, mainId: `main1111111111111` },
     }),
   }));
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.restoreAllMocks();
 });
 
 describe(`getter`, () => {
   it(`stateFull`, () => {
-    expect(list.getter.stateFull().sort).toEqual([`list100`, `list000`, `list900`]);
+    expect(list.getter.stateFull().sort).toEqual([`list1111111111111`, `list0000000000000`, `list9999999999999`]);
   });
   it(`stateUnit`, () => {
     expect(list.getter.stateUnit()).toEqual({ title: `list1` });
-    expect(list.getter.stateUnit(`list000`)).toEqual({ title: `Inbox` });
+    expect(list.getter.stateUnit(`list0000000000000`)).toEqual({ title: `Inbox` });
   });
   it(`classItem`, () => {
-    expect(list.getter.classItem(`list100`)).toEqual({ select: true, edit: false, hide: false });
-    expect(list.getter.classItem(`list000`)).toEqual({ select: false, edit: false, hide: false });
+    expect(list.getter.classItem(`list1111111111111`)).toEqual({ select: true, edit: false, hide: false });
+    expect(list.getter.classItem(`list0000000000000`)).toEqual({ select: false, edit: false, hide: false });
   });
   it(`iconType`, () => {
-    expect(list.getter.iconType(`list100`)).toBe(`ItemIconList`);
-    expect(list.getter.iconType(`list000`)).toBe(`ItemIconInbox`);
-    expect(list.getter.iconType(`list900`)).toBe(`ItemIconTrash`);
+    expect(list.getter.iconType(`list1111111111111`)).toBe(`IconList`);
+    expect(list.getter.iconType(`list0000000000000`)).toBe(`IconInbox`);
+    expect(list.getter.iconType(`list9999999999999`)).toBe(`IconTrash`);
   });
   it(`classLimit`, () => {
-    vi.setSystemTime(new Date(1999, 11, 30, 0, 0, 0));
-    expect(list.getter.classLimit(`list100`)).toEqual({
+    vi.setSystemTime(new Date(1999, 11, 30, 0, 0, 0, 0));
+    expect(list.getter.classLimit(`list1111111111111`)).toEqual({
       "text-theme-care": false,
       "text-theme-warn": false,
     });
-    vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0));
-    expect(list.getter.classLimit(`list100`)).toEqual({
+    vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0, 0));
+    expect(list.getter.classLimit(`list1111111111111`)).toEqual({
       "text-theme-care": true,
       "text-theme-warn": false,
     });
-    vi.setSystemTime(new Date(2000, 1, 1, 0, 0, 0));
-    expect(list.getter.classLimit(`list100`)).toEqual({
+    vi.setSystemTime(new Date(2000, 1, 1, 0, 0, 0, 0));
+    expect(list.getter.classLimit(`list1111111111111`)).toEqual({
       "text-theme-care": true,
       "text-theme-warn": true,
     });
   });
   it(`textCount`, () => {
-    expect(list.getter.textCount(`list100`)).toBe(`1/2`);
-    expect(list.getter.textCount(`list900`)).toBe(`0/0`);
+    expect(list.getter.textCount(`list1111111111111`)).toBe(`1/2`);
+    expect(list.getter.textCount(`list9999999999999`)).toBe(`0/0`);
   });
 });
 
@@ -80,7 +80,7 @@ describe(`action`, () => {
   it(`actPage`, async () => {
     vi.spyOn(list.action, `saveItem`).mockReturnValue();
     list.action.actPage();
-    list.state.data.data[`list100`]!.title = `list0`;
+    list.state.data.data[`list1111111111111`]!.title = `list0`;
     expect(await list.action.saveItem).toBeCalledTimes(1);
   });
   it(`loadItem`, async () => {
@@ -99,7 +99,7 @@ describe(`action`, () => {
     expect(Api.writeList).toBeCalledWith(writeListData);
   });
   it(`insertItem`, () => {
-    vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0));
+    vi.setSystemTime(new Date(946566000000));
     vi.spyOn(dialog.action, `open`);
     vi.spyOn(dialog.action, `close`).mockReturnValue();
     list.action.insertItem();
@@ -118,7 +118,12 @@ describe(`action`, () => {
       app.getter.lang().button.cancel,
     );
     dialog.state.callback.ok!();
-    expect(list.state.data.sort).toEqual([`list946566000000`, `list100`, `list000`, `list900`]);
+    expect(list.state.data.sort).toEqual([
+      `list946566000000`,
+      `list1111111111111`,
+      `list0000000000000`,
+      `list9999999999999`,
+    ]);
     expect(list.state.data.data[`list946566000000`]!.title).toBe(``);
     expect(main.state.data[`list946566000000`]).toEqual({ sort: [], data: {} });
     expect(sub.state.data[`list946566000000`]).toEqual({ data: {} });
@@ -127,22 +132,26 @@ describe(`action`, () => {
     expect(dialog.action.close).toBeCalledTimes(2);
   });
   it(`copyItem`, () => {
-    vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0));
-    list.action.copyItem({ listId: `list100` });
-    expect(list.state.data.sort).toEqual([`list100`, `list946566000000`, `list000`, `list900`]);
-    expect(list.state.data.data[`list946566000000`]).toEqual(list.state.data.data[`list100`]);
-    expect(main.state.data[`list946566000000`]).toEqual(main.state.data[`list100`]);
-    expect(sub.state.data[`list946566000000`]).toEqual(sub.state.data[`list100`]);
-    expect(list.state.status[`list100`]).toBeUndefined();
+    vi.setSystemTime(new Date(946566000000));
+    list.action.copyItem({ listId: `list1111111111111` });
+    expect(list.state.data.sort).toEqual([
+      `list1111111111111`,
+      `list946566000000`,
+      `list0000000000000`,
+      `list9999999999999`,
+    ]);
+    expect(list.state.data.data[`list946566000000`]).toEqual(list.state.data.data[`list1111111111111`]);
+    expect(main.state.data[`list946566000000`]).toEqual(main.state.data[`list1111111111111`]);
+    expect(sub.state.data[`list946566000000`]).toEqual(sub.state.data[`list1111111111111`]);
+    expect(list.state.status[`list1111111111111`]).toBeUndefined();
   });
   it(`deleteItem`, () => {
-    vi.spyOn(constant.base.id, `trash`, `get`).mockReturnValue(`list900`);
     vi.spyOn(dialog.action, `open`);
     vi.spyOn(dialog.action, `close`).mockReturnValue();
     vi.spyOn(constant.sound, `play`).mockReturnValue();
     vi.spyOn(notice.action, `open`);
     vi.spyOn(notice.action, `close`).mockReturnValue();
-    list.action.deleteItem({ listId: `list100` });
+    list.action.deleteItem({ listId: `list1111111111111` });
     expect(dialog.action.open).toBeCalledTimes(1);
     expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.mode).toBe(`confirm`);
     expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.title).toBe(
@@ -154,15 +163,15 @@ describe(`action`, () => {
       app.getter.lang().button.cancel,
     );
     dialog.state.callback.ok!();
-    expect(list.state.data.sort).toEqual([`list000`, `list900`]);
-    expect(list.state.data.data[`list100`]).toBeUndefined();
-    expect(main.state.data[`list100`]).toBeUndefined();
-    expect(sub.state.data[`list100`]).toBeUndefined();
-    expect(list.state.status[`list100`]).toBeUndefined();
-    expect(main.state.data[`list900`]).toEqual({
-      sort: [`main110`, `main120`],
+    expect(list.state.data.sort).toEqual([`list0000000000000`, `list9999999999999`]);
+    expect(list.state.data.data[`list1111111111111`]).toBeUndefined();
+    expect(main.state.data[`list1111111111111`]).toBeUndefined();
+    expect(sub.state.data[`list1111111111111`]).toBeUndefined();
+    expect(list.state.status[`list1111111111111`]).toBeUndefined();
+    expect(main.state.data[`list9999999999999`]).toEqual({
+      sort: [`main1111111111111`, `main2222222222222`],
       data: {
-        main110: {
+        main1111111111111: {
           check: false,
           title: `main1`,
           date: `2000/01/01`,
@@ -170,7 +179,7 @@ describe(`action`, () => {
           alarm: [`2`, `6`],
           task: true,
         },
-        main120: {
+        main2222222222222: {
           check: true,
           title: `main2`,
           date: ``,
@@ -180,15 +189,15 @@ describe(`action`, () => {
         },
       },
     });
-    expect(sub.state.data[`list900`]!.data).toEqual({
-      main110: {
-        sort: [`sub111`, `sub112`],
+    expect(sub.state.data[`list9999999999999`]!.data).toEqual({
+      main1111111111111: {
+        sort: [`sub1111111111111`, `sub2222222222222`],
         data: {
-          sub111: { check: false, title: `sub1` },
-          sub112: { check: true, title: `sub2` },
+          sub1111111111111: { check: false, title: `sub1` },
+          sub2222222222222: { check: true, title: `sub2` },
         },
       },
-      main120: {
+      main2222222222222: {
         sort: [`sub121`],
         data: {
           sub121: { check: false, title: `` },
@@ -206,12 +215,12 @@ describe(`action`, () => {
       app.getter.lang().notice.button,
     );
     notice.state.callback();
-    expect(list.state.data.sort).toEqual([`list100`, `list000`, `list900`]);
-    expect(list.state.data.data[`list100`]).toEqual({ title: `list1` });
-    expect(main.state.data[`list100`]).toEqual({
-      sort: [`main110`, `main120`],
+    expect(list.state.data.sort).toEqual([`list1111111111111`, `list0000000000000`, `list9999999999999`]);
+    expect(list.state.data.data[`list1111111111111`]).toEqual({ title: `list1` });
+    expect(main.state.data[`list1111111111111`]).toEqual({
+      sort: [`main1111111111111`, `main2222222222222`],
       data: {
-        main110: {
+        main1111111111111: {
           check: false,
           title: `main1`,
           date: `2000/01/01`,
@@ -219,7 +228,7 @@ describe(`action`, () => {
           alarm: [`2`, `6`],
           task: true,
         },
-        main120: {
+        main2222222222222: {
           check: true,
           title: `main2`,
           date: ``,
@@ -229,47 +238,47 @@ describe(`action`, () => {
         },
       },
     });
-    expect(sub.state.data[`list100`]!.data).toEqual({
-      main110: {
-        sort: [`sub111`, `sub112`],
+    expect(sub.state.data[`list1111111111111`]!.data).toEqual({
+      main1111111111111: {
+        sort: [`sub1111111111111`, `sub2222222222222`],
         data: {
-          sub111: { check: false, title: `sub1` },
-          sub112: { check: true, title: `sub2` },
+          sub1111111111111: { check: false, title: `sub1` },
+          sub2222222222222: { check: true, title: `sub2` },
         },
       },
-      main120: {
+      main2222222222222: {
         sort: [`sub121`],
         data: {
           sub121: { check: false, title: `` },
         },
       },
     });
-    expect(main.state.data[`list900`]).toEqual({ sort: [], data: {} });
-    expect(sub.state.data[`list900`]).toEqual({ data: {} });
+    expect(main.state.data[`list9999999999999`]).toEqual({ sort: [], data: {} });
+    expect(sub.state.data[`list9999999999999`]).toEqual({ data: {} });
     expect(notice.action.close).toBeCalledTimes(1);
     dialog.state.callback.cancel!();
-    expect(list.state.status[`list100`]).toBeUndefined();
+    expect(list.state.status[`list1111111111111`]).toBeUndefined();
     expect(dialog.action.close).toBeCalledTimes(2);
   });
   it(`switchEdit`, () => {
-    list.action.switchEdit({ listId: `list100` });
-    expect(list.state.status).toEqual({ list100: `edit`, list000: ``, list900: `` });
-    list.action.switchEdit({ listId: `list900` });
-    expect(list.state.status).toEqual({ list100: ``, list000: ``, list900: `edit` });
+    list.action.switchEdit({ listId: `list1111111111111` });
+    expect(list.state.status).toEqual({ list1111111111111: `edit`, list0000000000000: ``, list9999999999999: `` });
+    list.action.switchEdit({ listId: `list9999999999999` });
+    expect(list.state.status).toEqual({ list1111111111111: ``, list0000000000000: ``, list9999999999999: `edit` });
     list.action.switchEdit();
-    expect(list.state.status).toEqual({ list100: ``, list000: ``, list900: `` });
+    expect(list.state.status).toEqual({ list1111111111111: ``, list0000000000000: ``, list9999999999999: `` });
   });
   it(`dragInit`, () => {
     list.refer.items = {
       value: {
-        list100: { getBoundingClientRect: () => ({ top: 40, left: 60, height: 40, width: 120 }) },
+        list1111111111111: { getBoundingClientRect: () => ({ top: 40, left: 60, height: 40, width: 120 }) },
       },
     } as unknown as Vue.Ref<{ [K: string]: Vue.ComponentPublicInstance<HTMLElement> }>;
     vi.stubGlobal(`navigator`, { vibrate: vi.fn() });
-    list.action.dragInit({ listId: `list100`, clientY: 0 });
+    list.action.dragInit({ listId: `list1111111111111`, clientY: 0 });
     expect(list.prop.drag).toEqual({
       status: `start`,
-      id: `list100`,
+      id: `list1111111111111`,
       y: 0,
       top: 40,
       left: 60,
@@ -280,7 +289,7 @@ describe(`action`, () => {
     expect(navigator.vibrate).toBeCalledWith(40);
   });
   it(`dragStart`, () => {
-    list.refer.items!.value[`list100`]!.cloneNode = () => ({ style: {} }) as unknown as Node;
+    list.refer.items!.value[`list1111111111111`]!.cloneNode = () => ({ style: {} }) as unknown as Node;
     list.refer.wrap = { value: { appendChild: vi.fn() } } as unknown as Vue.Ref<
       Vue.ComponentPublicInstance<HTMLElement> | undefined
     >;
@@ -297,17 +306,17 @@ describe(`action`, () => {
         width: `120px`,
       },
     });
-    expect(list.state.status[`list100`]).toBe(`hide`);
+    expect(list.state.status[`list1111111111111`]).toBe(`hide`);
   });
   it(`dragMove`, () => {
     list.prop.drag.clone!.getBoundingClientRect = () => ({ top: 80, height: 40 }) as DOMRect;
-    list.refer.items!.value[`list100`]!.getBoundingClientRect = () =>
+    list.refer.items!.value[`list1111111111111`]!.getBoundingClientRect = () =>
       ({ top: 40, left: 60, height: 40, width: 120 }) as DOMRect;
-    list.refer.items!.value[`list000`] = {
+    list.refer.items!.value[`list0000000000000`] = {
       getBoundingClientRect: () => ({ top: 80, left: 60, height: 40, width: 120 }),
     } as Vue.ComponentPublicInstance<HTMLElement>;
     list.action.dragMove({ clientY: 0 });
-    expect(list.state.data.sort).toEqual([`list000`, `list100`, `list900`]);
+    expect(list.state.data.sort).toEqual([`list0000000000000`, `list1111111111111`, `list9999999999999`]);
   });
   it(`dragEnd`, () => {
     const removeClassMock = (() => {
@@ -337,7 +346,7 @@ describe(`action`, () => {
     expect(removeClassMock).toBeCalledWith(`edit`);
     expect(animateMock).toBeCalledTimes(1);
     expect(animateMock).toBeCalledWith({ top: [`80px`, `40px`] }, 150);
-    expect(list.state.status[`list100`]).toBe(``);
+    expect(list.state.status[`list1111111111111`]).toBe(``);
     expect(removeCloneMock).toBeCalledTimes(1);
     expect(list.prop.drag).toEqual({});
   });

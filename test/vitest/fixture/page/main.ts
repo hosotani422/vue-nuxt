@@ -16,13 +16,12 @@ export default class Main extends Base {
         listUnit: list.getter.stateUnit,
         stateFull: main.getter.stateFull,
         stateUnit: main.getter.stateUnit,
-        classItem: (mainId: string) =>
-          ({
-            classItem: true,
-            edit: main.state.status[mainId] === `edit`,
-          }) as any,
-        classLimit: () => ({ classLimit: true }) as any,
-        textCount: () => `textCount` as any,
+        classItem: ((mainId: string) => ({
+          classItem: true,
+          edit: main.state.status[mainId] === `edit`,
+        })) as unknown as typeof main.getter.classItem,
+        classLimit: (() => ({ classLimit: true })) as unknown as typeof main.getter.classLimit,
+        textCount: (() => `textCount`) as typeof main.getter.textCount,
       },
       global: {
         stubs: {
