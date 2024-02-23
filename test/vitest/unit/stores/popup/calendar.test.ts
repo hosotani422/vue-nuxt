@@ -1,4 +1,4 @@
-import { vi, beforeEach, afterEach, describe, it, expect, SpyInstance } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect, MockInstance } from "vitest";
 import * as Vue from "vue";
 import fs from "fs";
 import app from "@/stores/page/app";
@@ -77,34 +77,22 @@ describe(`getter`, () => {
   it(`classDay`, () => {
     vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0, 0));
     calendar.state.select = `1999/12/31`;
-    expect(calendar.getter.classDay(`1999/12`, `1999/12/31`)).toEqual({
-      select: true,
-      today: true,
-      hide: false,
-    });
-    expect(calendar.getter.classDay(`1999/12`, `1999/11/30`)).toEqual({
-      select: false,
-      today: false,
-      hide: true,
-    });
+    expect(calendar.getter.classDay(`1999/12`, `1999/12/31`)).toEqual({ select: true, today: true, hide: false });
+    expect(calendar.getter.classDay(`1999/12`, `1999/11/30`)).toEqual({ select: false, today: false, hide: true });
   });
 });
 
 describe(`action`, () => {
   it(`open`, () => {
-    const callbackData = () => ``;
-    calendar.action.open({
+    const option = {
       select: `1999/12/31`,
       current: `1999/12`,
       cancel: `cancel`,
       clear: `clear`,
-      callback: callbackData,
-    });
-    expect(calendar.state.open).toBe(true);
-    expect(calendar.state.select).toBe(`1999/12/31`);
-    expect(calendar.state.current).toBe(`1999/12`);
-    expect(calendar.state.cancel).toBe(`cancel`);
-    expect(calendar.state.callback).toEqual(callbackData);
+      callback: () => ``,
+    };
+    calendar.action.open(option);
+    expect(calendar.state).toEqual({ open: true, ...option });
   });
   it(`close`, () => {
     calendar.action.close();
@@ -125,11 +113,11 @@ describe(`action`, () => {
     expect(calendar.refer.area.value!.classList.add).toBeCalledTimes(1);
     expect(calendar.refer.area.value!.classList.add).toBeCalledWith(`prev`);
     expect(calendar.refer.area.value!.addEventListener).toBeCalledTimes(1);
-    expect((calendar.refer.area.value!.addEventListener as unknown as SpyInstance).mock.calls[0]![0]).toBe(
+    expect((calendar.refer.area.value!.addEventListener as unknown as MockInstance).mock.calls[0]![0]).toBe(
       `transitionend`,
     );
     expect(calendar.refer.area.value!.removeEventListener).toBeCalledTimes(1);
-    expect((calendar.refer.area.value!.removeEventListener as unknown as SpyInstance).mock.calls[0]![0]).toBe(
+    expect((calendar.refer.area.value!.removeEventListener as unknown as MockInstance).mock.calls[0]![0]).toBe(
       `transitionend`,
     );
     expect(calendar.refer.area.value!.classList.remove).toBeCalledTimes(1);
@@ -139,11 +127,11 @@ describe(`action`, () => {
     expect(calendar.refer.area.value!.classList.add).toBeCalledTimes(2);
     expect(calendar.refer.area.value!.classList.add).toBeCalledWith(`next`);
     expect(calendar.refer.area.value!.addEventListener).toBeCalledTimes(2);
-    expect((calendar.refer.area.value!.addEventListener as unknown as SpyInstance).mock.calls[0]![0]).toBe(
+    expect((calendar.refer.area.value!.addEventListener as unknown as MockInstance).mock.calls[0]![0]).toBe(
       `transitionend`,
     );
     expect(calendar.refer.area.value!.removeEventListener).toBeCalledTimes(2);
-    expect((calendar.refer.area.value!.removeEventListener as unknown as SpyInstance).mock.calls[0]![0]).toBe(
+    expect((calendar.refer.area.value!.removeEventListener as unknown as MockInstance).mock.calls[0]![0]).toBe(
       `transitionend`,
     );
     expect(calendar.refer.area.value!.classList.remove).toBeCalledTimes(2);
@@ -154,16 +142,9 @@ describe(`action`, () => {
     calendar.refer.body = {
       value: { parentElement: { getBoundingClientRect: () => ({ left: 40 }) } },
     } as unknown as Vue.Ref<Vue.ComponentPublicInstance<HTMLElement> | undefined>;
-    const target = {
-      style: {},
-      getBoundingClientRect: () => ({ left: 60 }),
-    } as unknown as HTMLElement;
+    const target = { style: {}, getBoundingClientRect: () => ({ left: 60 }) } as unknown as HTMLElement;
     calendar.action.swipeInit({ target, clientX: 0, clientY: 0 });
-    expect(calendar.prop.swipe.status).toBe(`start`);
-    expect(calendar.prop.swipe.target).toEqual(target);
-    expect(calendar.prop.swipe.x).toBe(0);
-    expect(calendar.prop.swipe.y).toBe(0);
-    expect(calendar.prop.swipe.left).toBe(20);
+    expect(calendar.prop.swipe).toEqual({ status: `start`, target, x: 0, y: 0, left: 20 });
   });
   it(`swipeStart`, () => {
     calendar.action.swipeStart({ clientX: 20, clientY: 0 });
@@ -195,6 +176,28 @@ describe(`action`, () => {
     expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
     expect(removeClassMock).toBeCalledTimes(1);
     expect(removeClassMock).toBeCalledWith(`back`);
+    expect(calendar.prop.swipe).toEqual({});
+  });
+  it(`swipeStart - extra`, () => {
+    calendar.prop.swipe = { status: `start`, x: 0, y: 0 };
+    calendar.action.swipeStart({ clientX: 0, clientY: 20 });
+    expect(calendar.prop.swipe).toEqual({});
+  });
+  it(`swipeEnd - extra`, () => {
+    calendar.prop.swipe = { status: `move`, x: 0, y: 0, target: { style: {} } as unknown as HTMLElement };
+    vi.spyOn(calendar.action, `pageMove`).mockReturnValue();
+    calendar.action.swipeEnd({ clientX: 100 });
+    expect(calendar.action.pageMove).toBeCalledTimes(1);
+    expect(calendar.action.pageMove).toBeCalledWith({ prev: true });
+    expect(calendar.prop.swipe).toEqual({});
+    calendar.prop.swipe = { status: `move`, x: 0, y: 0, target: { style: {} } as unknown as HTMLElement };
+    vi.spyOn(calendar.action, `pageMove`).mockReturnValue();
+    calendar.action.swipeEnd({ clientX: -100 });
+    expect(calendar.action.pageMove).toBeCalledTimes(1);
+    expect(calendar.action.pageMove).toBeCalledWith({ prev: false });
+    expect(calendar.prop.swipe).toEqual({});
+    calendar.prop.swipe = { status: `end` };
+    calendar.action.swipeEnd({ clientX: 0 });
     expect(calendar.prop.swipe).toEqual({});
   });
 });

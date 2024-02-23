@@ -14,11 +14,11 @@ const it = test.extend<{ wrapper: VueWrapper }>({
 
 describe(`dom`, () => {
   it(`header`, ({ wrapper }) => {
-    expect(wrapper.findByTestIdAll(`CalendarPrev`).length).toBe(1);
-    expect(wrapper.findByTestIdAll(`CalendarNext`).length).toBe(1);
-    expect(wrapper.findByTestIdAll(`CalendarCurrent`).length).toBe(1);
+    expect(wrapper.findByTestIdAll(`CalendarPrev`)).toHaveLength(1);
+    expect(wrapper.findByTestIdAll(`CalendarNext`)).toHaveLength(1);
+    expect(wrapper.findByTestIdAll(`CalendarCurrent`)).toHaveLength(1);
     expect(wrapper.findByTestId(`CalendarCurrent`).text()).toBe(`2023/09`);
-    expect(wrapper.findByTestIdAll(`CalendarWeek`).length).toBe(7);
+    expect(wrapper.findByTestIdAll(`CalendarWeek`)).toHaveLength(7);
     expect(wrapper.findByTestIdAll(`CalendarWeek`)[0]!.text()).toBe(`日`);
     expect(wrapper.findByTestIdAll(`CalendarWeek`)[1]!.text()).toBe(`月`);
     expect(wrapper.findByTestIdAll(`CalendarWeek`)[2]!.text()).toBe(`火`);
@@ -28,8 +28,8 @@ describe(`dom`, () => {
     expect(wrapper.findByTestIdAll(`CalendarWeek`)[6]!.text()).toBe(`土`);
   });
   it(`contents`, ({ wrapper }) => {
-    expect(wrapper.findByTestIdAll(`CalendarMonth`).length).toBe(3);
-    expect(wrapper.findByTestIdAll(`CalendarDay`).length).toBe(99);
+    expect(wrapper.findByTestIdAll(`CalendarMonth`)).toHaveLength(3);
+    expect(wrapper.findByTestIdAll(`CalendarDay`)).toHaveLength(99);
     expect(wrapper.findByTestIdAll(`CalendarDay`)[33]!.text()).toBe(`27`);
     expect(wrapper.findByTestIdAll(`CalendarDay`)[33]!.classes()).not.toContain(`select`);
     expect(wrapper.findByTestIdAll(`CalendarDay`)[33]!.classes()).not.toContain(`today`);
@@ -40,35 +40,40 @@ describe(`dom`, () => {
     expect(wrapper.findByTestIdAll(`CalendarDay`)[59]!.classes()).not.toContain(`hide`);
   });
   it(`footer`, ({ wrapper }) => {
-    expect(wrapper.findByTestIdAll(`CalendarCancel`).length).toBe(1);
+    expect(wrapper.findByTestIdAll(`CalendarCancel`)).toHaveLength(1);
     expect(wrapper.findByTestId(`CalendarCancel`).text()).toBe(`cancel`);
-    expect(wrapper.findByTestIdAll(`CalendarClear`).length).toBe(1);
+    expect(wrapper.findByTestIdAll(`CalendarClear`)).toHaveLength(1);
     expect(wrapper.findByTestId(`CalendarClear`).text()).toBe(`clear`);
   });
 });
 
 describe(`event`, () => {
+  it(`root`, ({ wrapper }) => {
+    wrapper.findByTestId(`CalendarRoot`).trigger(`mousemove`, { clientX: 0, clientY: 0 });
+    wrapper.findByTestId(`CalendarRoot`).trigger(`touchmove`, { changedTouches: [{ clientX: 0, clientY: 0 }] });
+    expect(wrapper.emitted(`swipeStart`)).toHaveLength(2);
+    expect(wrapper.emitted(`swipeStart`)).toEqual([[{ clientX: 0, clientY: 0 }], [{ clientX: 0, clientY: 0 }]]);
+    expect(wrapper.emitted(`swipeMove`)).toHaveLength(2);
+    expect(wrapper.emitted(`swipeMove`)).toEqual([[{ clientX: 0 }], [{ clientX: 0 }]]);
+    wrapper.findByTestId(`CalendarRoot`).trigger(`mouseup`, { clientX: 0 });
+    wrapper.findByTestId(`CalendarRoot`).trigger(`touchend`, { changedTouches: [{ clientX: 0 }] });
+    expect(wrapper.emitted(`swipeEnd`)).toHaveLength(2);
+    expect(wrapper.emitted(`swipeEnd`)).toEqual([[{ clientX: 0 }], [{ clientX: 0 }]]);
+  });
   it(`header`, ({ wrapper }) => {
-    wrapper.findByTestId(`CalendarRoot`).trigger(`touchmove`);
-    expect(wrapper.emitted(`swipeStart`)).toHaveLength(1);
-    expect(wrapper.emitted(`swipeStart`)![0]).toEqual([{ clientX: 0, clientY: 0 }]);
-    expect(wrapper.emitted(`swipeMove`)).toHaveLength(1);
-    expect(wrapper.emitted(`swipeMove`)![0]).toEqual([{ clientX: 0 }]);
-    wrapper.findByTestId(`CalendarRoot`).trigger(`touchend`);
-    expect(wrapper.emitted(`swipeEnd`)).toHaveLength(1);
-    expect(wrapper.emitted(`swipeEnd`)![0]).toEqual([{ clientX: 0 }]);
     wrapper.findByTestId(`CalendarPrev`).trigger(`click`);
-    expect(wrapper.emitted(`pageMove`)).toHaveLength(1);
-    expect(wrapper.emitted(`pageMove`)![0]).toEqual([{ prev: true }]);
     wrapper.findByTestId(`CalendarNext`).trigger(`click`);
     expect(wrapper.emitted(`pageMove`)).toHaveLength(2);
-    expect(wrapper.emitted(`pageMove`)![1]).toEqual([{ prev: false }]);
+    expect(wrapper.emitted(`pageMove`)).toEqual([[{ prev: true }], [{ prev: false }]]);
   });
   it(`contents`, ({ wrapper }) => {
-    wrapper.findByTestId(`CalendarArea`).trigger(`touchstart`);
-    expect(wrapper.emitted(`swipeInit`)).toHaveLength(1);
+    wrapper.findByTestId(`CalendarArea`).trigger(`mousedown`, { clientX: 0, clientY: 0 });
+    wrapper.findByTestId(`CalendarArea`).trigger(`touchstart`, { changedTouches: [{ clientX: 0, clientY: 0 }] });
+    expect(wrapper.emitted(`swipeInit`)).toHaveLength(2);
     expect((wrapper.emitted(`swipeInit`)![0]![0]! as { [K in string]: number }).clientX).toBe(0);
     expect((wrapper.emitted(`swipeInit`)![0]![0]! as { [K in string]: number }).clientY).toBe(0);
+    expect((wrapper.emitted(`swipeInit`)![1]![0]! as { [K in string]: number }).clientX).toBe(0);
+    expect((wrapper.emitted(`swipeInit`)![1]![0]! as { [K in string]: number }).clientY).toBe(0);
     wrapper.findByTestIdAll(`CalendarDay`)[59]!.trigger(`click`);
     expect(calendar.state.callback).toBeCalledTimes(1);
     expect(calendar.state.callback).toBeCalledWith(`2023/09/22`);

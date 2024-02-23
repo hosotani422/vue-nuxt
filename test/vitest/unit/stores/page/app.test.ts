@@ -9,6 +9,7 @@ import sub from "@/stores/page/sub";
 import conf from "@/stores/page/conf";
 
 beforeEach(async () => {
+  process.client = true;
   const backup = fs.readFileSync(`./test/memotea.bak`, `utf-8`).split(`\n`);
   app.state.backId = backup[0]!;
   list.state.data = JSON.parse(backup[1]!);
@@ -38,12 +39,22 @@ describe(`getter`, () => {
     expect(app.getter.mainId()).toBe(`main1111111111111`);
   });
   it(`lang`, () => {
-    expect(app.getter.lang()).toBe(lang[conf.state.data.lang]);
+    expect(app.getter.lang()).toBe(lang[`jp`]);
   });
   it(`classTop`, () => {
-    expect(app.getter.classTop()).toBe(`${conf.state.data.theme} speed2 text-base`);
+    expect(app.getter.classTop()).toBe(`dark speed2 text-base`);
+    conf.state.data.speed = 1;
+    conf.state.data.size = 1;
+    expect(app.getter.classTop()).toBe(`dark speed1 text-sm`);
+    conf.state.data.speed = 3;
+    conf.state.data.size = 3;
+    expect(app.getter.classTop()).toBe(`dark speed3 text-lg`);
   });
   it(`classBottom`, () => {
+    expect(app.getter.classBottom()).toBe(`flex-[0_0_90px]`);
+    vi.stubGlobal(`window`, { outerHeight: 300 });
+    expect(app.getter.classBottom()).toBe(`flex-[0_0_32px]`);
+    vi.stubGlobal(`window`, { outerHeight: 500 });
     expect(app.getter.classBottom()).toBe(`flex-[0_0_50px]`);
   });
 });

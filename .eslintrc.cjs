@@ -28,5 +28,7 @@ module.exports = {
     "@typescript-eslint/no-non-null-assertion": [`off`],
     "vue/multi-word-component-names": [`off`],
     "vue/no-mutating-props": [`off`],
+    "tailwindcss/enforces-shorthand": [`off`],
+    "tailwindcss/no-unnecessary-arbitrary-value": [`off`],
   },
 };

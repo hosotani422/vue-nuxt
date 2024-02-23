@@ -13,16 +13,17 @@ const it = test.extend<{ wrapper: VueWrapper }>({
 });
 
 describe(`dom`, () => {
-  it(`contents`, ({ wrapper }) => {
-    expect(wrapper.findByTestIdAll(`NoticeMessage`).length).toBe(1);
+  it(`all`, ({ wrapper }) => {
+    expect(wrapper.findByTestIdAll(`NoticeMessage`)).toHaveLength(1);
     expect(wrapper.findByTestId(`NoticeMessage`).text()).toBe(`message`);
-    expect(wrapper.findByTestIdAll(`NoticeBack`).length).toBe(1);
+    expect(wrapper.findByTestIdAll(`NoticeBack`)).toHaveLength(1);
     expect(wrapper.findByTestId(`NoticeBack`).text()).toBe(`button`);
   });
 });
 
 describe(`event`, () => {
-  it(`contents`, ({ wrapper }) => {
+  it(`all`, ({ wrapper }) => {
+    vi.spyOn(notice.state, `callback`).mockReturnValue();
     wrapper.findByTestId(`NoticeBack`).trigger(`click`);
     expect(notice.state.callback).toBeCalledTimes(1);
   });

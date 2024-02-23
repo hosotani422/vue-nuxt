@@ -14,7 +14,7 @@ const emit = defineEmits([`clickCheckAll`]);
 
 <template>
   <BasePopup data-testid="DialogRoot" :open="state.open">
-    <div v-if="state.title" data-testid="Dialogtitle" class="flex-auto whitespace-pre-line">{{ state.title }}</div>
+    <div v-if="state.title" data-testid="DialogTitle" class="flex-auto whitespace-pre-line">{{ state.title }}</div>
     <div class="flex flex-col gap-3 overflow-auto">
       <div v-if="state.message" data-testid="DialogMessage" class="whitespace-pre-line break-all">
         {{ state.message }}

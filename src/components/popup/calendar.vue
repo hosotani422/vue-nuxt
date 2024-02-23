@@ -22,14 +22,19 @@ props.refer.area = area;
   <BasePopup
     data-testid="CalendarRoot"
     :open="state.open"
+    @mousemove="
+      emit(`swipeStart`, { clientX: $event.clientX, clientY: $event.clientY });
+      emit(`swipeMove`, { clientX: $event.clientX });
+    "
+    @mouseup="emit(`swipeEnd`, { clientX: $event.clientX })"
     @touchmove="
       emit(`swipeStart`, {
-        clientX: $event.changedTouches ? $event.changedTouches[0]!.clientX : 0,
-        clientY: $event.changedTouches ? $event.changedTouches[0]!.clientY : 0,
+        clientX: $event.changedTouches[0]!.clientX,
+        clientY: $event.changedTouches[0]!.clientY,
       });
-      emit(`swipeMove`, { clientX: $event.changedTouches ? $event.changedTouches[0]!.clientX : 0 });
+      emit(`swipeMove`, { clientX: $event.changedTouches[0]!.clientX });
     "
-    @touchend="emit(`swipeEnd`, { clientX: $event.changedTouches ? $event.changedTouches[0]!.clientX : 0 })"
+    @touchend="emit(`swipeEnd`, { clientX: $event.changedTouches[0]!.clientX })"
   >
     <div class="flex flex-auto flex-col gap-4">
       <div class="flex items-center">
@@ -53,11 +58,18 @@ props.refer.area = area;
         ref="area"
         data-testid="CalendarArea"
         class="flex h-[15rem] w-[300%] translate-x-[-33.33%] current:transition-transform speed1:current:duration-1000 speed2:current:duration-500 speed3:current:duration-200 [&.back]:translate-x-[-33.333%] [&.next]:translate-x-[-66.666%] [&.prev]:translate-x-0"
+        @mousedown="
+          emit(`swipeInit`, {
+            target: $event.currentTarget,
+            clientX: $event.clientX,
+            clientY: $event.clientY,
+          })
+        "
         @touchstart="
           emit(`swipeInit`, {
             target: $event.currentTarget,
-            clientX: $event.changedTouches ? $event.changedTouches[0]!.clientX : 0,
-            clientY: $event.changedTouches ? $event.changedTouches[0]!.clientY : 0,
+            clientX: $event.changedTouches[0]!.clientX,
+            clientY: $event.changedTouches[0]!.clientY,
           })
         "
       >
