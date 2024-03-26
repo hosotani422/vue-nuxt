@@ -17,8 +17,7 @@ export default class Main extends Base {
         stateFull: main.getter.stateFull,
         stateUnit: main.getter.stateUnit,
         classItem: ((mainId: string) => ({
-          classItem: true,
-          edit: main.state.status[mainId] === `edit`,
+          edit: mainId === `main1111111111111`,
         })) as unknown as typeof main.getter.classItem,
         classLimit: (() => ({ classLimit: true })) as unknown as typeof main.getter.classLimit,
         textCount: (() => `textCount`) as typeof main.getter.textCount,

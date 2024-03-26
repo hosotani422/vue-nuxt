@@ -20,7 +20,9 @@ export default class Sound {
   }
   public static volume(volume: number): void {
     for (const audio of Object.values(this.audio)) {
-      audio!.volume = volume;
+      if (audio) {
+        audio.volume = volume;
+      }
     }
   }
 }

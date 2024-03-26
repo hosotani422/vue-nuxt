@@ -11,20 +11,28 @@ const it = test.extend<{ wrapper: VueWrapper }>({
 });
 
 describe(`dom`, () => {
-  it(`header`, ({ wrapper }) => {
-    expect(wrapper.findByTestIdAll(`AppRoot`).length).toBe(1);
+  it(`root`, ({ wrapper }) => {
+    expect(wrapper.findByTestIdAll(`AppRoot`)).toHaveLength(1);
     expect(wrapper.findByTestId(`AppRoot`).classes()).toContain(`light`);
     expect(wrapper.findByTestId(`AppRoot`).classes()).toContain(`speed2`);
     expect(wrapper.findByTestId(`AppRoot`).classes()).toContain(`text-base`);
-    expect(wrapper.findByTestIdAll(`AppTitle`).length).toBe(1);
+  });
+  it(`header`, ({ wrapper }) => {
+    expect(wrapper.findByTestIdAll(`AppTitle`)).toHaveLength(1);
     expect(wrapper.findByTestId(`AppTitle`).text()).toBe(`Memotea`);
+    expect(wrapper.findByTestIdAll(`AppViewport`)).toHaveLength(1);
     expect(wrapper.findByTestId(`AppViewport`).attributes(`name`)).toBe(`viewport`);
     expect(wrapper.findByTestId(`AppViewport`).attributes(`content`)).toBe(`width=device-width, initial-scale=1`);
+    expect(wrapper.findByTestIdAll(`AppDescription`)).toHaveLength(1);
     expect(wrapper.findByTestId(`AppDescription`).attributes(`name`)).toBe(`description`);
     expect(wrapper.findByTestId(`AppDescription`).attributes(`content`)).toBe(`メモ帳、TODOアプリ`);
+    expect(wrapper.findByTestIdAll(`AppIcon`)).toHaveLength(1);
     expect(wrapper.findByTestId(`AppIcon`).attributes(`rel`)).toBe(`icon`);
     expect(wrapper.findByTestId(`AppIcon`).attributes(`href`)).toBe(`/favicon.png`);
+    expect(wrapper.findByTestIdAll(`AppNoScript`)).toHaveLength(1);
     expect(wrapper.findByTestId(`AppNoScript`).text()).toBe(`JavaScript is required`);
-    expect(wrapper.findByTestIdAll(`AppFoot`).length).toBe(0);
+  });
+  it(`footer`, ({ wrapper }) => {
+    expect(wrapper.findByTestIdAll(`AppFoot`)).toHaveLength(0);
   });
 });

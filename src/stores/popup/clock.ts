@@ -41,10 +41,10 @@ const useStore = defineStore(`clock`, () => {
     close: (): void => {
       state.open = false;
     },
-    inputHour: (payload: { event: TouchEvent }): void => {
-      const target = payload.event.target as HTMLCanvasElement;
-      const x = payload.event.touches[0]!.pageX - target.getBoundingClientRect().left;
-      const y = payload.event.touches[0]!.pageY - target.getBoundingClientRect().top;
+    inputHour: (payload: { target: HTMLElement; pageX: number; pageY: number }): void => {
+      const target = payload.target as HTMLCanvasElement;
+      const x = payload.pageX - target.getBoundingClientRect().left;
+      const y = payload.pageY - target.getBoundingClientRect().top;
       const half = target.getBoundingClientRect().height / 2;
       const angle = (Math.atan((half - y) / (half - x)) * 360) / (Math.PI * 2) + (x >= half ? 90 : 270);
       const inner = Math.sqrt((half - x) ** 2 + (half - y) ** 2) < half * 0.66;
@@ -53,10 +53,10 @@ const useStore = defineStore(`clock`, () => {
       state.hour = hour;
       action.drawHour({ target });
     },
-    inputMinute: (payload: { event: TouchEvent }): void => {
-      const target = payload.event.target as HTMLCanvasElement;
-      const x = payload.event.touches[0]!.pageX - target.getBoundingClientRect().left;
-      const y = payload.event.touches[0]!.pageY - target.getBoundingClientRect().top;
+    inputMinute: (payload: { target: HTMLElement; pageX: number; pageY: number }): void => {
+      const target = payload.target as HTMLCanvasElement;
+      const x = payload.pageX - target.getBoundingClientRect().left;
+      const y = payload.pageY - target.getBoundingClientRect().top;
       const half = target.getBoundingClientRect().height / 2;
       const angle = (Math.atan((half - y) / (half - x)) * 360) / (Math.PI * 2) + (x >= half ? 90 : 270);
       const minute = Math.round(angle / 6) === 60 ? 0 : Math.round(angle / 6);

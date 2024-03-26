@@ -22,15 +22,67 @@ props.refer.minute = minute;
         ref="hour"
         data-testid="ClockHour"
         class="flex-even"
-        @touchstart="emit(`inputHour`, { event: $event })"
-        @touchmove="emit(`inputHour`, { event: $event })"
+        @mousedown="
+          emit(`inputHour`, {
+            target: $event.target,
+            pageX: $event.pageX,
+            pageY: $event.pageY,
+          })
+        "
+        @mousemove="
+          emit(`inputHour`, {
+            target: $event.target,
+            pageX: $event.pageX,
+            pageY: $event.pageY,
+          })
+        "
+        @touchstart="
+          emit(`inputHour`, {
+            target: $event.target,
+            pageX: $event.touches[0]!.pageX,
+            pageY: $event.touches[0]!.pageY,
+          })
+        "
+        @touchmove="
+          emit(`inputHour`, {
+            target: $event.target,
+            pageX: $event.touches[0]!.pageX,
+            pageY: $event.touches[0]!.pageY,
+          })
+        "
       />
       <canvas
         ref="minute"
         data-testid="ClockMinute"
         class="flex-even"
-        @touchstart="emit(`inputMinute`, { event: $event })"
-        @touchmove="emit(`inputMinute`, { event: $event })"
+        @mousedown="
+          emit(`inputMinute`, {
+            target: $event.target,
+            pageX: $event.pageX,
+            pageY: $event.pageY,
+          })
+        "
+        @mousemove="
+          emit(`inputMinute`, {
+            target: $event.target,
+            pageX: $event.pageX,
+            pageY: $event.pageY,
+          })
+        "
+        @touchstart="
+          emit(`inputMinute`, {
+            target: $event.target,
+            pageX: $event.touches[0]!.pageX,
+            pageY: $event.touches[0]!.pageY,
+          })
+        "
+        @touchmove="
+          emit(`inputMinute`, {
+            target: $event.target,
+            pageX: $event.touches[0]!.pageX,
+            pageY: $event.touches[0]!.pageY,
+          })
+        "
       />
     </div>
     <div class="flex flex-auto items-center justify-end gap-4">

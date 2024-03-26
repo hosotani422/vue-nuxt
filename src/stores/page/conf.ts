@@ -92,8 +92,10 @@ const useStore = defineStore(`conf`, () => {
     downloadBackup: (payload: { event: Event }): void => {
       const data =
         `${app.getter.listId()}\n` +
-        `${JSON.stringify(list.state.data)}\n${JSON.stringify(main.state.data)}\n` +
-        `${JSON.stringify(sub.state.data)}\n${JSON.stringify(state.data)}`;
+        `${JSON.stringify(list.state.data)}\n` +
+        `${JSON.stringify(main.state.data)}\n` +
+        `${JSON.stringify(sub.state.data)}\n` +
+        `${JSON.stringify(state.data)}`;
       if (!app.getter.isApp()) {
         const target = payload.event.currentTarget as HTMLElement;
         target.setAttribute(`download`, constant.base.backup);
@@ -194,12 +196,13 @@ const useStore = defineStore(`conf`, () => {
         ok: app.getter.lang().button.ok,
         cancel: app.getter.lang().button.cancel,
         callback: {
-          ok: () => {
+          ok: async () => {
+            app.action.routerBack({ listId: constant.init.listId });
+            dialog.action.close();
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             list.state.data = constant.init.list;
             main.state.data = constant.init.main;
             sub.state.data = constant.init.sub;
-            app.action.routerBack({ listId: constant.init.listId });
-            dialog.action.close();
           },
           cancel: () => {
             dialog.action.close();

@@ -28,21 +28,21 @@ afterEach(() => {
 describe(`getter`, () => {
   it(`stateCheckAll`, () => {
     dialog.state.check = {
-      all: false,
+      all: true,
       sort: [`1`, `2`],
-      data: { "1": { check: false, title: `1` }, "2": { check: false, title: `2` } },
+      data: { 1: { check: false, title: `1` }, 2: { check: false, title: `2` } },
     };
     expect(dialog.getter.stateCheckAll()).toBe(false);
     dialog.state.check = {
-      all: false,
+      all: true,
       sort: [`1`, `2`],
-      data: { "1": { check: true, title: `1` }, "2": { check: false, title: `2` } },
+      data: { 1: { check: true, title: `1` }, 2: { check: false, title: `2` } },
     };
     expect(dialog.getter.stateCheckAll()).toBe(false);
     dialog.state.check = {
-      all: false,
+      all: true,
       sort: [`1`, `2`],
-      data: { "1": { check: true, title: `1` }, "2": { check: true, title: `2` } },
+      data: { 1: { check: true, title: `1` }, 2: { check: true, title: `2` } },
     };
     expect(dialog.getter.stateCheckAll()).toBe(true);
   });
@@ -50,7 +50,7 @@ describe(`getter`, () => {
 
 describe(`action`, () => {
   it(`open`, () => {
-    const param = {
+    const option = {
       mode: `alert` as typeof dialog.state.mode,
       title: `title`,
       message: `message`,
@@ -61,13 +61,13 @@ describe(`action`, () => {
       check: {
         all: false,
         sort: [`1`, `2`],
-        data: { "1": { check: true, title: `1` }, "2": { check: false, title: `2` } },
+        data: { 1: { check: true, title: `1` }, 2: { check: false, title: `2` } },
       },
       radio: {
         none: false,
         select: `1`,
         sort: [`1`, `2`],
-        data: { "1": { title: `1` }, "2": { title: `2` } },
+        data: { 1: { title: `1` }, 2: { title: `2` } },
       },
       ok: `ok`,
       cancel: `cancel`,
@@ -76,38 +76,19 @@ describe(`action`, () => {
         cancel: () => ``,
       },
     };
-    dialog.action.open(param);
-    expect(dialog.state.open).toBe(true);
-    expect(dialog.state.mode).toBe(`alert`);
-    expect(dialog.state.title).toBe(`title`);
-    expect(dialog.state.message).toBe(`message`);
-    expect(dialog.state.text.value).toBe(`text`);
-    expect(dialog.state.text.placeholder).toBe(`placeholder`);
-    expect(dialog.state.check.all).toBe(false);
-    expect(dialog.state.check.sort).toEqual([`1`, `2`]);
-    expect(dialog.state.check.data).toEqual({
-      "1": { check: true, title: `1` },
-      "2": { check: false, title: `2` },
-    });
-    expect(dialog.state.radio.none).toBe(false);
-    expect(dialog.state.radio.select).toBe(`1`);
-    expect(dialog.state.radio.sort).toEqual([`1`, `2`]);
-    expect(dialog.state.radio.data).toEqual({ "1": { title: `1` }, "2": { title: `2` } });
-    expect(dialog.state.ok).toBe(`ok`);
-    expect(dialog.state.cancel).toBe(`cancel`);
-    expect(dialog.state.callback.ok).toEqual(param.callback.ok);
-    expect(dialog.state.callback.cancel).toEqual(param.callback.cancel);
+    dialog.action.open(option);
+    expect(dialog.state).toEqual({ open: true, ...option });
   });
   it(`close`, () => {
     dialog.action.close();
     expect(dialog.state.open).toBe(false);
   });
   it(`clickCheckAll`, () => {
-    dialog.action.clickCheckAll({ checked: false });
-    expect(dialog.state.check.data[`1`]!.check).toBe(false);
-    expect(dialog.state.check.data[`2`]!.check).toBe(false);
     dialog.action.clickCheckAll({ checked: true });
     expect(dialog.state.check.data[`1`]!.check).toBe(true);
     expect(dialog.state.check.data[`2`]!.check).toBe(true);
+    dialog.action.clickCheckAll({ checked: false });
+    expect(dialog.state.check.data[`1`]!.check).toBe(false);
+    expect(dialog.state.check.data[`2`]!.check).toBe(false);
   });
 });

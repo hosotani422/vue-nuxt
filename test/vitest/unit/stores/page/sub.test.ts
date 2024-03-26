@@ -1,4 +1,4 @@
-import { vi, beforeEach, afterEach, describe, it, expect, SpyInstance } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect, MockInstance } from "vitest";
 import * as Vue from "vue";
 import fs from "fs";
 import * as Dom from "@/utils/base/dom";
@@ -34,44 +34,34 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+const main1Data = {
+  sort: [`sub1111111111111`, `sub2222222222222`],
+  data: { sub1111111111111: { check: false, title: `sub1` }, sub2222222222222: { check: true, title: `sub2` } },
+};
+
+const main2Data = { sort: [`sub121`], data: { sub121: { check: false, title: `` } } };
+
+const sub1Data = { check: false, title: `sub1` };
+
+const sub2Data = { check: true, title: `sub2` };
+
 describe(`getter`, () => {
   it(`stateFull`, () => {
-    expect(sub.getter.stateFull().sort).toEqual([`sub1111111111111`, `sub2222222222222`]);
-    expect(sub.getter.stateFull(`list1111111111111`).sort).toEqual([`sub1111111111111`, `sub2222222222222`]);
-    expect(sub.getter.stateFull(undefined, `main1111111111111`).sort).toEqual([`sub1111111111111`, `sub2222222222222`]);
-    expect(sub.getter.stateFull(`list1111111111111`, `main2222222222222`).sort).toEqual([`sub121`]);
+    expect(sub.getter.stateFull()).toEqual(main1Data);
+    expect(sub.getter.stateFull(`list1111111111111`)).toEqual(main1Data);
+    expect(sub.getter.stateFull(undefined, `main1111111111111`)).toEqual(main1Data);
+    expect(sub.getter.stateFull(`list1111111111111`, `main2222222222222`)).toEqual(main2Data);
   });
   it(`stateUnit`, () => {
-    expect(sub.getter.stateUnit(undefined, undefined, `sub1111111111111`)).toEqual({
-      check: false,
-      title: `sub1`,
-    });
-    expect(sub.getter.stateUnit(undefined, `main1111111111111`, `sub1111111111111`)).toEqual({
-      check: false,
-      title: `sub1`,
-    });
-    expect(sub.getter.stateUnit(`list1111111111111`, undefined, `sub1111111111111`)).toEqual({
-      check: false,
-      title: `sub1`,
-    });
-    expect(sub.getter.stateUnit(`list1111111111111`, `main2222222222222`, `sub121`)).toEqual({
-      check: false,
-      title: ``,
-    });
+    expect(sub.getter.stateUnit()).toBeUndefined();
+    expect(sub.getter.stateUnit(undefined, undefined, `sub1111111111111`)).toEqual(sub1Data);
+    expect(sub.getter.stateUnit(undefined, `main1111111111111`, `sub1111111111111`)).toEqual(sub1Data);
+    expect(sub.getter.stateUnit(`list1111111111111`, undefined, `sub1111111111111`)).toEqual(sub1Data);
+    expect(sub.getter.stateUnit(`list1111111111111`, `main1111111111111`, `sub2222222222222`)).toEqual(sub2Data);
   });
   it(`classItem`, () => {
-    expect(sub.getter.classItem(`sub1111111111111`)).toEqual({
-      check: false,
-      edit: false,
-      drag: false,
-      hide: false,
-    });
-    expect(sub.getter.classItem(`sub2222222222222`)).toEqual({
-      check: true,
-      edit: false,
-      drag: false,
-      hide: false,
-    });
+    expect(sub.getter.classItem(`sub1111111111111`)).toEqual({ check: false, edit: false, drag: false, hide: false });
+    expect(sub.getter.classItem(`sub2222222222222`)).toEqual({ check: true, edit: false, drag: false, hide: false });
   });
   it(`textMemo`, () => {
     expect(sub.getter.textMemo()).toEqual(`sub1\nsub2`);
@@ -102,19 +92,31 @@ describe(`action`, () => {
     expect(await sub.action.saveItem).toBeCalledTimes(1);
   });
   it(`loadItem`, async () => {
-    const readSubData = { list9999999999999: { data: {} } };
-    vi.spyOn(Api, `readSub`).mockResolvedValue(readSubData);
+    vi.spyOn(Api, `readSub`).mockResolvedValue({ list9999999999999: { data: {} } });
     await sub.action.loadItem();
     expect(Api.readSub).toBeCalledTimes(1);
-    expect(sub.state.data).toEqual(readSubData);
+    expect(sub.state.data).toEqual({ list9999999999999: { data: {} } });
   });
   it(`saveItem`, () => {
-    const writeSubData = { list9999999999999: { data: {} } };
     vi.spyOn(Api, `writeSub`).mockReturnValue();
-    sub.state.data = writeSubData;
     sub.action.saveItem();
     expect(Api.writeSub).toBeCalledTimes(1);
-    expect(Api.writeSub).toBeCalledWith(writeSubData);
+    expect(Api.writeSub).toBeCalledWith({
+      list0000000000000: { data: {} },
+      list9999999999999: { data: {} },
+      list1111111111111: {
+        data: {
+          main1111111111111: {
+            sort: [`sub1111111111111`, `sub2222222222222`],
+            data: {
+              sub1111111111111: { check: false, title: `sub1` },
+              sub2222222222222: { check: true, title: `sub2` },
+            },
+          },
+          main2222222222222: { sort: [`sub121`], data: { sub121: { check: false, title: `` } } },
+        },
+      },
+    });
   });
   it(`inputItem`, () => {
     sub.refer.titles = { value: { sub1111111111111: { $el: `inputItem` } } } as unknown as Vue.Ref<{
@@ -148,21 +150,25 @@ describe(`action`, () => {
     }>;
     vi.spyOn(Dom, `resize`).mockReturnValue(0);
     await sub.action.enterItem({ subId: `sub1111111111111`, selectionStart: 3 });
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.sort).toEqual([
-      `sub1111111111111`,
-      `sub946566000000`,
-      `sub2222222222222`,
-    ]);
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.data[`sub1111111111111`]!.title).toEqual(
-      `sub`,
-    );
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.data[`sub946566000000`]!.title).toEqual(`1`);
-    expect(sub.refer.titles!.value[`sub1111111111111`]!.$el.value).toBe(`sub`);
-    expect(sub.refer.titles.value.sub946566000000!.$el.focus).toBeCalledTimes(1);
+    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]).toEqual({
+      sort: [`sub1111111111111`, `sub946566000000`, `sub2222222222222`],
+      data: {
+        sub1111111111111: { check: false, title: `sub` },
+        sub946566000000: { check: false, title: `1` },
+        sub2222222222222: { check: true, title: `sub2` },
+      },
+    });
+    expect(sub.refer.titles.value[`sub946566000000`]!.$el.focus).toBeCalledTimes(1);
     expect(Dom.resize).toBeCalledTimes(1);
     expect(Dom.resize).toBeCalledWith({ value: `sub` });
-    expect(sub.refer.items.value.sub1111111111111!.addEventListener).toBeCalledTimes(1);
-    expect(sub.refer.items.value.sub1111111111111!.removeEventListener).toBeCalledTimes(1);
+    expect(sub.refer.items.value[`sub1111111111111`]!.addEventListener).toBeCalledTimes(1);
+    expect(
+      (sub.refer.items.value[`sub1111111111111`]!.addEventListener as unknown as MockInstance).mock.calls[0]![0]!,
+    ).toBe(`transitionend`);
+    expect(sub.refer.items.value[`sub1111111111111`]!.removeEventListener).toBeCalledTimes(1);
+    expect(
+      (sub.refer.items.value[`sub1111111111111`]!.removeEventListener as unknown as MockInstance).mock.calls[0]![0]!,
+    ).toBe(`transitionend`);
     expect(sub.refer.items!.value[`sub1111111111111`]!.style.height).toBe(``);
   });
   it(`backItem`, async () => {
@@ -171,16 +177,15 @@ describe(`action`, () => {
     } as unknown as Vue.Ref<{ [K: string]: Vue.ComponentPublicInstance<HTMLElement> }>;
     vi.spyOn(Dom, `resize`).mockReturnValue(0);
     await sub.action.backItem({ subId: `sub2222222222222` });
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.sort).toEqual([`sub1111111111111`]);
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.data[`sub1111111111111`]!.title).toEqual(
-      `sub1sub2`,
-    );
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.data[`sub2222222222222`]).toBeUndefined();
-    expect(sub.refer.titles!.value[`sub1111111111111`]!.$el.value).toBe(`sub1sub2`);
+    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]).toEqual({
+      sort: [`sub1111111111111`],
+      data: { sub1111111111111: { check: false, title: `sub1sub2` } },
+    });
     expect(Dom.resize).toBeCalledTimes(1);
-    expect(sub.refer.titles.value.sub1111111111111!.$el.focus).toBeCalledTimes(1);
-    expect(sub.refer.titles!.value[`sub1111111111111`]!.$el.selectionStart).toBe(4);
-    expect(sub.refer.titles!.value[`sub1111111111111`]!.$el.selectionEnd).toBe(4);
+    expect((Dom.resize as unknown as MockInstance).mock.calls[0]![0]!.value).toBe(`sub1sub2`);
+    expect(sub.refer.titles.value[`sub1111111111111`]!.$el.focus).toBeCalledTimes(1);
+    expect(sub.refer.titles.value[`sub1111111111111`]!.$el.selectionStart).toBe(4);
+    expect(sub.refer.titles.value[`sub1111111111111`]!.$el.selectionEnd).toBe(4);
   });
   it(`deleteItem`, async () => {
     sub.refer.items = {
@@ -202,29 +207,33 @@ describe(`action`, () => {
     vi.spyOn(notice.action, `close`).mockReturnValue();
     sub.action.deleteItem({ subId: `sub2222222222222` });
     expect(Dom.resize).toBeCalledTimes(1);
-    expect(Dom.resize).toHaveBeenCalledWith(sub.refer.items.value.sub2222222222222);
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.sort).toEqual([`sub1111111111111`]);
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.data[`sub2222222222222`]).toBeUndefined();
+    expect(Dom.resize).toHaveBeenCalledWith(sub.refer.items.value[`sub2222222222222`]);
+    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]).toEqual({
+      sort: [`sub1111111111111`],
+      data: { sub1111111111111: { check: false, title: `sub1` } },
+    });
     expect(sub.state.status[`sub2222222222222`]).toBeUndefined();
     expect(constant.sound.play).toBeCalledTimes(1);
     expect(constant.sound.play).toHaveBeenCalledWith(`warn`);
     expect(notice.action.open).toBeCalledTimes(1);
-    expect((notice.action.open as unknown as SpyInstance).mock.calls[0]![0]!.message).toBe(
-      app.getter.lang().notice.message,
-    );
-    expect((notice.action.open as unknown as SpyInstance).mock.calls[0]![0]!.button).toBe(
-      app.getter.lang().notice.button,
-    );
+    expect((notice.action.open as unknown as MockInstance).mock.calls[0]![0]!.message).toBe(`削除が完了しました`);
+    expect((notice.action.open as unknown as MockInstance).mock.calls[0]![0]!.button).toBe(`元に戻す`);
     await notice.state.callback();
     expect(notice.action.close).toBeCalledTimes(1);
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.sort).toEqual([
-      `sub1111111111111`,
-      `sub2222222222222`,
-    ]);
+    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]).toEqual({
+      sort: [`sub1111111111111`, `sub2222222222222`],
+      data: { sub1111111111111: { check: false, title: `sub1` }, sub2222222222222: { check: true, title: `sub2` } },
+    });
     expect(Dom.resize).toBeCalledTimes(2);
-    expect(Dom.resize).toHaveBeenCalledWith(sub.refer.items.value.sub2222222222222, 0);
-    expect(sub.refer.items.value.sub2222222222222!.addEventListener).toBeCalledTimes(1);
-    expect(sub.refer.items.value.sub2222222222222!.removeEventListener).toBeCalledTimes(1);
+    expect(Dom.resize).toHaveBeenCalledWith(sub.refer.items.value[`sub2222222222222`], 0);
+    expect(sub.refer.items.value[`sub2222222222222`]!.addEventListener).toBeCalledTimes(1);
+    expect(
+      (sub.refer.items.value[`sub2222222222222`]!.addEventListener as unknown as MockInstance).mock.calls[0]![0]!,
+    ).toBe(`transitionend`);
+    expect(sub.refer.items.value[`sub2222222222222`]!.removeEventListener).toBeCalledTimes(1);
+    expect(
+      (sub.refer.items.value[`sub2222222222222`]!.removeEventListener as unknown as MockInstance).mock.calls[0]![0]!,
+    ).toBe(`transitionend`);
     expect(sub.refer.items!.value[`sub2222222222222`]!.style.height).toBe(``);
   });
   it(`checkItem`, () => {
@@ -253,8 +262,6 @@ describe(`action`, () => {
     expect(main.state.data[`list1111111111111`]!.data[`main1111111111111`]!.task).toBe(true);
   });
   it(`switchEdit`, () => {
-    sub.action.switchEdit({ subId: `sub1111111111111` });
-    expect(sub.state.status).toEqual({ sub1111111111111: `edit`, sub2222222222222: `` });
     sub.action.switchEdit({ subId: `sub2222222222222` });
     expect(sub.state.status).toEqual({ sub1111111111111: ``, sub2222222222222: `edit` });
     sub.action.switchEdit();
@@ -263,17 +270,9 @@ describe(`action`, () => {
   it(`inputMemo`, () => {
     vi.setSystemTime(new Date(946566000000));
     sub.action.inputMemo({ value: `memo1\nmemo2` });
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.sort).toEqual([
-      `sub9465660000000`,
-      `sub9465660000001`,
-    ]);
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.data[`sub9465660000000`]).toEqual({
-      check: false,
-      title: `memo1`,
-    });
-    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.data[`sub9465660000001`]).toEqual({
-      check: false,
-      title: `memo2`,
+    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]).toEqual({
+      sort: [`sub9465660000000`, `sub9465660000001`],
+      data: { sub9465660000000: { check: false, title: `memo1` }, sub9465660000001: { check: false, title: `memo2` } },
     });
   });
   it(`openCalendar`, () => {
@@ -281,14 +280,10 @@ describe(`action`, () => {
     vi.spyOn(calendar.action, `close`).mockReturnValue();
     sub.action.openCalendar({ date: `1999/12/31` });
     expect(calendar.action.open).toBeCalledTimes(1);
-    expect((calendar.action.open as unknown as SpyInstance).mock.calls[0]![0]!.select).toBe(`1999/12/31`);
-    expect((calendar.action.open as unknown as SpyInstance).mock.calls[0]![0]!.current).toBe(`1999/12`);
-    expect((calendar.action.open as unknown as SpyInstance).mock.calls[0]![0]!.cancel).toBe(
-      app.getter.lang().button.cancel,
-    );
-    expect((calendar.action.open as unknown as SpyInstance).mock.calls[0]![0]!.clear).toBe(
-      app.getter.lang().button.clear,
-    );
+    expect((calendar.action.open as unknown as MockInstance).mock.calls[0]![0]!.select).toBe(`1999/12/31`);
+    expect((calendar.action.open as unknown as MockInstance).mock.calls[0]![0]!.current).toBe(`1999/12`);
+    expect((calendar.action.open as unknown as MockInstance).mock.calls[0]![0]!.cancel).toBe(`キャンセル`);
+    expect((calendar.action.open as unknown as MockInstance).mock.calls[0]![0]!.clear).toBe(`クリア`);
     calendar.state.callback(`2000/01/01`);
     expect(calendar.action.close).toBeCalledTimes(1);
     expect(main.state.data[`list1111111111111`]!.data[`main1111111111111`]!.date).toBe(`2000/01/01`);
@@ -302,13 +297,11 @@ describe(`action`, () => {
     vi.spyOn(clock.action, `drawMinute`).mockReturnValue();
     sub.action.openClock({ time: `12:45` });
     expect(clock.action.open).toBeCalledTimes(1);
-    expect((clock.action.open as unknown as SpyInstance).mock.calls[0]![0]!.hour).toBe(12);
-    expect((clock.action.open as unknown as SpyInstance).mock.calls[0]![0]!.minute).toBe(45);
-    expect((clock.action.open as unknown as SpyInstance).mock.calls[0]![0]!.cancel).toBe(
-      app.getter.lang().button.cancel,
-    );
-    expect((clock.action.open as unknown as SpyInstance).mock.calls[0]![0]!.clear).toBe(app.getter.lang().button.clear);
-    expect((clock.action.open as unknown as SpyInstance).mock.calls[0]![0]!.ok).toBe(app.getter.lang().button.ok);
+    expect((clock.action.open as unknown as MockInstance).mock.calls[0]![0]!.hour).toBe(12);
+    expect((clock.action.open as unknown as MockInstance).mock.calls[0]![0]!.minute).toBe(45);
+    expect((clock.action.open as unknown as MockInstance).mock.calls[0]![0]!.cancel).toBe(`キャンセル`);
+    expect((clock.action.open as unknown as MockInstance).mock.calls[0]![0]!.clear).toBe(`クリア`);
+    expect((clock.action.open as unknown as MockInstance).mock.calls[0]![0]!.ok).toBe(`決定`);
     clock.state.callback(23, 59);
     expect(clock.action.close).toBeCalledTimes(1);
     expect(main.state.data[`list1111111111111`]!.data[`main1111111111111`]!.time).toBe(`23:59`);
@@ -318,37 +311,33 @@ describe(`action`, () => {
     vi.spyOn(dialog.action, `close`).mockReturnValue();
     sub.action.openAlarm();
     expect(dialog.action.open).toBeCalledTimes(1);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.mode).toBe(`check`);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.title).toBe(
-      app.getter.lang().dialog.alarm.title,
-    );
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.message).toBe(``);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.check!.all).toBe(true);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.check!.sort).toBe(
-      app.getter.lang().dialog.alarm.sort,
-    );
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.check!.data).toEqual({
-      "1": { check: false, title: `時刻通り` },
-      "2": { check: true, title: `5分前` },
-      "3": { check: false, title: `10分前` },
-      "4": { check: false, title: `15分前` },
-      "5": { check: false, title: `30分前` },
-      "6": { check: true, title: `1時間前` },
-      "7": { check: false, title: `2時間前` },
-      "8": { check: false, title: `3時間前` },
-      "9": { check: false, title: `6時間前` },
-      "10": { check: false, title: `12時間前` },
-      "11": { check: false, title: `1日前` },
-      "12": { check: false, title: `2日前` },
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.mode).toBe(`check`);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.title).toBe(`通知タイミングの選択`);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.message).toBe(``);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.check).toEqual({
+      all: true,
+      sort: [`1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`],
+      data: {
+        "1": { check: false, title: `時刻通り` },
+        "2": { check: true, title: `5分前` },
+        "3": { check: false, title: `10分前` },
+        "4": { check: false, title: `15分前` },
+        "5": { check: false, title: `30分前` },
+        "6": { check: true, title: `1時間前` },
+        "7": { check: false, title: `2時間前` },
+        "8": { check: false, title: `3時間前` },
+        "9": { check: false, title: `6時間前` },
+        "10": { check: false, title: `12時間前` },
+        "11": { check: false, title: `1日前` },
+        "12": { check: false, title: `2日前` },
+      },
     });
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.ok).toBe(app.getter.lang().button.ok);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.cancel).toBe(
-      app.getter.lang().button.cancel,
-    );
-    dialog.state.check.data[`6`]!.check = false;
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.ok).toBe(`決定`);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.cancel).toBe(`キャンセル`);
+    dialog.state.check.data[`1`]!.check = true;
     dialog.state.callback.ok!();
     expect(dialog.action.close).toBeCalledTimes(1);
-    expect(main.state.data[`list1111111111111`]!.data[`main1111111111111`]!.alarm).toEqual([`2`]);
+    expect(main.state.data[`list1111111111111`]!.data[`main1111111111111`]!.alarm).toEqual([`1`, `2`, `6`]);
     dialog.state.callback.cancel!();
     expect(dialog.action.close).toBeCalledTimes(2);
   });
@@ -397,17 +386,29 @@ describe(`action`, () => {
     expect(sub.state.status[`sub1111111111111`]).toBe(`hide`);
   });
   it(`dragMove`, () => {
-    sub.prop.drag.clone!.getBoundingClientRect = () => ({ top: 80, height: 40 }) as DOMRect;
-    sub.refer.wrap!.value!.getBoundingClientRect = () => ({ top: 0, height: 40 }) as DOMRect;
-    sub.refer.items!.value!.sub1111111111111!.getBoundingClientRect = () =>
+    sub.refer.wrap!.value!.getBoundingClientRect = () => ({ top: 40, height: 120 }) as DOMRect;
+    sub.refer.items!.value[`sub1111111111111`]!.getBoundingClientRect = () =>
       ({ top: 40, left: 60, height: 40, width: 120 }) as DOMRect;
-    sub.refer.items!.value!.sub2222222222222 = {
+    sub.refer.items!.value[`sub2222222222222`] = {
       getBoundingClientRect: () => ({ top: 80, left: 60, height: 40, width: 120 }),
     } as Vue.ComponentPublicInstance<HTMLElement>;
+    sub.prop.drag.clone!.getBoundingClientRect = () => ({ top: 40, height: 40 }) as DOMRect;
+    sub.action.dragMove({ clientY: 0 });
+    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.sort).toEqual([
+      `sub1111111111111`,
+      `sub2222222222222`,
+    ]);
+    sub.prop.drag.clone!.getBoundingClientRect = () => ({ top: 80, height: 40 }) as DOMRect;
     sub.action.dragMove({ clientY: 0 });
     expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.sort).toEqual([
       `sub2222222222222`,
       `sub1111111111111`,
+    ]);
+    sub.prop.drag.clone!.getBoundingClientRect = () => ({ top: 40, height: 40 }) as DOMRect;
+    sub.action.dragMove({ clientY: 0 });
+    expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]!.sort).toEqual([
+      `sub1111111111111`,
+      `sub2222222222222`,
     ]);
   });
   it(`dragEnd`, () => {
@@ -437,22 +438,20 @@ describe(`action`, () => {
     expect(removeClassMock).toBeCalledTimes(1);
     expect(removeClassMock).toBeCalledWith(`edit`);
     expect(animateMock).toBeCalledTimes(1);
-    expect(animateMock).toBeCalledWith({ top: [`80px`, `40px`] }, 150);
-    expect(sub.state.status[`sub1111111111111`]).toBe(``);
+    expect(animateMock).toBeCalledWith({ top: [`40px`, `40px`] }, 150);
     expect(removeCloneMock).toBeCalledTimes(1);
+    expect(sub.state.status[`sub1111111111111`]).toBe(``);
+    expect(sub.prop.drag).toEqual({});
+  });
+  it(`dragEnd - extra`, () => {
+    sub.prop.drag = { status: `end`, id: `sub1111111111111` };
+    sub.action.dragEnd();
     expect(sub.prop.drag).toEqual({});
   });
   it(`swipeInit`, () => {
-    const target = {
-      style: {},
-      getBoundingClientRect: () => ({ left: 60, width: 120 }),
-    } as unknown as HTMLElement;
+    const target = { style: {}, getBoundingClientRect: () => ({ left: 60, width: 120 }) } as unknown as HTMLElement;
     sub.action.swipeInit({ target, clientX: 0, clientY: 0 });
-    expect(sub.prop.swipe.status).toBe(`start`);
-    expect(sub.prop.swipe.target).toEqual(target);
-    expect(sub.prop.swipe.x).toBe(0);
-    expect(sub.prop.swipe.y).toBe(0);
-    expect(sub.prop.swipe.right).toBe(120);
+    expect(sub.prop.swipe).toEqual({ status: `start`, target, x: 0, y: 0, right: 120 });
   });
   it(`swipeStart`, () => {
     sub.action.swipeStart({ clientX: 20, clientY: 0 });
@@ -461,6 +460,8 @@ describe(`action`, () => {
   it(`swipeMove`, () => {
     sub.action.swipeMove({ clientX: 20 });
     expect(sub.prop.swipe.target!.style.transform).toBe(`translateX(140px)`);
+    sub.action.swipeMove({ clientX: -200 });
+    expect(sub.prop.swipe.target!.style.transform).toBe(`translateX(0px)`);
   });
   it(`swipeEnd`, () => {
     const addClassMock = vi.fn();
@@ -484,6 +485,38 @@ describe(`action`, () => {
     expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
     expect(removeClassMock).toBeCalledTimes(1);
     expect(removeClassMock).toBeCalledWith(`v-enter-active`);
+    expect(sub.prop.swipe).toEqual({});
+  });
+  it(`swipeInit - extra`, () => {
+    sub.prop.swipe.status = `end`;
+    const removeClassMock = vi.fn();
+    const removeListenerMock = vi.fn();
+    const target = {
+      style: {},
+      classList: { remove: removeClassMock },
+      getBoundingClientRect: () => ({ left: 60, width: 120 }),
+      removeEventListener: removeListenerMock,
+    } as unknown as HTMLElement;
+    sub.action.swipeInit({ target, clientX: 0, clientY: 0 });
+    expect(sub.prop.swipe).toEqual({ status: `move`, target, x: 0, y: 0, right: 120 });
+    expect(removeListenerMock).toBeCalledTimes(1);
+    expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
+    expect(removeClassMock).toBeCalledTimes(1);
+    expect(removeClassMock).toBeCalledWith(`v-enter-active`);
+    expect(sub.prop.swipe.target!.style.transform).toBe(`translateX(120px)`);
+  });
+  it(`swipeEnd - extra`, () => {
+    vi.spyOn(app.action, `routerBack`).mockReturnValue();
+    sub.action.swipeEnd({ clientX: 0 });
+    expect(app.action.routerBack).toBeCalledTimes(1);
+    expect(sub.prop.swipe).toEqual({});
+    sub.prop.swipe = { status: `end` };
+    sub.action.swipeEnd({ clientX: 0 });
+    expect(sub.prop.swipe).toEqual({});
+  });
+  it(`swipeStart - extra`, () => {
+    sub.prop.swipe = { status: `start`, x: 0, y: 0 };
+    sub.action.swipeStart({ clientX: 0, clientY: 20 });
     expect(sub.prop.swipe).toEqual({});
   });
 });

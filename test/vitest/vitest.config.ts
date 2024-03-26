@@ -9,9 +9,6 @@ export default defineConfig(() => ({
     globals: true,
     include: [`test/vitest/unit/**/*.test.ts`],
     environment: `happy-dom`,
-    coverage: {
-      reportsDirectory: `./test/vitest/coverage`,
-    },
     alias: {
       "@": path.join(__dirname, `../../src`),
     },

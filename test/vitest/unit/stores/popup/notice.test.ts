@@ -27,18 +27,19 @@ afterEach(() => {
 
 describe(`action`, () => {
   it(`open`, async () => {
-    const param = {
+    const option = {
       message: `message`,
       button: `button`,
       callback: () => ``,
     };
-    notice.action.open(param);
+    vi.spyOn(notice.action, `close`).mockReturnValue();
+    notice.action.open(option);
     expect(notice.state.open).toBe(true);
     expect(notice.state.message).toBe(`message`);
     expect(notice.state.button).toBe(`button`);
-    expect(notice.state.callback).toEqual(param.callback);
+    expect(notice.state.callback).toEqual(option.callback);
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    expect(notice.state.open).toBe(false);
+    expect(notice.action.close).toBeCalledTimes(1);
   });
   it(`close`, () => {
     notice.action.close();

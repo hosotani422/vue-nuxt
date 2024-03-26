@@ -1,4 +1,4 @@
-import { vi, beforeEach, afterEach, describe, it, expect, SpyInstance } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect, MockInstance } from "vitest";
 import fs from "fs";
 import * as Api from "@/api/api";
 import * as Cordova from "@/utils/cordova/cordova";
@@ -37,17 +37,22 @@ describe(`action`, () => {
   });
   it(`actPage`, async () => {
     vi.spyOn(conf.action, `saveItem`).mockReturnValue();
+    vi.spyOn(conf.action, `reactSound`).mockReturnValue();
     conf.action.actPage();
-    conf.state.data.speed = 3;
+    conf.state.data.volume = 3;
     expect(await conf.action.saveItem).toBeCalledTimes(1);
+    expect(await conf.action.reactSound).toBeCalledTimes(1);
+    conf.state.data.speed = 3;
+    expect(await conf.action.saveItem).toBeCalledTimes(2);
+    expect(await conf.action.reactSound).toBeCalledTimes(1);
   });
   it(`loadItem`, async () => {
     const readConfData: typeof conf.state.data = {
-      size: 3,
+      size: 2,
       speed: 2,
       volume: 1,
       vibrate: `on`,
-      theme: `light`,
+      theme: `dark`,
       lang: `jp`,
       save: `local`,
     };
@@ -57,26 +62,24 @@ describe(`action`, () => {
     expect(conf.state.data).toEqual(readConfData);
   });
   it(`saveItem`, () => {
-    const writeConfData: typeof conf.state.data = {
-      size: 3,
+    vi.spyOn(Api, `writeConf`).mockReturnValue();
+    conf.action.saveItem();
+    expect(Api.writeConf).toBeCalledTimes(1);
+    expect(Api.writeConf).toBeCalledWith({
+      size: 2,
       speed: 2,
       volume: 1,
       vibrate: `on`,
-      theme: `light`,
+      theme: `dark`,
       lang: `jp`,
       save: `local`,
-    };
-    vi.spyOn(Api, `writeConf`).mockReturnValue();
-    conf.state.data = writeConfData;
-    conf.action.saveItem();
-    expect(Api.writeConf).toBeCalledTimes(1);
-    expect(Api.writeConf).toBeCalledWith(writeConfData);
+    });
   });
   it(`reactSound`, () => {
     vi.spyOn(constant.sound, `volume`).mockReturnValue();
     conf.action.reactSound();
     expect(constant.sound.volume).toBeCalledTimes(1);
-    expect(constant.sound.volume).toBeCalledWith(conf.state.data.volume / 3);
+    expect(constant.sound.volume).toBeCalledWith(1 / 3);
   });
   it(`reactAlarm`, () => {
     vi.spyOn(Cordova.Notice, `removeAll`).mockReturnValue();
@@ -85,34 +88,35 @@ describe(`action`, () => {
     expect(Cordova.Notice.removeAll).toBeCalledTimes(1);
     expect(Cordova.Notice.insert).toBeCalledTimes(2);
     expect(Cordova.Notice.insert).toBeCalledWith({
-      title: app.getter.lang().dialog.title.alarm,
+      title: `Memotea アラーム`,
       message: `list1 ⇒ main1`,
       date: new Date(`1999/12/31 23:55`),
     });
     expect(Cordova.Notice.insert).toBeCalledWith({
-      title: app.getter.lang().dialog.title.alarm,
+      title: `Memotea アラーム`,
       message: `list1 ⇒ main1`,
       date: new Date(`1999/12/31 23:00`),
     });
   });
   it(`downloadBackup`, () => {
-    const eventData = { currentTarget: { setAttribute: vi.fn() } } as unknown as Event;
-    conf.action.downloadBackup({ event: eventData });
-    expect((eventData.currentTarget as HTMLElement).setAttribute).toBeCalledTimes(2);
-    expect((eventData.currentTarget as HTMLElement).setAttribute).toBeCalledWith(`download`, constant.base.backup);
-    expect((eventData.currentTarget as HTMLElement).setAttribute).toBeCalledWith(
+    const event = { currentTarget: { setAttribute: vi.fn() } } as unknown as Event;
+    conf.action.downloadBackup({ event });
+    expect((event.currentTarget as HTMLElement).setAttribute).toBeCalledTimes(2);
+    expect((event.currentTarget as HTMLElement).setAttribute).toBeCalledWith(`download`, `memotea.bak`);
+    expect((event.currentTarget as HTMLElement).setAttribute).toBeCalledWith(
       `href`,
       `data:text/plain,${encodeURIComponent(
         `${app.getter.listId()}\n` +
-          `${JSON.stringify(list.state.data)}\n${JSON.stringify(main.state.data)}\n` +
-          `${JSON.stringify(sub.state.data)}\n${JSON.stringify(conf.state.data)}`,
+          `${JSON.stringify(list.state.data)}\n` +
+          `${JSON.stringify(main.state.data)}\n` +
+          `${JSON.stringify(sub.state.data)}\n` +
+          `${JSON.stringify(conf.state.data)}`,
       )}`,
     );
   });
   it(`uploadBackup`, () => {
-    const eventData = { target: { files: [`uploadFile`] } } as unknown as Event;
     vi.spyOn(FileReader.prototype, `readAsText`).mockReturnValue();
-    conf.action.uploadBackup({ event: eventData });
+    conf.action.uploadBackup({ event: { target: { files: [`uploadFile`] } } as unknown as Event });
     expect(FileReader.prototype.readAsText).toBeCalledTimes(1);
     expect(FileReader.prototype.readAsText).toBeCalledWith(`uploadFile`);
   });
@@ -121,57 +125,70 @@ describe(`action`, () => {
     vi.spyOn(dialog.action, `close`).mockReturnValue();
     conf.action.resetConf();
     expect(dialog.action.open).toBeCalledTimes(1);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.mode).toBe(`confirm`);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.title).toBe(
-      app.getter.lang().dialog.title.reset,
-    );
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.message).toBe(``);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.ok).toBe(app.getter.lang().button.ok);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.cancel).toBe(
-      app.getter.lang().button.cancel,
-    );
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.mode).toBe(`confirm`);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.title).toBe(`本当にリセットしますか`);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.message).toBe(``);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.ok).toBe(`決定`);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.cancel).toBe(`キャンセル`);
     dialog.state.callback.ok!();
-    expect(conf.state.data).toEqual(constant.init.conf);
+    expect(conf.state.data).toEqual({
+      size: 2,
+      speed: 2,
+      volume: 1,
+      vibrate: `on`,
+      theme: `light`,
+      lang: `jp`,
+      save: `local`,
+    });
     expect(dialog.action.close).toBeCalledTimes(1);
     dialog.state.callback.cancel!();
     expect(dialog.action.close).toBeCalledTimes(2);
   });
-  it(`resetList`, () => {
+  it(`resetList`, async () => {
     vi.spyOn(dialog.action, `open`);
     vi.spyOn(dialog.action, `close`).mockReturnValue();
     vi.spyOn(app.action, `routerBack`).mockReturnValue();
     conf.action.resetList();
     expect(dialog.action.open).toBeCalledTimes(1);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.mode).toBe(`confirm`);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.title).toBe(
-      app.getter.lang().dialog.title.reset,
-    );
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.message).toBe(``);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.ok).toBe(app.getter.lang().button.ok);
-    expect((dialog.action.open as unknown as SpyInstance).mock.calls[0]![0]!.cancel).toBe(
-      app.getter.lang().button.cancel,
-    );
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.mode).toBe(`confirm`);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.title).toBe(`本当にリセットしますか`);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.message).toBe(``);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.ok).toBe(`決定`);
+    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.cancel).toBe(`キャンセル`);
     dialog.state.callback.ok!();
-    expect(list.state.data).toEqual(constant.init.list);
-    expect(main.state.data).toEqual(constant.init.main);
-    expect(sub.state.data).toEqual(constant.init.sub);
     expect(app.action.routerBack).toBeCalledTimes(1);
-    expect(app.action.routerBack).toBeCalledWith({ listId: constant.init.listId });
+    expect(app.action.routerBack).toBeCalledWith({ listId: `list0000000000000` });
     expect(dialog.action.close).toBeCalledTimes(1);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    expect(list.state.data).toEqual({
+      sort: [`list0000000000000`, `list9999999999999`],
+      data: {
+        list0000000000000: { title: `Inbox` },
+        list9999999999999: { title: `Trash` },
+      },
+    });
+    expect(main.state.data).toEqual({
+      list0000000000000: {
+        sort: [`main0000000000000`],
+        data: { main0000000000000: { check: false, title: `サンプル`, date: ``, time: ``, alarm: [], task: true } },
+      },
+      list9999999999999: { sort: [], data: {} },
+    });
+    expect(sub.state.data).toEqual({
+      list0000000000000: {
+        data: {
+          main0000000000000: { sort: [`sub0000000000000`], data: { sub0000000000000: { check: false, title: `` } } },
+        },
+      },
+      list9999999999999: { data: {} },
+    });
     dialog.state.callback.cancel!();
     expect(dialog.action.close).toBeCalledTimes(2);
   });
   it(`swipeInit`, () => {
-    const target = {
-      style: {},
-      getBoundingClientRect: () => ({ top: 40, height: 40 }),
-    } as unknown as HTMLElement;
+    const target = { style: {}, getBoundingClientRect: () => ({ top: 40, height: 40 }) } as unknown as HTMLElement;
     conf.action.swipeInit({ target, clientX: 0, clientY: 0 });
-    expect(conf.prop.swipe.status).toBe(`start`);
-    expect(conf.prop.swipe.target).toEqual(target);
-    expect(conf.prop.swipe.x).toBe(0);
-    expect(conf.prop.swipe.y).toBe(0);
-    expect(conf.prop.swipe.top).toBe(60);
+    expect(conf.prop.swipe).toEqual({ status: `start`, target, x: 0, y: 0, top: 60 });
   });
   it(`swipeStart`, () => {
     conf.action.swipeStart({ clientX: 0, clientY: 20 });
@@ -180,6 +197,8 @@ describe(`action`, () => {
   it(`swipeMove`, () => {
     conf.action.swipeMove({ clientY: 20 });
     expect(conf.prop.swipe.target!.style.transform).toBe(`translateY(80px)`);
+    conf.action.swipeMove({ clientY: -200 });
+    expect(conf.prop.swipe.target!.style.transform).toBe(`translateY(0px)`);
   });
   it(`swipeEnd`, () => {
     const addClassMock = vi.fn();
@@ -203,6 +222,38 @@ describe(`action`, () => {
     expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
     expect(removeClassMock).toBeCalledTimes(1);
     expect(removeClassMock).toBeCalledWith(`v-enter-active`);
+    expect(conf.prop.swipe).toEqual({});
+  });
+  it(`swipeInit - extra`, () => {
+    conf.prop.swipe.status = `end`;
+    const removeClassMock = vi.fn();
+    const removeListenerMock = vi.fn();
+    const target = {
+      style: {},
+      classList: { remove: removeClassMock },
+      getBoundingClientRect: () => ({ top: 40, height: 40 }),
+      removeEventListener: removeListenerMock,
+    } as unknown as HTMLElement;
+    conf.action.swipeInit({ target, clientX: 0, clientY: 0 });
+    expect(conf.prop.swipe).toEqual({ status: `move`, target, x: 0, y: 0, top: 60 });
+    expect(removeListenerMock).toBeCalledTimes(1);
+    expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
+    expect(removeClassMock).toBeCalledTimes(1);
+    expect(removeClassMock).toBeCalledWith(`v-enter-active`);
+    expect(conf.prop.swipe.target!.style.transform).toBe(`translateY(60px)`);
+  });
+  it(`swipeEnd - extra`, () => {
+    vi.spyOn(app.action, `routerBack`).mockReturnValue();
+    conf.action.swipeEnd({ clientY: 100 });
+    expect(app.action.routerBack).toBeCalledTimes(1);
+    expect(conf.prop.swipe).toEqual({});
+    conf.prop.swipe = { status: `end` };
+    conf.action.swipeEnd({ clientY: 100 });
+    expect(conf.prop.swipe).toEqual({});
+  });
+  it(`swipeStart - extra`, () => {
+    conf.prop.swipe = { status: `start`, x: 0, y: 0 };
+    conf.action.swipeStart({ clientX: 20, clientY: 0 });
     expect(conf.prop.swipe).toEqual({});
   });
 });

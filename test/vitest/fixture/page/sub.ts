@@ -17,7 +17,6 @@ export default class Sub extends Base {
         stateFull: sub.getter.stateFull,
         stateUnit: sub.getter.stateUnit,
         classItem: ((subId: string) => ({
-          classItem: true,
           edit: subId === `sub1111111111111`,
         })) as unknown as typeof sub.getter.classItem,
         textMemo: sub.getter.textMemo,
