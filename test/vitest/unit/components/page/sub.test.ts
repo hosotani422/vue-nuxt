@@ -99,9 +99,6 @@ describe(`event`, () => {
     wrapper.findByTestId(`SubTask`).trigger(`click`);
     expect(wrapper.emitted(`switchEdit`)).toHaveLength(1);
     expect(wrapper.emitted(`switchEdit`)).toEqual([[{ subId: `sub1111111111111` }]]);
-    wrapper.findByTestId(`SubTask`).trigger(`input`);
-    expect(wrapper.emitted(`inputItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`inputItem`)).toEqual([[{ subId: `sub1111111111111` }]]);
     wrapper.findByTestId(`SubTask`).trigger(`keydown.enter`);
     expect(wrapper.emitted(`enterItem`)).toHaveLength(1);
     expect(wrapper.emitted(`enterItem`)).toEqual([[{ subId: `sub1111111111111`, selectionStart: 4 }]]);

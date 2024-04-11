@@ -193,59 +193,31 @@ describe(`action`, () => {
     expect(conf.prop.swipe.target!.style.transform).toBe(`translateY(0px)`);
   });
   it(`swipeEnd`, () => {
-    const addClassMock = vi.fn();
-    const removeClassMock = vi.fn();
     const addListenerMock = vi.fn((_mode: string, listener: () => void) => {
       listener();
     });
-    const removeListenerMock = vi.fn();
-    (conf.prop.swipe.target as unknown as { [K in string]: object }).classList = {
-      add: addClassMock,
-      remove: removeClassMock,
-    };
-    (conf.prop.swipe.target as unknown as { [K in string]: object }).addEventListener = addListenerMock;
-    (conf.prop.swipe.target as unknown as { [K in string]: object }).removeEventListener = removeListenerMock;
+    const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
+    (conf.prop.swipe.target as unknown as { [K in string]: object }).animate = animateMock;
     conf.action.swipeEnd({ clientY: 20 });
-    expect(addClassMock).toBeCalledTimes(1);
-    expect(addClassMock).toBeCalledWith(`v-enter-active`);
+    expect(animateMock).toBeCalledTimes(1);
+    expect(animateMock).toBeCalledWith({ transform: `translateY(0px)` }, { duration: 150, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(1);
-    expect(addListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
-    expect(removeListenerMock).toBeCalledTimes(1);
-    expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
-    expect(removeClassMock).toBeCalledTimes(1);
-    expect(removeClassMock).toBeCalledWith(`v-enter-active`);
+    expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(conf.prop.swipe).toEqual({});
   });
-  it(`swipeInit - extra`, () => {
-    conf.prop.swipe.status = `end`;
-    const removeClassMock = vi.fn();
-    const removeListenerMock = vi.fn();
-    const target = {
-      style: {},
-      classList: { remove: removeClassMock },
-      getBoundingClientRect: () => ({ top: 40, height: 40 }),
-      removeEventListener: removeListenerMock,
-    } as unknown as HTMLElement;
-    conf.action.swipeInit({ target, clientX: 0, clientY: 0 });
-    expect(conf.prop.swipe).toEqual({ status: `move`, target, x: 0, y: 0, top: 60 });
-    expect(removeListenerMock).toBeCalledTimes(1);
-    expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
-    expect(removeClassMock).toBeCalledTimes(1);
-    expect(removeClassMock).toBeCalledWith(`v-enter-active`);
-    expect(conf.prop.swipe.target!.style.transform).toBe(`translateY(60px)`);
+  it(`swipeStart - extra`, () => {
+    conf.prop.swipe = { status: `start`, x: 0, y: 0 };
+    conf.action.swipeStart({ clientX: 20, clientY: 0 });
+    expect(conf.prop.swipe).toEqual({});
   });
   it(`swipeEnd - extra`, () => {
+    conf.prop.swipe = { status: `move`, top: 60, y: 0 };
     vi.spyOn(app.action, `routerBack`).mockReturnValue();
     conf.action.swipeEnd({ clientY: 100 });
     expect(app.action.routerBack).toBeCalledTimes(1);
     expect(conf.prop.swipe).toEqual({});
     conf.prop.swipe = { status: `end` };
     conf.action.swipeEnd({ clientY: 100 });
-    expect(conf.prop.swipe).toEqual({});
-  });
-  it(`swipeStart - extra`, () => {
-    conf.prop.swipe = { status: `start`, x: 0, y: 0 };
-    conf.action.swipeStart({ clientX: 20, clientY: 0 });
     expect(conf.prop.swipe).toEqual({});
   });
 });

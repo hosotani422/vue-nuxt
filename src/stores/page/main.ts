@@ -275,13 +275,8 @@ const useStore = defineStore(`main`, () => {
         prop.drag.clone!.classList.remove(`edit`);
         prop.drag
           .clone!.animate(
-            {
-              top: [
-                `${prop.drag.clone!.getBoundingClientRect().top}px`,
-                `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`,
-              ],
-            },
-            constant.base.duration[conf.state.data.speed],
+            { top: `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px` },
+            { duration: constant.base.duration[conf.state.data.speed], easing: `ease-in-out` },
           )
           .addEventListener(`finish`, () => {
             state.status[prop.drag.id!] = ``;

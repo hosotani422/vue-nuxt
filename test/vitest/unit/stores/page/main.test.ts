@@ -338,18 +338,11 @@ describe(`action`, () => {
       (main.prop.drag.clone!.classList as object) = { remove: mock };
       return mock;
     })();
-    const animateMock = (() => {
-      const mock = vi.fn(
-        () =>
-          ({
-            addEventListener: (_mode: string, listener: () => void) => {
-              listener();
-            },
-          }) as Animation,
-      );
-      main.prop.drag.clone!.animate = mock;
-      return mock;
-    })();
+    const addListenerMock = vi.fn((_mode: string, listener: () => void) => {
+      listener();
+    });
+    const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
+    (main.prop.drag.clone as unknown as { [K in string]: object }).animate = animateMock;
     const removeCloneMock = (() => {
       const mock = vi.fn();
       main.prop.drag.clone!.remove = mock;
@@ -359,7 +352,9 @@ describe(`action`, () => {
     expect(removeClassMock).toBeCalledTimes(1);
     expect(removeClassMock).toBeCalledWith(`edit`);
     expect(animateMock).toBeCalledTimes(1);
-    expect(animateMock).toBeCalledWith({ top: [`0px`, `40px`] }, 150);
+    expect(animateMock).toBeCalledWith({ top: `40px` }, { duration: 150, easing: `ease-in-out` });
+    expect(addListenerMock).toBeCalledTimes(1);
+    expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(removeCloneMock).toBeCalledTimes(1);
     expect(main.state.status[`main1111111111111`]).toBe(``);
     expect(main.prop.drag).toEqual({});

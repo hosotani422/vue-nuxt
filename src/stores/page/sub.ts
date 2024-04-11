@@ -1,7 +1,6 @@
 import * as Vue from "vue";
-import * as Dom from "@/utils/base/dom";
-import constant from "@/utils/const";
 import * as Api from "@/api/api";
+import constant from "@/utils/const";
 import app from "@/stores/page/app";
 import main from "@/stores/page/main";
 import conf from "@/stores/page/conf";
@@ -128,9 +127,6 @@ const useStore = defineStore(`sub`, () => {
     saveItem: (): void => {
       Api.writeSub(state.data);
     },
-    inputItem: (payload: { subId: string }): void => {
-      Dom.resize(refer.titles!.value[payload.subId]!.$el);
-    },
     enterItem: async (payload: { subId: string; selectionStart: number }) => {
       const subId = `sub${app.lib.dayjs().valueOf()}`;
       const caret = payload.selectionStart;
@@ -142,11 +138,6 @@ const useStore = defineStore(`sub`, () => {
       // 要素が正しく描画されないので強制描画
       refer.titles!.value[payload.subId]!.$el.value = getter.stateFull().data[payload.subId]!.title;
       refer.titles!.value[subId]?.$el.focus();
-      Dom.resize(refer.titles!.value[payload.subId]!.$el);
-      refer.items!.value[payload.subId]!.addEventListener(`transitionend`, function listener() {
-        refer.items!.value[payload.subId]!.removeEventListener(`transitionend`, listener);
-        refer.items!.value[payload.subId]!.style.height = ``;
-      });
     },
     backItem: async (payload: { subId: string }) => {
       const subId = getter.stateFull().sort[getter.stateFull().sort.indexOf(payload.subId) - 1]!;
@@ -157,13 +148,11 @@ const useStore = defineStore(`sub`, () => {
       await nextTick();
       // 要素が正しく描画されないので強制描画
       refer.titles!.value[subId]!.$el.value = getter.stateFull().data[subId]!.title;
-      Dom.resize(refer.titles!.value[subId]!.$el);
       refer.titles!.value[subId]!.$el.focus();
       refer.titles!.value[subId]!.$el.selectionStart = caret;
       refer.titles!.value[subId]!.$el.selectionEnd = caret;
     },
     deleteItem: (payload: { subId: string }) => {
-      const height = Dom.resize(refer.items!.value[payload.subId]!);
       const backup = app.lib.lodash.cloneDeep(state.data);
       getter.stateFull().sort.splice(getter.stateFull().sort.indexOf(payload.subId), 1);
       delete getter.stateFull().data[payload.subId];
@@ -175,12 +164,6 @@ const useStore = defineStore(`sub`, () => {
         callback: async () => {
           notice.action.close();
           state.data = backup;
-          await nextTick();
-          Dom.resize(refer.items!.value[payload.subId]!, height);
-          refer.items!.value[payload.subId]!.addEventListener(`transitionend`, function listener() {
-            refer.items!.value[payload.subId]!.removeEventListener(`transitionend`, listener);
-            refer.items!.value[payload.subId]!.style.height = ``;
-          });
         },
       });
     },
@@ -329,13 +312,8 @@ const useStore = defineStore(`sub`, () => {
         prop.drag.clone!.classList.remove(`edit`);
         prop.drag
           .clone!.animate(
-            {
-              top: [
-                `${prop.drag.clone!.getBoundingClientRect().top}px`,
-                `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`,
-              ],
-            },
-            constant.base.duration[conf.state.data.speed],
+            { top: `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px` },
+            { duration: constant.base.duration[conf.state.data.speed], easing: `ease-in-out` },
           )
           .addEventListener(`finish`, () => {
             state.status[prop.drag.id!] = ``;
@@ -348,17 +326,13 @@ const useStore = defineStore(`sub`, () => {
       }
     },
     swipeInit: (payload: { target: HTMLElement; clientX: number; clientY: number }): void => {
-      prop.swipe.status = prop.swipe.status === `end` ? `move` : `start`;
-      prop.swipe.target = payload.target;
-      prop.swipe.x = payload.clientX;
-      prop.swipe.y = payload.clientY;
-      const item = prop.swipe.target.getBoundingClientRect();
-      prop.swipe.right = item.left + item.width / 2;
-      // スワイプ終了前に再開時
-      if (prop.swipe.status === `move`) {
-        prop.swipe.target.removeEventListener(`transitionend`, prop.swipe.listener!);
-        prop.swipe.target.classList.remove(`v-enter-active`);
-        prop.swipe.target.style.transform = `translateX(${prop.swipe.right}px)`;
+      if (!prop.swipe.status) {
+        prop.swipe.status = `start`;
+        prop.swipe.target = payload.target;
+        prop.swipe.x = payload.clientX;
+        prop.swipe.y = payload.clientY;
+        const item = prop.swipe.target.getBoundingClientRect();
+        prop.swipe.right = item.left + item.width / 2;
       }
     },
     swipeStart: (payload: { clientX: number; clientY: number }): void => {
@@ -383,16 +357,15 @@ const useStore = defineStore(`sub`, () => {
           app.action.routerBack();
           prop.swipe = {};
         } else {
-          prop.swipe.target!.style.transform = ``;
-          prop.swipe.target!.classList.add(`v-enter-active`);
-          prop.swipe.target!.addEventListener(
-            `transitionend`,
-            (prop.swipe.listener = () => {
-              prop.swipe.target!.removeEventListener(`transitionend`, prop.swipe.listener!);
-              prop.swipe.target!.classList.remove(`v-enter-active`);
+          prop.swipe
+            .target!.animate(
+              { transform: `translateX(0px)` },
+              { duration: constant.base.duration[conf.state.data.speed], easing: `ease-in-out` },
+            )
+            .addEventListener(`finish`, () => {
+              prop.swipe.target!.style.transform = `translateX(0px)`;
               prop.swipe = {};
-            }),
-          );
+            });
         }
       } else {
         prop.swipe = {};

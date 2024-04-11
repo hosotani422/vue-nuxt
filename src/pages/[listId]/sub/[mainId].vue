@@ -17,7 +17,6 @@ import sub from "@/stores/page/sub";
     :class-limit="sub.getter.classLimit"
     :text-alarm="sub.getter.textAlarm"
     @router-back="app.action.routerBack"
-    @input-item="sub.action.inputItem"
     @enter-item="sub.action.enterItem"
     @back-item="sub.action.backItem"
     @delete-item="sub.action.deleteItem"

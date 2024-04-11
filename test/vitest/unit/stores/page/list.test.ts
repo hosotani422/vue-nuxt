@@ -262,18 +262,11 @@ describe(`action`, () => {
       (list.prop.drag.clone!.classList as object) = { remove: mock };
       return mock;
     })();
-    const animateMock = (() => {
-      const mock = vi.fn(
-        () =>
-          ({
-            addEventListener: (_mode: string, listener: () => void) => {
-              listener();
-            },
-          }) as Animation,
-      );
-      list.prop.drag.clone!.animate = mock;
-      return mock;
-    })();
+    const addListenerMock = vi.fn((_mode: string, listener: () => void) => {
+      listener();
+    });
+    const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
+    (list.prop.drag.clone as unknown as { [K in string]: object }).animate = animateMock;
     const removeCloneMock = (() => {
       const mock = vi.fn();
       list.prop.drag.clone!.remove = mock;
@@ -283,7 +276,9 @@ describe(`action`, () => {
     expect(removeClassMock).toBeCalledTimes(1);
     expect(removeClassMock).toBeCalledWith(`edit`);
     expect(animateMock).toBeCalledTimes(1);
-    expect(animateMock).toBeCalledWith({ top: [`40px`, `40px`] }, 150);
+    expect(animateMock).toBeCalledWith({ top: `40px` }, { duration: 150, easing: `ease-in-out` });
+    expect(addListenerMock).toBeCalledTimes(1);
+    expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(removeCloneMock).toBeCalledTimes(1);
     expect(list.state.status[`list1111111111111`]).toBe(``);
     expect(list.prop.drag).toEqual({});
@@ -309,59 +304,31 @@ describe(`action`, () => {
     expect(list.prop.swipe.target!.style.transform).toBe(`translateX(0px)`);
   });
   it(`swipeEnd`, () => {
-    const addClassMock = vi.fn();
-    const removeClassMock = vi.fn();
     const addListenerMock = vi.fn((_mode: string, listener: () => void) => {
       listener();
     });
-    const removeListenerMock = vi.fn();
-    (list.prop.swipe.target as unknown as { [K in string]: object }).classList = {
-      add: addClassMock,
-      remove: removeClassMock,
-    };
-    (list.prop.swipe.target as unknown as { [K in string]: object }).addEventListener = addListenerMock;
-    (list.prop.swipe.target as unknown as { [K in string]: object }).removeEventListener = removeListenerMock;
+    const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
+    (list.prop.swipe.target as unknown as { [K in string]: object }).animate = animateMock;
     list.action.swipeEnd({ clientX: 0 });
-    expect(addClassMock).toBeCalledTimes(1);
-    expect(addClassMock).toBeCalledWith(`v-enter-active`);
+    expect(animateMock).toBeCalledTimes(1);
+    expect(animateMock).toBeCalledWith({ transform: `translateX(0px)` }, { duration: 150, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(1);
-    expect(addListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
-    expect(removeListenerMock).toBeCalledTimes(1);
-    expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
-    expect(removeClassMock).toBeCalledTimes(1);
-    expect(removeClassMock).toBeCalledWith(`v-enter-active`);
+    expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(list.prop.swipe).toEqual({});
   });
-  it(`swipeInit - extra`, () => {
-    list.prop.swipe.status = `end`;
-    const removeClassMock = vi.fn();
-    const removeListenerMock = vi.fn();
-    const target = {
-      style: {},
-      classList: { remove: removeClassMock },
-      getBoundingClientRect: () => ({ left: 60 }),
-      removeEventListener: removeListenerMock,
-    } as unknown as HTMLElement;
-    list.action.swipeInit({ target, clientX: 0, clientY: 0 });
-    expect(list.prop.swipe).toEqual({ status: `move`, target, x: 0, y: 0, left: 60 });
-    expect(removeListenerMock).toBeCalledTimes(1);
-    expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
-    expect(removeClassMock).toBeCalledTimes(1);
-    expect(removeClassMock).toBeCalledWith(`v-enter-active`);
-    expect(list.prop.swipe.target!.style.transform).toBe(`translateX(60px)`);
+  it(`swipeStart - extra`, () => {
+    list.prop.swipe = { status: `start`, x: 0, y: 0 };
+    list.action.swipeStart({ clientX: 0, clientY: 20 });
+    expect(list.prop.swipe).toEqual({});
   });
   it(`swipeEnd - extra`, () => {
+    list.prop.swipe = { status: `move`, left: 60, x: 0 };
     vi.spyOn(app.action, `routerBack`).mockReturnValue();
     list.action.swipeEnd({ clientX: -200 });
     expect(app.action.routerBack).toBeCalledTimes(1);
     expect(list.prop.swipe).toEqual({});
     list.prop.swipe = { status: `end` };
     list.action.swipeEnd({ clientX: -200 });
-    expect(list.prop.swipe).toEqual({});
-  });
-  it(`swipeStart - extra`, () => {
-    list.prop.swipe = { status: `start`, x: 0, y: 0 };
-    list.action.swipeStart({ clientX: 0, clientY: 20 });
     expect(list.prop.swipe).toEqual({});
   });
 });
