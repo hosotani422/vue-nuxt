@@ -1,6 +1,5 @@
 import { vi, beforeEach, afterEach, describe, it, expect, MockInstance } from "vitest";
 import * as Vue from "vue";
-import * as Dom from "@/utils/base/dom";
 import * as Api from "@/api/api";
 import constant from "@/utils/const";
 import app from "@/stores/page/app";
@@ -112,15 +111,6 @@ describe(`action`, () => {
       },
     });
   });
-  it(`inputItem`, () => {
-    sub.refer.titles = { value: { sub1111111111111: { $el: `inputItem` } } } as unknown as Vue.Ref<{
-      [K: string]: Vue.ComponentPublicInstance<HTMLElement>;
-    }>;
-    vi.spyOn(Dom, `resize`).mockReturnValue(0);
-    sub.action.inputItem({ subId: `sub1111111111111` });
-    expect(Dom.resize).toBeCalledTimes(1);
-    expect(Dom.resize).toBeCalledWith(`inputItem`);
-  });
   it(`enterItem`, async () => {
     vi.setSystemTime(new Date(946566000000));
     sub.refer.titles = {
@@ -129,20 +119,6 @@ describe(`action`, () => {
         sub946566000000: { $el: { focus: vi.fn() } },
       },
     } as unknown as Vue.Ref<{ [K: string]: Vue.ComponentPublicInstance<HTMLElement> }>;
-    sub.refer.items = {
-      value: {
-        sub1111111111111: {
-          style: {},
-          addEventListener: vi.fn((_mode: string, listener: () => void) => {
-            listener();
-          }),
-          removeEventListener: vi.fn(),
-        },
-      },
-    } as unknown as Vue.Ref<{
-      [K: string]: Vue.ComponentPublicInstance<HTMLElement>;
-    }>;
-    vi.spyOn(Dom, `resize`).mockReturnValue(0);
     await sub.action.enterItem({ subId: `sub1111111111111`, selectionStart: 3 });
     expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]).toEqual({
       sort: [`sub1111111111111`, `sub946566000000`, `sub2222222222222`],
@@ -153,55 +129,25 @@ describe(`action`, () => {
       },
     });
     expect(sub.refer.titles.value[`sub946566000000`]!.$el.focus).toBeCalledTimes(1);
-    expect(Dom.resize).toBeCalledTimes(1);
-    expect(Dom.resize).toBeCalledWith({ value: `sub` });
-    expect(sub.refer.items.value[`sub1111111111111`]!.addEventListener).toBeCalledTimes(1);
-    expect(
-      (sub.refer.items.value[`sub1111111111111`]!.addEventListener as unknown as MockInstance).mock.calls[0]![0]!,
-    ).toBe(`transitionend`);
-    expect(sub.refer.items.value[`sub1111111111111`]!.removeEventListener).toBeCalledTimes(1);
-    expect(
-      (sub.refer.items.value[`sub1111111111111`]!.removeEventListener as unknown as MockInstance).mock.calls[0]![0]!,
-    ).toBe(`transitionend`);
-    expect(sub.refer.items!.value[`sub1111111111111`]!.style.height).toBe(``);
   });
   it(`backItem`, async () => {
     sub.refer.titles = {
       value: { sub1111111111111: { $el: { focus: vi.fn() } } },
     } as unknown as Vue.Ref<{ [K: string]: Vue.ComponentPublicInstance<HTMLElement> }>;
-    vi.spyOn(Dom, `resize`).mockReturnValue(0);
     await sub.action.backItem({ subId: `sub2222222222222` });
     expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]).toEqual({
       sort: [`sub1111111111111`],
       data: { sub1111111111111: { check: false, title: `sub1sub2` } },
     });
-    expect(Dom.resize).toBeCalledTimes(1);
-    expect((Dom.resize as unknown as MockInstance).mock.calls[0]![0]!.value).toBe(`sub1sub2`);
     expect(sub.refer.titles.value[`sub1111111111111`]!.$el.focus).toBeCalledTimes(1);
     expect(sub.refer.titles.value[`sub1111111111111`]!.$el.selectionStart).toBe(4);
     expect(sub.refer.titles.value[`sub1111111111111`]!.$el.selectionEnd).toBe(4);
   });
   it(`deleteItem`, async () => {
-    sub.refer.items = {
-      value: {
-        sub2222222222222: {
-          style: {},
-          addEventListener: vi.fn((_mode: string, listener: () => void) => {
-            listener();
-          }),
-          removeEventListener: vi.fn(),
-        },
-      },
-    } as unknown as Vue.Ref<{
-      [K: string]: Vue.ComponentPublicInstance<HTMLElement>;
-    }>;
-    vi.spyOn(Dom, `resize`).mockReturnValue(0);
     vi.spyOn(constant.sound, `play`).mockReturnValue();
     vi.spyOn(notice.action, `open`);
     vi.spyOn(notice.action, `close`).mockReturnValue();
     sub.action.deleteItem({ subId: `sub2222222222222` });
-    expect(Dom.resize).toBeCalledTimes(1);
-    expect(Dom.resize).toHaveBeenCalledWith(sub.refer.items.value[`sub2222222222222`]);
     expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]).toEqual({
       sort: [`sub1111111111111`],
       data: { sub1111111111111: { check: false, title: `sub1` } },
@@ -218,17 +164,6 @@ describe(`action`, () => {
       sort: [`sub1111111111111`, `sub2222222222222`],
       data: { sub1111111111111: { check: false, title: `sub1` }, sub2222222222222: { check: true, title: `sub2` } },
     });
-    expect(Dom.resize).toBeCalledTimes(2);
-    expect(Dom.resize).toHaveBeenCalledWith(sub.refer.items.value[`sub2222222222222`], 0);
-    expect(sub.refer.items.value[`sub2222222222222`]!.addEventListener).toBeCalledTimes(1);
-    expect(
-      (sub.refer.items.value[`sub2222222222222`]!.addEventListener as unknown as MockInstance).mock.calls[0]![0]!,
-    ).toBe(`transitionend`);
-    expect(sub.refer.items.value[`sub2222222222222`]!.removeEventListener).toBeCalledTimes(1);
-    expect(
-      (sub.refer.items.value[`sub2222222222222`]!.removeEventListener as unknown as MockInstance).mock.calls[0]![0]!,
-    ).toBe(`transitionend`);
-    expect(sub.refer.items!.value[`sub2222222222222`]!.style.height).toBe(``);
   });
   it(`checkItem`, () => {
     vi.spyOn(constant.sound, `play`).mockReturnValue();
@@ -411,18 +346,11 @@ describe(`action`, () => {
       (sub.prop.drag.clone!.classList as object) = { remove: mock };
       return mock;
     })();
-    const animateMock = (() => {
-      const mock = vi.fn(
-        () =>
-          ({
-            addEventListener: (_mode: string, listener: () => void) => {
-              listener();
-            },
-          }) as Animation,
-      );
-      sub.prop.drag.clone!.animate = mock;
-      return mock;
-    })();
+    const addListenerMock = vi.fn((_mode: string, listener: () => void) => {
+      listener();
+    });
+    const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
+    (sub.prop.drag.clone as unknown as { [K in string]: object }).animate = animateMock;
     const removeCloneMock = (() => {
       const mock = vi.fn();
       sub.prop.drag.clone!.remove = mock;
@@ -432,7 +360,9 @@ describe(`action`, () => {
     expect(removeClassMock).toBeCalledTimes(1);
     expect(removeClassMock).toBeCalledWith(`edit`);
     expect(animateMock).toBeCalledTimes(1);
-    expect(animateMock).toBeCalledWith({ top: [`40px`, `40px`] }, 150);
+    expect(animateMock).toBeCalledWith({ top: `40px` }, { duration: 150, easing: `ease-in-out` });
+    expect(addListenerMock).toBeCalledTimes(1);
+    expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(removeCloneMock).toBeCalledTimes(1);
     expect(sub.state.status[`sub1111111111111`]).toBe(``);
     expect(sub.prop.drag).toEqual({});
@@ -458,59 +388,31 @@ describe(`action`, () => {
     expect(sub.prop.swipe.target!.style.transform).toBe(`translateX(0px)`);
   });
   it(`swipeEnd`, () => {
-    const addClassMock = vi.fn();
-    const removeClassMock = vi.fn();
     const addListenerMock = vi.fn((_mode: string, listener: () => void) => {
       listener();
     });
-    const removeListenerMock = vi.fn();
-    (sub.prop.swipe.target as unknown as { [K in string]: object }).classList = {
-      add: addClassMock,
-      remove: removeClassMock,
-    };
-    (sub.prop.swipe.target as unknown as { [K in string]: object }).addEventListener = addListenerMock;
-    (sub.prop.swipe.target as unknown as { [K in string]: object }).removeEventListener = removeListenerMock;
+    const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
+    (sub.prop.swipe.target as unknown as { [K in string]: object }).animate = animateMock;
     sub.action.swipeEnd({ clientX: -100 });
-    expect(addClassMock).toBeCalledTimes(1);
-    expect(addClassMock).toBeCalledWith(`v-enter-active`);
+    expect(animateMock).toBeCalledTimes(1);
+    expect(animateMock).toBeCalledWith({ transform: `translateX(0px)` }, { duration: 150, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(1);
-    expect(addListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
-    expect(removeListenerMock).toBeCalledTimes(1);
-    expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
-    expect(removeClassMock).toBeCalledTimes(1);
-    expect(removeClassMock).toBeCalledWith(`v-enter-active`);
+    expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(sub.prop.swipe).toEqual({});
   });
-  it(`swipeInit - extra`, () => {
-    sub.prop.swipe.status = `end`;
-    const removeClassMock = vi.fn();
-    const removeListenerMock = vi.fn();
-    const target = {
-      style: {},
-      classList: { remove: removeClassMock },
-      getBoundingClientRect: () => ({ left: 60, width: 120 }),
-      removeEventListener: removeListenerMock,
-    } as unknown as HTMLElement;
-    sub.action.swipeInit({ target, clientX: 0, clientY: 0 });
-    expect(sub.prop.swipe).toEqual({ status: `move`, target, x: 0, y: 0, right: 120 });
-    expect(removeListenerMock).toBeCalledTimes(1);
-    expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
-    expect(removeClassMock).toBeCalledTimes(1);
-    expect(removeClassMock).toBeCalledWith(`v-enter-active`);
-    expect(sub.prop.swipe.target!.style.transform).toBe(`translateX(120px)`);
+  it(`swipeStart - extra`, () => {
+    sub.prop.swipe = { status: `start`, x: 0, y: 0 };
+    sub.action.swipeStart({ clientX: 0, clientY: 20 });
+    expect(sub.prop.swipe).toEqual({});
   });
   it(`swipeEnd - extra`, () => {
+    sub.prop.swipe = { status: `move`, right: 120, x: 0 };
     vi.spyOn(app.action, `routerBack`).mockReturnValue();
     sub.action.swipeEnd({ clientX: 0 });
     expect(app.action.routerBack).toBeCalledTimes(1);
     expect(sub.prop.swipe).toEqual({});
     sub.prop.swipe = { status: `end` };
     sub.action.swipeEnd({ clientX: 0 });
-    expect(sub.prop.swipe).toEqual({});
-  });
-  it(`swipeStart - extra`, () => {
-    sub.prop.swipe = { status: `start`, x: 0, y: 0 };
-    sub.action.swipeStart({ clientX: 0, clientY: 20 });
     expect(sub.prop.swipe).toEqual({});
   });
 });

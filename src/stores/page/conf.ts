@@ -1,11 +1,12 @@
 import * as Util from "@/utils/base/util";
-import constant from "@/utils/const";
 import * as Api from "@/api/api";
 import * as Cordova from "@/utils/cordova/cordova";
+import constant from "@/utils/const";
 import app from "@/stores/page/app";
 import list from "@/stores/page/list";
 import main from "@/stores/page/main";
 import sub from "@/stores/page/sub";
+import conf from "@/stores/page/conf";
 import dialog from "@/stores/popup/dialog";
 
 const prop: {
@@ -220,17 +221,13 @@ const useStore = defineStore(`conf`, () => {
       });
     },
     swipeInit: (payload: { target: HTMLElement; clientX: number; clientY: number }): void => {
-      prop.swipe.status = prop.swipe.status === `end` ? `move` : `start`;
-      prop.swipe.target = payload.target;
-      prop.swipe.x = payload.clientX;
-      prop.swipe.y = payload.clientY;
-      const item = prop.swipe.target.getBoundingClientRect();
-      prop.swipe.top = item.top + item.height / 2;
-      // スワイプ終了前に再開時
-      if (prop.swipe.status === `move`) {
-        prop.swipe.target.removeEventListener(`transitionend`, prop.swipe.listener!);
-        prop.swipe.target.classList.remove(`v-enter-active`);
-        prop.swipe.target.style.transform = `translateY(${prop.swipe.top}px)`;
+      if (!prop.swipe.status) {
+        prop.swipe.status = `start`;
+        prop.swipe.target = payload.target;
+        prop.swipe.x = payload.clientX;
+        prop.swipe.y = payload.clientY;
+        const item = prop.swipe.target.getBoundingClientRect();
+        prop.swipe.top = item.top + item.height / 2;
       }
     },
     swipeStart: (payload: { clientX: number; clientY: number }): void => {
@@ -255,16 +252,15 @@ const useStore = defineStore(`conf`, () => {
           app.action.routerBack();
           prop.swipe = {};
         } else {
-          prop.swipe.target!.style.transform = ``;
-          prop.swipe.target!.classList.add(`v-enter-active`);
-          prop.swipe.target!.addEventListener(
-            `transitionend`,
-            (prop.swipe.listener = () => {
-              prop.swipe.target!.removeEventListener(`transitionend`, prop.swipe.listener!);
-              prop.swipe.target!.classList.remove(`v-enter-active`);
+          prop.swipe
+            .target!.animate(
+              { transform: `translateY(0px)` },
+              { duration: constant.base.duration[conf.state.data.speed], easing: `ease-in-out` },
+            )
+            .addEventListener(`finish`, () => {
+              prop.swipe.target!.style.transform = `translateY(0px)`;
               prop.swipe = {};
-            }),
-          );
+            });
         }
       } else {
         prop.swipe = {};

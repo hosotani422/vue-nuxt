@@ -20,7 +20,6 @@ const props = defineProps<{
 }>();
 const emit = defineEmits([
   `routerBack`,
-  `inputItem`,
   `enterItem`,
   `backItem`,
   `deleteItem`,
@@ -165,10 +164,10 @@ props.refer.titles = titles;
                     }
                   "
                   v-model="stateUnit(``, ``, subId).title"
-                  v-height
                   data-testid="SubTask"
                   class="flex-even !p-0"
                   :placeholder="$t(`placeholder.sub`)"
+                  sizing="content"
                   @click="emit(`switchEdit`, { subId })"
                   @keydown.enter.prevent="
                     emit(`enterItem`, {
@@ -181,7 +180,6 @@ props.refer.titles = titles;
                       ($event.target as HTMLInputElement).selectionStart === 0 &&
                       ($event.preventDefault(), emit(`backItem`, { subId }))
                   "
-                  @input="emit(`inputItem`, { subId })"
                 />
                 <IconDrag
                   data-testid="SubDrag"

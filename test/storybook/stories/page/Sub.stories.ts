@@ -23,7 +23,6 @@ const meta: Meta<typeof PageSub> = {
         classLimit: sub.getter.classLimit,
         textAlarm: sub.getter.textAlarm,
         routerBack: app.action.routerBack,
-        inputItem: sub.action.inputItem,
         enterItem: sub.action.enterItem,
         backItem: sub.action.backItem,
         deleteItem: sub.action.deleteItem,
@@ -56,7 +55,6 @@ const meta: Meta<typeof PageSub> = {
         :classLimit="classLimit"
         :textAlarm="textAlarm"
         @routerBack="routerBack"
-        @inputItem="inputItem"
         @enterItem="enterItem"
         @backItem="backItem"
         @deleteItem="deleteItem"

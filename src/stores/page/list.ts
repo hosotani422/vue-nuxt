@@ -1,6 +1,6 @@
 import * as Vue from "vue";
-import constant from "@/utils/const";
 import * as Api from "@/api/api";
+import constant from "@/utils/const";
 import app from "@/stores/page/app";
 import main from "@/stores/page/main";
 import sub from "@/stores/page/sub";
@@ -253,13 +253,8 @@ const useStore = defineStore(`list`, () => {
         prop.drag.clone!.classList.remove(`edit`);
         prop.drag
           .clone!.animate(
-            {
-              top: [
-                `${prop.drag.clone!.getBoundingClientRect().top}px`,
-                `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px`,
-              ],
-            },
-            constant.base.duration[conf.state.data.speed],
+            { top: `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px` },
+            { duration: constant.base.duration[conf.state.data.speed], easing: `ease-in-out` },
           )
           .addEventListener(`finish`, () => {
             state.status[prop.drag.id!] = ``;
@@ -271,16 +266,12 @@ const useStore = defineStore(`list`, () => {
       }
     },
     swipeInit: (payload: { target: HTMLElement; clientX: number; clientY: number }): void => {
-      prop.swipe.status = prop.swipe.status === `end` ? `move` : `start`;
-      prop.swipe.target = payload.target;
-      prop.swipe.x = payload.clientX;
-      prop.swipe.y = payload.clientY;
-      prop.swipe.left = payload.target.getBoundingClientRect().left;
-      // スワイプ終了前に再開時
-      if (prop.swipe.status === `move`) {
-        prop.swipe.target.removeEventListener(`transitionend`, prop.swipe.listener!);
-        prop.swipe.target.classList.remove(`v-enter-active`);
-        prop.swipe.target.style.transform = `translateX(${prop.swipe.left}px)`;
+      if (!prop.swipe.status) {
+        prop.swipe.status = `start`;
+        prop.swipe.target = payload.target;
+        prop.swipe.x = payload.clientX;
+        prop.swipe.y = payload.clientY;
+        prop.swipe.left = payload.target.getBoundingClientRect().left;
       }
     },
     swipeStart: (payload: { clientX: number; clientY: number }): void => {
@@ -305,16 +296,15 @@ const useStore = defineStore(`list`, () => {
           app.action.routerBack();
           prop.swipe = {};
         } else {
-          prop.swipe.target!.style.transform = ``;
-          prop.swipe.target!.classList.add(`v-enter-active`);
-          prop.swipe.target!.addEventListener(
-            `transitionend`,
-            (prop.swipe.listener = () => {
-              prop.swipe.target!.removeEventListener(`transitionend`, prop.swipe.listener!);
-              prop.swipe.target!.classList.remove(`v-enter-active`);
+          prop.swipe
+            .target!.animate(
+              { transform: `translateX(0px)` },
+              { duration: constant.base.duration[conf.state.data.speed], easing: `ease-in-out` },
+            )
+            .addEventListener(`finish`, () => {
+              prop.swipe.target!.style.transform = `translateX(0px)`;
               prop.swipe = {};
-            }),
-          );
+            });
         }
       } else {
         prop.swipe = {};

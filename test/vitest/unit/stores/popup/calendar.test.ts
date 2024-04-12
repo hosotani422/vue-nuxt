@@ -1,4 +1,4 @@
-import { vi, beforeEach, afterEach, describe, it, expect, MockInstance } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import * as Vue from "vue";
 import calendar from "@/stores/popup/calendar";
 import fixture from "../../../fixture/base";
@@ -87,42 +87,29 @@ describe(`action`, () => {
   });
   it(`pageMove`, () => {
     calendar.state.current = `1999/12`;
+    const addListenerMock = vi.fn((_mode: string, listener: () => void) => {
+      listener();
+    });
+    const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
     calendar.refer.area! = {
       value: {
-        classList: { add: vi.fn(), remove: vi.fn() },
-        addEventListener: vi.fn((_mode: string, listener: () => void) => {
-          listener();
-        }),
-        removeEventListener: vi.fn(),
+        style: { transform: `` },
+        animate: animateMock,
       },
     } as unknown as Vue.Ref<Vue.ComponentPublicInstance<HTMLElement> | undefined>;
     calendar.action.pageMove({ prev: true });
-    expect(calendar.refer.area.value!.classList.add).toBeCalledTimes(1);
-    expect(calendar.refer.area.value!.classList.add).toBeCalledWith(`prev`);
-    expect(calendar.refer.area.value!.addEventListener).toBeCalledTimes(1);
-    expect((calendar.refer.area.value!.addEventListener as unknown as MockInstance).mock.calls[0]![0]).toBe(
-      `transitionend`,
-    );
-    expect(calendar.refer.area.value!.removeEventListener).toBeCalledTimes(1);
-    expect((calendar.refer.area.value!.removeEventListener as unknown as MockInstance).mock.calls[0]![0]).toBe(
-      `transitionend`,
-    );
-    expect(calendar.refer.area.value!.classList.remove).toBeCalledTimes(1);
-    expect(calendar.refer.area.value!.classList.remove).toBeCalledWith(`prev`);
+    expect(animateMock).toBeCalledTimes(1);
+    expect(animateMock).toBeCalledWith({ transform: `translateX(0px)` }, { duration: 150, easing: `ease-in-out` });
+    expect(addListenerMock).toBeCalledTimes(1);
+    expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
+    expect(calendar.refer.area!.value!.style.transform).toBe(`translateX(-33.333%)`);
     expect(calendar.state.current).toBe(`1999/11`);
     calendar.action.pageMove({ prev: false });
-    expect(calendar.refer.area.value!.classList.add).toBeCalledTimes(2);
-    expect(calendar.refer.area.value!.classList.add).toBeCalledWith(`next`);
-    expect(calendar.refer.area.value!.addEventListener).toBeCalledTimes(2);
-    expect((calendar.refer.area.value!.addEventListener as unknown as MockInstance).mock.calls[0]![0]).toBe(
-      `transitionend`,
-    );
-    expect(calendar.refer.area.value!.removeEventListener).toBeCalledTimes(2);
-    expect((calendar.refer.area.value!.removeEventListener as unknown as MockInstance).mock.calls[0]![0]).toBe(
-      `transitionend`,
-    );
-    expect(calendar.refer.area.value!.classList.remove).toBeCalledTimes(2);
-    expect(calendar.refer.area.value!.classList.remove).toBeCalledWith(`next`);
+    expect(animateMock).toBeCalledTimes(2);
+    expect(animateMock).toBeCalledWith({ transform: `translateX(-66.666%)` }, { duration: 150, easing: `ease-in-out` });
+    expect(addListenerMock).toBeCalledTimes(2);
+    expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
+    expect(calendar.refer.area!.value!.style.transform).toBe(`translateX(-33.333%)`);
     expect(calendar.state.current).toBe(`1999/12`);
   });
   it(`swipeInit`, () => {
@@ -142,27 +129,16 @@ describe(`action`, () => {
     expect(calendar.prop.swipe.target!.style.transform).toBe(`translateX(120px)`);
   });
   it(`swipeEnd`, () => {
-    const addClassMock = vi.fn();
-    const removeClassMock = vi.fn();
     const addListenerMock = vi.fn((_mode: string, listener: () => void) => {
       listener();
     });
-    const removeListenerMock = vi.fn();
-    (calendar.prop.swipe.target as unknown as { [K in string]: object }).classList = {
-      add: addClassMock,
-      remove: removeClassMock,
-    };
-    (calendar.prop.swipe.target as unknown as { [K in string]: object }).addEventListener = addListenerMock;
-    (calendar.prop.swipe.target as unknown as { [K in string]: object }).removeEventListener = removeListenerMock;
+    const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
+    (calendar.prop.swipe.target as unknown as { [K in string]: object }).animate = animateMock;
     calendar.action.swipeEnd({ clientX: 0 });
-    expect(addClassMock).toBeCalledTimes(1);
-    expect(addClassMock).toBeCalledWith(`back`);
+    expect(animateMock).toBeCalledTimes(1);
+    expect(animateMock).toBeCalledWith({ transform: `translateX(-33.333%)` }, { duration: 150, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(1);
-    expect(addListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
-    expect(removeListenerMock).toBeCalledTimes(1);
-    expect(removeListenerMock.mock.calls[0]![0]).toBe(`transitionend`);
-    expect(removeClassMock).toBeCalledTimes(1);
-    expect(removeClassMock).toBeCalledWith(`back`);
+    expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(calendar.prop.swipe).toEqual({});
   });
   it(`swipeStart - extra`, () => {

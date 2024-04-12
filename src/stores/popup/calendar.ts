@@ -1,6 +1,7 @@
 import * as Vue from "vue";
 import constant from "@/utils/const";
 import app from "@/stores/page/app";
+import conf from "@/stores/page/conf";
 
 const refer: {
   body?: Vue.Ref<Vue.ComponentPublicInstance<HTMLElement> | undefined>;
@@ -89,15 +90,18 @@ const useStore = defineStore(`calendar`, () => {
       state.open = false;
     },
     pageMove: (payload: { prev: boolean }): void => {
-      refer.area!.value!.classList.add(payload.prev ? `prev` : `next`);
-      refer.area!.value!.addEventListener(`transitionend`, function listener() {
-        refer.area!.value!.removeEventListener(`transitionend`, listener);
-        refer.area!.value!.classList.remove(payload.prev ? `prev` : `next`);
-        state.current = app.lib
-          .dayjs(state.current)
-          .add(payload.prev ? -1 : 1, `month`)
-          .format(`YYYY/MM`);
-      });
+      refer
+        .area!.value!.animate(
+          { transform: `translateX(${payload.prev ? `0px` : `-66.666%`})` },
+          { duration: constant.base.duration[conf.state.data.speed], easing: `ease-in-out` },
+        )
+        .addEventListener(`finish`, () => {
+          refer.area!.value!.style.transform = `translateX(-33.333%)`;
+          state.current = app.lib
+            .dayjs(state.current)
+            .add(payload.prev ? -1 : 1, `month`)
+            .format(`YYYY/MM`);
+        });
     },
     swipeInit: (payload: { target: HTMLElement; clientX: number; clientY: number }): void => {
       prop.swipe.status = `start`;
@@ -124,7 +128,6 @@ const useStore = defineStore(`calendar`, () => {
     swipeEnd: (payload: { clientX: number }): void => {
       if (prop.swipe.status === `move`) {
         prop.swipe.status = `end`;
-        prop.swipe.target!.style.transform = ``;
         if (payload.clientX - prop.swipe.x! >= 75) {
           action.pageMove({ prev: true });
           prop.swipe = {};
@@ -132,12 +135,15 @@ const useStore = defineStore(`calendar`, () => {
           action.pageMove({ prev: false });
           prop.swipe = {};
         } else {
-          prop.swipe.target!.classList.add(`back`);
-          prop.swipe.target!.addEventListener(`transitionend`, function listener() {
-            prop.swipe.target!.removeEventListener(`transitionend`, listener);
-            prop.swipe.target!.classList.remove(`back`);
-            prop.swipe = {};
-          });
+          prop.swipe
+            .target!.animate(
+              { transform: `translateX(-33.333%)` },
+              { duration: constant.base.duration[conf.state.data.speed], easing: `ease-in-out` },
+            )
+            .addEventListener(`finish`, () => {
+              prop.swipe.target!.style.transform = `translateX(-33.333%)`;
+              prop.swipe = {};
+            });
         }
       } else {
         prop.swipe = {};
