@@ -1,3 +1,4 @@
+import Validation from "@/validation/schema";
 import constant from "@/utils/const";
 
 const useStore = defineStore(`dialog`, () => {
@@ -9,6 +10,7 @@ const useStore = defineStore(`dialog`, () => {
     text: {
       value: string;
       placeholder: string;
+      error: string;
     };
     check: {
       all: boolean;
@@ -75,6 +77,10 @@ const useStore = defineStore(`dialog`, () => {
     },
     close: (): void => {
       state.open = false;
+    },
+    validateTitle: (payload: { text: string }): void => {
+      const result = Validation.noEmptySchema.safeParse(payload.text);
+      state.text.error = result.success ? `` : result.error.errors[0]!.message;
     },
     clickCheckAll: (payload: { checked: boolean }): void => {
       for (const id of state.check.sort) {

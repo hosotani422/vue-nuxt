@@ -14,6 +14,7 @@ const meta: Meta<typeof PopupDialog> = {
         text: {
           value: `text`,
           placeholder: `placeholder`,
+          error: ``,
         },
         check: {
           all: true,

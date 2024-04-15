@@ -43,6 +43,7 @@ describe(`action`, () => {
       text: {
         value: `text`,
         placeholder: `placeholder`,
+        error: ``,
       },
       check: {
         all: false,

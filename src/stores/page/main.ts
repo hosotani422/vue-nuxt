@@ -112,6 +112,7 @@ const useStore = defineStore(`main`, () => {
         text: {
           value: ``,
           placeholder: useNuxtApp().$i18n.t(`placeholder.main`),
+          error: ``,
         },
         ok: useNuxtApp().$i18n.t(`button.ok`),
         cancel: useNuxtApp().$i18n.t(`button.cancel`),
