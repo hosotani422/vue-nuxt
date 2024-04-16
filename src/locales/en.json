@@ -125,5 +125,8 @@
       "conf": "Config",
       "list": "Memo"
     }
+  },
+  "validation": {
+    "noempty": "Please enter one or more non-blank strings."
   }
 }

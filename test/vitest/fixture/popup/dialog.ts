@@ -11,6 +11,7 @@ export default class Dialog extends Base {
     dialog.state.text = {
       value: `text`,
       placeholder: `placeholder`,
+      error: ``,
     };
     dialog.state.check = {
       all: true,

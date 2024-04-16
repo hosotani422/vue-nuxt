@@ -81,6 +81,7 @@ export const dialog: (typeof dialogs)[`state`] = {
   text: {
     value: ``,
     placeholder: ``,
+    error: ``,
   },
   check: {
     all: false,

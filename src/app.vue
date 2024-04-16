@@ -51,6 +51,7 @@ onMounted(() => {
           <PopupDialog
             :state="dialog.state"
             :state-check-all="dialog.getter.stateCheckAll"
+            @validate-title="dialog.action.validateTitle"
             @click-check-all="dialog.action.clickCheckAll"
           />
           <PopupNotice :state="notice.state" />

@@ -7,7 +7,7 @@ defineProps<{
   state: typeof dialog.state;
   stateCheckAll: typeof dialog.getter.stateCheckAll;
 }>();
-const emit = defineEmits([`clickCheckAll`]);
+const emit = defineEmits([`validateTitle`, `clickCheckAll`]);
 </script>
 
 <template>
@@ -24,7 +24,9 @@ const emit = defineEmits([`clickCheckAll`]);
           data-testid="DialogText"
           class="border-b-[0.1rem] border-solid border-b-theme-fine"
           :placeholder="state.text.placeholder"
+          @input="emit(`validateTitle`, { text: ($event.target as HTMLInputElement).value })"
         />
+        <div v-if="dialog.state.text.error" class="text-theme-warn">{{ dialog.state.text.error }}</div>
       </template>
       <template v-else-if="state.mode === `check`">
         <InputCheck
