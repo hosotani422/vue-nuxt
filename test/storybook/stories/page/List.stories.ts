@@ -12,22 +12,18 @@ const meta: Meta<typeof PageList> = {
     setup() {
       mock();
       return {
-        refer: list.refer,
-        status: list.state.status,
-        title: constant.base.title,
-        trashId: constant.base.id.trash,
-        getListId: app.getter.listId,
-        stateFull: list.getter.stateFull,
-        stateUnit: list.getter.stateUnit,
-        classItem: list.getter.classItem,
-        iconType: list.getter.iconType,
+        constant: constant,
+        stateList: list.state,
+        selectId: app.getter.listId,
+        classStatus: list.getter.classStatus,
         classLimit: list.getter.classLimit,
+        typeIcon: list.getter.typeIcon,
         textCount: list.getter.textCount,
         routerBack: app.action.routerBack,
-        insertItem: list.action.insertItem,
+        editItem: list.action.editItem,
+        entryItem: list.action.entryItem,
         copyItem: list.action.copyItem,
         deleteItem: list.action.deleteItem,
-        switchEdit: list.action.switchEdit,
         dragInit: list.action.dragInit,
         dragStart: list.action.dragStart,
         dragMove: list.action.dragMove,
@@ -39,22 +35,19 @@ const meta: Meta<typeof PageList> = {
       };
     },
     template: `<PageList
-        :refer="refer"
-        :status="status"
-        :title="title"
-        :trashId="trashId"
-        :getListId="getListId"
-        :stateFull="stateFull"
-        :stateUnit="stateUnit"
-        :classItem="classItem"
-        :iconType="iconType"
+        :constant="constant"
+        :stateList="stateList"
+        :selectId="selectId"
+        :classStatus="classStatus"
         :classLimit="classLimit"
+        :typeIcon="typeIcon"
         :textCount="textCount"
+        :listFull="listFull"
         @routerBack="routerBack"
-        @insertItem="insertItem"
+        @editItem="editItem"
+        @entryItem="entryItem"
         @copyItem="copyItem"
         @deleteItem="deleteItem"
-        @switchEdit="switchEdit"
         @dragInit="dragInit"
         @dragStart="dragStart"
         @dragMove="dragMove"

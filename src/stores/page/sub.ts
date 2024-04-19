@@ -1,7 +1,9 @@
-import Vue from "vue";
+import * as datefns from "date-fns";
+import lodash from "lodash";
 import i18next from "i18next";
-import * as Api from "@/api/api";
+import Api from "@/api/api";
 import constant from "@/utils/const";
+import Util from "@/utils/base/util";
 import app from "@/stores/page/app";
 import main from "@/stores/page/main";
 import conf from "@/stores/page/conf";
@@ -10,14 +12,7 @@ import clock from "@/stores/popup/clock";
 import dialog from "@/stores/popup/dialog";
 import notice from "@/stores/popup/notice";
 
-const refer: {
-  home?: Vue.Ref<Vue.ComponentPublicInstance<HTMLElement> | undefined>;
-  wrap?: Vue.Ref<Vue.ComponentPublicInstance<HTMLElement> | undefined>;
-  items?: Vue.Ref<{ [K: string]: Vue.ComponentPublicInstance<HTMLElement> }>;
-  titles?: Vue.Ref<{ [K: string]: Vue.ComponentPublicInstance<HTMLElement> }>;
-} = {};
-
-const prop: {
+const temp: {
   drag: {
     status?: `start` | `move` | `end`;
     id?: string;
@@ -30,11 +25,10 @@ const prop: {
   };
   swipe: {
     status?: `start` | `move` | `end`;
-    target?: HTMLElement;
+    elem?: HTMLElement;
     x?: number;
     y?: number;
     right?: number;
-    listener?: () => void;
   };
 } = {
   drag: {},
@@ -65,189 +59,159 @@ const useStore = defineStore(`sub`, () => {
   });
 
   const getter = reactive({
-    stateFull: computed(
-      () =>
-        (listId?: string, mainId?: string): (typeof state)[`data`][string][`data`][string] =>
-          state.data[listId || app.getter.listId()]!.data[mainId || app.getter.mainId()]!,
-    ),
-    stateUnit: computed(
-      () =>
-        (
-          listId?: string,
-          mainId?: string,
-          subId?: string,
-        ): (typeof state)[`data`][string][`data`][string][`data`][string] =>
-          state.data[listId || app.getter.listId()]!.data[mainId || app.getter.mainId()]!.data[subId || ``]!,
-    ),
-    classItem: computed(() => (subId: string): { [K in `check` | `edit` | `drag` | `hide`]: boolean } => ({
-      check: getter.stateUnit(``, ``, subId).check,
-      edit: state.status[subId] === `edit`,
-      drag: state.status[subId] === `drag`,
-      hide: state.status[subId] === `hide`,
-    })),
-    textMemo: computed(() => (): string => {
-      const memo: string[] = [];
-      for (const subId of getter.stateFull().sort) {
-        memo.push(getter.stateUnit(``, ``, subId).title);
-      }
-      return memo.join(`\n`);
+    classStatus: computed(() => (arg: { subId: string }): string => {
+      const classStatus: string[] = [];
+      state.status[arg.subId] === `edit` && classStatus.push(`edit`);
+      state.status[arg.subId] === `hide` && classStatus.push(`hide`);
+      return classStatus.join(` `);
     }),
-    classLimit: computed(() => (): { [K in `text-theme-care` | `text-theme-warn`]: boolean } => {
-      const unit = main.getter.stateUnit();
-      const date = `${unit.date || `9999/99/99`} ${unit.time || `00:00`}`;
-      return {
-        "text-theme-care": app.lib.dayjs(date).isBefore(app.lib.dayjs().add(2, `day`)),
-        "text-theme-warn": app.lib.dayjs(date).isBefore(app.lib.dayjs().add(1, `day`)),
-      };
+    classLimit: computed(() => (): string => {
+      const classLimit: string[] = [];
+      const item = main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!;
+      const now = new Date();
+      const date = `${item.date || `9999/99/99`} ${item.time || `00:00`}`;
+      datefns.isBefore(date, datefns.addDays(now, 2)) && classLimit.push(`text-theme-care`);
+      datefns.isBefore(date, datefns.addDays(now, 1)) && classLimit.push(`text-theme-warn`);
+      return classLimit.join(` `);
+    }),
+    textMemo: computed(() => (): string => {
+      const textMemo: string[] = [];
+      for (const subId of state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort) {
+        textMemo.push(state.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[subId]!.title);
+      }
+      return textMemo.join(`\n`);
     }),
     textAlarm: computed(() => (): string => {
-      const alarm: string[] = [];
-      for (const alarmId of main.getter.stateUnit().alarm as (
-        | `1`
-        | `2`
-        | `3`
-        | `4`
-        | `5`
-        | `6`
-        | `7`
-        | `8`
-        | `9`
-        | `10`
-        | `11`
-        | `12`
-      )[]) {
-        alarm.push(i18next.t(`dialog.alarm.data${alarmId}.label`));
+      const textAlarm: string[] = [];
+      for (const alarmId of main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.alarm) {
+        textAlarm.push(i18next.t(`dialog.alarm.data.${alarmId}.label`));
       }
-      return alarm.join(`,`);
+      return textAlarm.join(`,`);
     }),
   });
 
   const action = {
-    initPage: async (): Promise<void> => {
-      await action.loadItem();
-    },
-    actPage: (): void => {
+    init: async (): Promise<void> => {
+      state.data = await Api.readSub();
       watch(
-        () => app.lib.lodash.cloneDeep(state.data),
-        () => {
-          action.saveItem();
+        () => state.data,
+        (data) => {
+          Api.writeSub(data);
         },
         { deep: true },
       );
     },
-    loadItem: async (): Promise<void> => {
-      state.data = await Api.readSub();
+    toggleMode: (): void => {
+      main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.task =
+        !main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.task;
     },
-    saveItem: (): void => {
-      Api.writeSub(state.data);
+    convertItem: (arg: { text: string }): void => {
+      state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort = [];
+      state.data[app.getter.listId()]!.data[app.getter.mainId()]!.data = {};
+      const subId = new Date().valueOf();
+      for (const [i, title] of arg.text.split(`\n`).entries()) {
+        state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.push(`sub${subId + i}`);
+        state.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[`sub${subId + i}`] = { check: false, title };
+      }
     },
-    enterItem: async (payload: { subId: string; selectionStart: number }) => {
-      const subId = `sub${app.lib.dayjs().valueOf()}`;
-      const caret = payload.selectionStart;
-      const title = getter.stateFull().data[payload.subId]!.title;
-      getter.stateFull().sort.splice(getter.stateFull().sort.indexOf(payload.subId) + 1, 0, subId);
-      getter.stateFull().data[payload.subId]!.title = title.slice(0, caret!);
-      getter.stateFull().data[subId] = { check: false, title: title.slice(caret!) };
+    divideItem: async (arg: { subId: string; caret: number }): Promise<void> => {
+      const subId = `sub${new Date().valueOf()}`;
+      const title = state.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[arg.subId]!.title;
+      state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.splice(
+        state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.indexOf(arg.subId) + 1,
+        0,
+        subId,
+      );
+      state.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[arg.subId]!.title = title.slice(0, arg.caret);
+      state.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[subId] = {
+        check: false,
+        title: title.slice(arg.caret),
+      };
       await nextTick();
-      // 要素が正しく描画されないので強制描画
-      refer.titles!.value[payload.subId]!.$el.value = getter.stateFull().data[payload.subId]!.title;
-      refer.titles!.value[subId]?.$el.focus();
+      const elem = Util.getById<HTMLInputElement>(`SubTask${subId}`);
+      elem.focus();
+      elem.selectionStart = 0;
+      elem.selectionEnd = 0;
     },
-    backItem: async (payload: { subId: string }) => {
-      const subId = getter.stateFull().sort[getter.stateFull().sort.indexOf(payload.subId) - 1]!;
-      const caret = getter.stateUnit(``, ``, subId).title.length;
-      getter.stateFull().sort.splice(getter.stateFull().sort.indexOf(payload.subId), 1);
-      getter.stateFull().data[subId]!.title += getter.stateFull().data[payload.subId]!.title;
-      delete getter.stateFull().data[payload.subId];
+    connectItem: async (arg: { subId: string }): Promise<void> => {
+      const subId =
+        state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort[
+          state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.indexOf(arg.subId) - 1
+        ]!;
+      const caret = state.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[subId]!.title.length;
+      state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.splice(
+        state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.indexOf(arg.subId),
+        1,
+      );
+      state.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[subId]!.title +=
+        state.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[arg.subId]!.title;
+      delete state.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[arg.subId];
+      delete state.status[arg.subId];
       await nextTick();
-      // 要素が正しく描画されないので強制描画
-      refer.titles!.value[subId]!.$el.value = getter.stateFull().data[subId]!.title;
-      refer.titles!.value[subId]!.$el.focus();
-      refer.titles!.value[subId]!.$el.selectionStart = caret;
-      refer.titles!.value[subId]!.$el.selectionEnd = caret;
+      const elem = Util.getById<HTMLInputElement>(`SubTask${subId}`);
+      elem.focus();
+      elem.selectionStart = caret;
+      elem.selectionEnd = caret;
     },
-    deleteItem: (payload: { subId: string }) => {
-      const backup = app.lib.lodash.cloneDeep(state.data);
-      getter.stateFull().sort.splice(getter.stateFull().sort.indexOf(payload.subId), 1);
-      delete getter.stateFull().data[payload.subId];
-      delete state.status[payload.subId];
-      constant.sound.play(`warn`);
+    deleteItem: (arg: { subId: string }): void => {
+      const backup = lodash.cloneDeep(state.data);
+      state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.splice(
+        state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.indexOf(arg.subId),
+        1,
+      );
+      delete state.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[arg.subId];
+      delete state.status[arg.subId];
       notice.action.open({
         message: i18next.t(`notice.message`),
         button: i18next.t(`notice.button`),
-        callback: async () => {
-          notice.action.close();
+        callback: () => {
           state.data = backup;
+          notice.action.close();
         },
       });
     },
-    checkItem: (payload: { subId: string; checked: boolean }): void => {
-      getter.stateFull().sort.splice(getter.stateFull().sort.indexOf(payload.subId), 1);
-      getter.stateFull().sort[payload.checked ? `push` : `unshift`](payload.subId);
-      getter.stateUnit(``, ``, payload.subId).check = payload.checked;
-      constant.sound.play(payload.checked ? `ok` : `cancel`);
-    },
-    switchItem: (): void => {
-      main.getter.stateUnit().task = !main.getter.stateUnit().task;
-    },
-    switchEdit: (payload?: { subId: string }): void => {
-      for (const subId of getter.stateFull().sort) {
-        state.status[subId] = subId === payload?.subId ? `edit` : ``;
-      }
-    },
-    inputMemo: (payload: { value: string }): void => {
-      getter.stateFull().sort = [];
-      getter.stateFull().data = {};
-      for (const [i, title] of payload.value.split(`\n`).entries()) {
-        const subId = `sub${app.lib.dayjs().valueOf()}${i}`;
-        getter.stateFull().sort.push(subId);
-        getter.stateFull().data[subId] = { check: false, title };
-      }
-    },
-    openCalendar: (payload: { date: string }): void => {
+    openCalendar: (): void => {
       calendar.action.open({
-        select: payload.date,
-        current: app.lib.dayjs(payload.date || new Date()).format(`YYYY/MM`),
+        select: main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.date,
         cancel: i18next.t(`button.cancel`),
         clear: i18next.t(`button.clear`),
         callback: (date) => {
+          main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.date = date;
           calendar.action.close();
-          main.getter.stateUnit().date = date || ``;
         },
       });
     },
-    openClock: (payload: { time: string }): void => {
+    openClock: (): void => {
       clock.action.open({
-        hour: payload.time ? app.lib.dayjs(`2000/1/1 ${payload.time}`).hour() : 0,
-        minute: payload.time ? app.lib.dayjs(`2000/1/1 ${payload.time}`).minute() : 0,
+        time: datefns.format(
+          `2000/1/1 ${main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.time || `00:00`}`,
+          `HH:mm`,
+        ),
         cancel: i18next.t(`button.cancel`),
         clear: i18next.t(`button.clear`),
         ok: i18next.t(`button.ok`),
-        callback: (hour, minute) => {
+        callback: (arg) => {
+          main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.time = arg
+            ? datefns.format(`2000/1/1 ${arg.hour}:${arg.minute}`, `HH:mm`)
+            : ``;
           clock.action.close();
-          main.getter.stateUnit().time =
-            hour != null && minute != null ? app.lib.dayjs(`2000/1/1 ${hour}:${minute}`).format(`HH:mm`) : ``;
         },
       });
     },
     openAlarm: (): void => {
-      const sort: (`1` | `2` | `3` | `4` | `5` | `6` | `7` | `8` | `9` | `10` | `11` | `12`)[] = [];
-      for (let i = 1; i <= Number(i18next.t(`dialog.alarm.sort`)); i++) {
-        sort.push(String(i) as `1` | `2` | `3` | `4` | `5` | `6` | `7` | `8` | `9` | `10` | `11` | `12`);
-      }
       dialog.action.open({
         mode: `check`,
-        title: i18next.t(`dialog.alarm.title`),
+        title: i18next.t(`dialog.title.alarm`),
         message: ``,
         check: {
           all: true,
-          sort,
+          sort: i18next.t(`dialog.alarm.sort`, { returnObjects: true }),
           data: (() => {
             const data: (typeof dialog)[`state`][`check`][`data`] = {};
-            for (const id of sort) {
+            for (const id of i18next.t(`dialog.alarm.sort`, { returnObjects: true })) {
               data[id] = {
-                check: main.getter.stateUnit().alarm.includes(id),
-                title: i18next.t(`dialog.alarm.data${id}.label`),
+                check: main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.alarm.includes(id),
+                title: i18next.t(`dialog.alarm.data.${id}.label`),
               };
             }
             return data;
@@ -257,14 +221,13 @@ const useStore = defineStore(`sub`, () => {
         cancel: i18next.t(`button.cancel`),
         callback: {
           ok: () => {
-            dialog.action.close();
-            main.getter.stateUnit().alarm = (() => {
-              const alarm: (typeof main)[`state`][`data`][string][`data`][string][`alarm`] = [];
-              for (const id of dialog.state.check.sort) {
-                dialog.state.check.data[id]!.check && alarm.push(id);
+            main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.alarm = [];
+            for (const id of dialog.state.check!.sort) {
+              if (dialog.state.check!.data[id]!.check) {
+                main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.alarm.push(id);
               }
-              return alarm;
-            })();
+            }
+            dialog.action.close();
           },
           cancel: () => {
             dialog.action.close();
@@ -272,117 +235,132 @@ const useStore = defineStore(`sub`, () => {
         },
       });
     },
-    dragInit: (payload: { subId: string; clientY: number }): void => {
-      const item = refer.items!.value[payload.subId]!.getBoundingClientRect();
-      prop.drag.status = `start`;
-      prop.drag.id = payload.subId;
-      prop.drag.y = payload.clientY;
-      prop.drag.top = item.top;
-      prop.drag.left = item.left - refer.home!.value!.getBoundingClientRect().left;
-      prop.drag.height = item.height;
-      prop.drag.width = item.width;
-      state.status[payload.subId] = `edit`;
-      conf.state.data.vibrate === `on` && navigator.vibrate(40);
-    },
-    dragStart: (): void => {
-      if (prop.drag.status === `start`) {
-        prop.drag.status = `move`;
-        prop.drag.clone = refer.items!.value[prop.drag.id!]!.cloneNode(true) as HTMLElement;
-        prop.drag.clone.style.position = `absolute`;
-        prop.drag.clone.style.zIndex = `1`;
-        prop.drag.clone.style.top = `${prop.drag.top}px`;
-        prop.drag.clone.style.left = `${prop.drag.left}px`;
-        prop.drag.clone.style.height = `${prop.drag.height}px`;
-        prop.drag.clone.style.width = `${prop.drag.width}px`;
-        refer.wrap!.value!.appendChild(prop.drag.clone);
-        state.status[prop.drag.id!] = `hide`;
+    dragInit: (arg: { subId: string; y: number }): void => {
+      if (!temp.drag.status) {
+        const item = Util.getById(`SubItem${arg.subId}`).getBoundingClientRect();
+        temp.drag.status = `start`;
+        temp.drag.id = arg.subId;
+        temp.drag.y = arg.y;
+        temp.drag.top = item.top;
+        temp.drag.left = item.left - Util.getById(`SubHome`).getBoundingClientRect().left;
+        temp.drag.height = item.height;
+        temp.drag.width = item.width;
+        state.status[arg.subId] = `edit`;
+        conf.state.data.vibrate === `on` && navigator.vibrate(40);
       }
     },
-    dragMove: (payload: { clientY: number }): void => {
-      if (prop.drag.status === `move`) {
-        prop.drag.clone!.style.top = `${prop.drag.top! + payload.clientY - prop.drag.y!}px`;
-        const index = getter.stateFull().sort.indexOf(prop.drag.id!);
-        const clone = prop.drag.clone!.getBoundingClientRect();
-        const wrap = refer.wrap!.value!.getBoundingClientRect();
-        const prev = refer.items!.value[getter.stateFull().sort[index - 1]!]?.getBoundingClientRect();
-        const current = refer.items!.value[getter.stateFull().sort[index]!]!.getBoundingClientRect();
-        const next = refer.items!.value[getter.stateFull().sort[index + 1]!]?.getBoundingClientRect();
-        if (
-          prev &&
-          clone.top + clone.height / 2 < (next ? next.top : wrap.top + wrap.height) - (prev.height + current.height) / 2
-        ) {
-          getter.stateFull().sort.splice(index - 1, 0, ...getter.stateFull().sort.splice(index, 1));
-        } else if (
-          next &&
-          clone.top + clone.height / 2 > (prev ? prev.top + prev.height : wrap.top) + (current.height + next.height) / 2
-        ) {
-          getter.stateFull().sort.splice(index + 1, 0, ...getter.stateFull().sort.splice(index, 1));
+    dragStart: (): void => {
+      if (temp.drag.status === `start`) {
+        temp.drag.status = `move`;
+        temp.drag.clone = Util.getById(`SubItem${temp.drag.id}`).cloneNode(true) as HTMLElement;
+        temp.drag.clone.removeAttribute(`data-id`);
+        temp.drag.clone.style.position = `absolute`;
+        temp.drag.clone.style.zIndex = `1`;
+        temp.drag.clone.style.top = `${temp.drag.top}px`;
+        temp.drag.clone.style.left = `${temp.drag.left}px`;
+        temp.drag.clone.style.height = `${temp.drag.height}px`;
+        temp.drag.clone.style.width = `${temp.drag.width}px`;
+        Util.getById(`SubBody`).appendChild(temp.drag.clone);
+        state.status[temp.drag.id!] = `hide`;
+      }
+    },
+    dragMove: (arg: { y: number }): void => {
+      if (temp.drag.status === `move`) {
+        temp.drag.clone!.style.top = `${temp.drag.top! + arg.y - temp.drag.y!}px`;
+        const index = state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.indexOf(temp.drag.id!);
+        const clone = temp.drag.clone!.getBoundingClientRect();
+        const wrap = Util.getById(`SubBody`).getBoundingClientRect();
+        const prev = Util.getById(
+          `SubItem${state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort[index - 1]}`,
+        )?.getBoundingClientRect();
+        const current = Util.getById(
+          `SubItem${state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort[index]}`,
+        ).getBoundingClientRect();
+        const next = Util.getById(
+          `SubItem${state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort[index + 1]}`,
+        )?.getBoundingClientRect();
+        if (prev && clone.top + clone.height / 2 < (next?.top || wrap.bottom) - (prev.height + current.height) / 2) {
+          state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.splice(
+            index - 1,
+            0,
+            ...state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.splice(index, 1),
+          );
+        }
+        if (next && clone.top + clone.height / 2 > (prev?.bottom || wrap.top) + (current.height + next.height) / 2) {
+          state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.splice(
+            index + 1,
+            0,
+            ...state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort.splice(index, 1),
+          );
         }
       }
     },
     dragEnd: (): void => {
-      if (prop.drag.status === `move`) {
-        prop.drag.status = `end`;
-        prop.drag.clone!.classList.remove(`edit`);
-        prop.drag
+      if (temp.drag.status === `move`) {
+        temp.drag.status = `end`;
+        temp.drag.clone!.classList.remove(`edit`);
+        temp.drag
           .clone!.animate(
-            { top: `${refer.items!.value[prop.drag.id!]!.getBoundingClientRect().top}px` },
-            { duration: constant.base.duration[conf.state.data.speed], easing: `ease-in-out` },
+            { top: `${Util.getById(`SubItem${temp.drag.id}`).getBoundingClientRect().top}px` },
+            { duration: app.action.getDuration(), easing: `ease-in-out` },
           )
-          .addEventListener(`finish`, () => {
-            state.status[prop.drag.id!] = ``;
-            prop.drag.clone!.remove();
-            prop.drag = {};
+          .addEventListener(`finish`, function listener() {
+            temp.drag.clone!.removeEventListener(`finish`, listener);
+            delete state.status[temp.drag.id!];
+            temp.drag.clone!.remove();
+            temp.drag = {};
           });
-      } else if (prop.drag.id && !prop.drag.clone) {
-        delete state.status[prop.drag.id];
-        prop.drag = {};
+      } else {
+        delete state.status[temp.drag.id!];
+        temp.drag = {};
       }
     },
-    swipeInit: (payload: { target: HTMLElement; clientX: number; clientY: number }): void => {
-      if (!prop.swipe.status) {
-        prop.swipe.status = `start`;
-        prop.swipe.target = payload.target;
-        prop.swipe.x = payload.clientX;
-        prop.swipe.y = payload.clientY;
-        const item = prop.swipe.target.getBoundingClientRect();
-        prop.swipe.right = item.left + item.width / 2;
+    swipeInit: (arg: { x: number; y: number }): void => {
+      if (!temp.swipe.status) {
+        temp.swipe.status = `start`;
+        temp.swipe.elem = Util.getById<HTMLElement>(`SubRoot`);
+        temp.swipe.x = arg.x;
+        temp.swipe.y = arg.y;
+        temp.swipe.right =
+          temp.swipe.elem.getBoundingClientRect().left + temp.swipe.elem.getBoundingClientRect().width / 2;
       }
     },
-    swipeStart: (payload: { clientX: number; clientY: number }): void => {
-      if (prop.swipe.status === `start`) {
-        if (Math.abs(payload.clientX - prop.swipe.x!) + Math.abs(payload.clientY - prop.swipe.y!) > 15) {
-          Math.abs(payload.clientX - prop.swipe.x!) > Math.abs(payload.clientY - prop.swipe.y!)
-            ? (prop.swipe.status = `move`)
-            : (prop.swipe = {});
+    swipeStart: (arg: { x: number; y: number }): void => {
+      if (temp.swipe.status === `start`) {
+        if (Math.abs(arg.x - temp.swipe.x!) + Math.abs(arg.y - temp.swipe.y!) > 15) {
+          if (Math.abs(arg.x - temp.swipe.x!) > Math.abs(arg.y - temp.swipe.y!)) {
+            temp.swipe.status = `move`;
+          } else {
+            temp.swipe = {};
+          }
         }
       }
     },
-    swipeMove: (payload: { clientX: number }): void => {
-      if (prop.swipe.status === `move`) {
-        const x = prop.swipe.right! + payload.clientX - prop.swipe.x!;
-        prop.swipe.target!.style.transform = `translateX(${x > 0 ? x : 0}px)`;
+    swipeMove: (arg: { x: number }): void => {
+      if (temp.swipe.status === `move`) {
+        temp.swipe.elem!.style.transform = `translateX(${Math.max(temp.swipe.right! + arg.x - temp.swipe.x!, 0)}px)`;
       }
     },
-    swipeEnd: (payload: { clientX: number }): void => {
-      if (prop.swipe.status === `move`) {
-        prop.swipe.status = `end`;
-        if (prop.swipe.right! + payload.clientX - prop.swipe.x! > 100) {
+    swipeEnd: (arg: { x: number }): void => {
+      if (temp.swipe.status === `move`) {
+        temp.swipe.status = `end`;
+        if (temp.swipe.right! + arg.x - temp.swipe.x! > 100) {
           app.action.routerBack();
-          prop.swipe = {};
+          temp.swipe = {};
         } else {
-          prop.swipe
-            .target!.animate(
+          temp.swipe
+            .elem!.animate(
               { transform: `translateX(0px)` },
-              { duration: constant.base.duration[conf.state.data.speed], easing: `ease-in-out` },
+              { duration: app.action.getDuration(), easing: `ease-in-out` },
             )
-            .addEventListener(`finish`, () => {
-              prop.swipe.target!.style.transform = `translateX(0px)`;
-              prop.swipe = {};
+            .addEventListener(`finish`, function listener() {
+              temp.swipe.elem!.removeEventListener(`finish`, listener);
+              temp.swipe.elem!.style.transform = `translateX(0px)`;
+              temp.swipe = {};
             });
         }
       } else {
-        prop.swipe = {};
+        temp.swipe = {};
       }
     },
   };
@@ -392,4 +370,4 @@ const useStore = defineStore(`sub`, () => {
 
 const store = useStore(createPinia());
 
-export default { refer, prop, state: store.state, getter: store.getter, action: store.action };
+export default { temp, state: store.state, getter: store.getter, action: store.action };

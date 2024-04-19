@@ -12,8 +12,9 @@ const meta: Meta<typeof PageConf> = {
     setup() {
       mock();
       return {
-        title: `${constant.base.title} ${constant.base.version}`,
-        state: conf.state.data,
+        updateKey: app.state.updateKey,
+        constant: constant,
+        state: conf.state,
         routerBack: app.action.routerBack,
         downloadBackup: conf.action.downloadBackup,
         uploadBackup: conf.action.uploadBackup,
@@ -26,7 +27,8 @@ const meta: Meta<typeof PageConf> = {
       };
     },
     template: `<PageConf
-        :title="title"
+        :updateKey="updateKey"
+        :constant="constant"
         :state="state"
         @routerBack="routerBack"
         @downloadBackup="downloadBackup"

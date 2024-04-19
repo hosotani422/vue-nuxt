@@ -12,24 +12,20 @@ const meta: Meta<typeof PageSub> = {
     setup() {
       mock();
       return {
-        refer: sub.refer,
+        stateMain: main.state,
+        stateSub: sub.state,
         listId: app.getter.listId,
         mainId: app.getter.mainId,
-        mainUnit: main.getter.stateUnit,
-        stateFull: sub.getter.stateFull,
-        stateUnit: sub.getter.stateUnit,
-        classItem: sub.getter.classItem,
-        textMemo: sub.getter.textMemo,
+        classStatus: sub.getter.classStatus,
         classLimit: sub.getter.classLimit,
+        textMemo: sub.getter.textMemo,
         textAlarm: sub.getter.textAlarm,
         routerBack: app.action.routerBack,
-        enterItem: sub.action.enterItem,
-        backItem: sub.action.backItem,
+        toggleMode: sub.action.toggleMode,
+        convertItem: sub.action.convertItem,
+        divideItem: sub.action.divideItem,
+        connectItem: sub.action.connectItem,
         deleteItem: sub.action.deleteItem,
-        checkItem: sub.action.checkItem,
-        switchItem: sub.action.switchItem,
-        switchEdit: sub.action.switchEdit,
-        inputMemo: sub.action.inputMemo,
         openCalendar: sub.action.openCalendar,
         openClock: sub.action.openClock,
         openAlarm: sub.action.openAlarm,
@@ -44,24 +40,20 @@ const meta: Meta<typeof PageSub> = {
       };
     },
     template: `<PageSub
-        :refer="refer"
+        :stateMain="stateMain"
+        :stateSub="stateSub"
         :listId="listId"
         :mainId="mainId"
-        :mainUnit="mainUnit"
-        :stateFull="stateFull"
-        :stateUnit="stateUnit"
-        :classItem="classItem"
-        :textMemo="textMemo"
+        :classStatus="classStatus"
         :classLimit="classLimit"
+        :textMemo="textMemo"
         :textAlarm="textAlarm"
         @routerBack="routerBack"
-        @enterItem="enterItem"
-        @backItem="backItem"
+        @toggleMode="toggleMode"
+        @convertItem="convertItem"
+        @divideItem="divideItem"
+        @connectItem="connectItem"
         @deleteItem="deleteItem"
-        @checkItem="checkItem"
-        @switchItem="switchItem"
-        @switchEdit="switchEdit"
-        @inputMemo="inputMemo"
         @openCalendar="openCalendar"
         @openClock="openClock"
         @openAlarm="openAlarm"
