@@ -12,8 +12,8 @@ import { en } from "@/locales/en";
 const temp: {
   routeStart: boolean;
   backId: string;
-  route?: typeof useRoute;
-  router?: typeof useRouter;
+  route?: ReturnType<typeof useRoute>;
+  router?: ReturnType<typeof useRouter>;
 } = {
   routeStart: true,
   backId: ``,
@@ -28,16 +28,16 @@ const useStore = defineStore(`app`, () => {
 
   const getter = reactive({
     listId: computed(() => (): string => {
-      return temp.route?.params?.listId || ``;
+      return (temp.route?.params.listId as string) || ``;
     }),
     mainId: computed(() => (): string => {
-      return temp.route?.params?.mainId || ``;
+      return (temp.route?.params.mainId as string) || ``;
     }),
-    attrClass: computed(() => (attrs: Vue.SetupContext[`attrs`]): Vue.SetupContext[`attrs`] => {
-      return Object.fromEntries(Object.entries(attrs).filter(([key]) => key === `class`));
+    attrClass: computed(() => (arg: { attrs: Vue.SetupContext[`attrs`] }): Vue.SetupContext[`attrs`] => {
+      return Object.fromEntries(Object.entries(arg.attrs).filter(([key]) => key === `class`));
     }),
-    attrAlmost: computed(() => (attrs: Vue.SetupContext[`attrs`]): Vue.SetupContext[`attrs`] => {
-      return Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== `class`));
+    attrAlmost: computed(() => (arg: { attrs: Vue.SetupContext[`attrs`] }): Vue.SetupContext[`attrs`] => {
+      return Object.fromEntries(Object.entries(arg.attrs).filter(([key]) => key !== `class`));
     }),
     classTheme: computed(() => (): string => {
       return conf.state.data.theme;
@@ -86,21 +86,21 @@ const useStore = defineStore(`app`, () => {
       return 250;
     },
     routerList: (): void => {
-      temp.router.push(`/${getter.listId()}/list`);
+      temp.router!.push(`/${getter.listId()}/list`);
     },
     routerMain: (arg: { listId: string }): void => {
-      temp.router.push(`/${arg.listId}`);
+      temp.router!.push(`/${arg.listId}`);
     },
     routerSub: (arg: { mainId: string }): void => {
-      temp.router.push(`/${getter.listId()}/sub/${arg.mainId}`);
+      temp.router!.push(`/${getter.listId()}/sub/${arg.mainId}`);
     },
     routerConf: (): void => {
-      temp.router.push(`/${getter.listId()}/conf`);
+      temp.router!.push(`/${getter.listId()}/conf`);
     },
     routerBack: (arg?: { listId: string }): void => {
       temp.backId = arg?.listId || ``;
       temp.backId && Api.writeRoute(temp.backId);
-      temp.router.back();
+      temp.router!.back();
     },
     clearTrash: (): void => {
       const trashId = constant.base.id.trash;

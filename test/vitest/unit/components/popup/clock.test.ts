@@ -36,14 +36,14 @@ describe(`event`, () => {
     wrapper.findByTestId(`ClockMinute`).trigger(`mousemove`, { pageX: 8, pageY: 8 });
     expect(wrapper.emitted(`inputTime`)).toHaveLength(8);
     expect(wrapper.emitted(`inputTime`)).toEqual([
-      [{ mode: `hour`, x: 1, y: 1 }],
-      [{ mode: `hour`, x: 2, y: 2 }],
-      [{ mode: `hour`, x: 3, y: 3 }],
-      [{ mode: `hour`, x: 4, y: 4 }],
-      [{ mode: `minute`, x: 5, y: 5 }],
-      [{ mode: `minute`, x: 6, y: 6 }],
-      [{ mode: `minute`, x: 7, y: 7 }],
-      [{ mode: `minute`, x: 8, y: 8 }],
+      [{ type: `hour`, x: 1, y: 1 }],
+      [{ type: `hour`, x: 2, y: 2 }],
+      [{ type: `hour`, x: 3, y: 3 }],
+      [{ type: `hour`, x: 4, y: 4 }],
+      [{ type: `minute`, x: 5, y: 5 }],
+      [{ type: `minute`, x: 6, y: 6 }],
+      [{ type: `minute`, x: 7, y: 7 }],
+      [{ type: `minute`, x: 8, y: 8 }],
     ]);
   });
   it(`footer`, ({ wrapper }) => {

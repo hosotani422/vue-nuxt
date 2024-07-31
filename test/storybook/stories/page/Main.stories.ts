@@ -12,22 +12,20 @@ const meta: Meta<typeof PageMain> = {
     setup() {
       mock();
       return {
-        status: main.state.status,
+        stateList: list.state,
+        stateMain: main.state,
         listId: app.getter.listId,
         classStatus: main.getter.classStatus,
         classLimit: main.getter.classLimit,
         textCount: main.getter.textCount,
-        listUnit: list.action.getUnit,
-        mainFull: main.action.getFull,
-        mainUnit: main.action.getUnit,
         routerList: app.action.routerList,
         routerSub: app.action.routerSub,
         routerConf: app.action.routerConf,
+        editItem: main.action.editItem,
         entryItem: main.action.entryItem,
         copyItem: main.action.copyItem,
         moveItem: main.action.moveItem,
         deleteItem: main.action.deleteItem,
-        editItem: main.action.editItem,
         dragInit: main.action.dragInit,
         dragStart: main.action.dragStart,
         dragMove: main.action.dragMove,
@@ -35,22 +33,20 @@ const meta: Meta<typeof PageMain> = {
       };
     },
     template: `<PageMain
-        :status="status"
+        :stateList="stateList"
+        :stateMain="stateMain"
         :listId="listId"
         :classStatus="classStatus"
         :classLimit="classLimit"
         :textCount="textCount"
-        :listUnit="listUnit"
-        :mainFull="mainFull"
-        :mainUnit="mainUnit"
         @routerList="routerList"
         @routerSub="routerSub"
         @routerConf="routerConf"
+        @editItem="editItem"
         @entryItem="entryItem"
         @copyItem="copyItem"
         @moveItem="moveItem"
         @deleteItem="deleteItem"
-        @editItem="editItem"
         @dragInit="dragInit"
         @dragStart="dragStart"
         @dragMove="dragMove"

@@ -18,6 +18,7 @@ export default class Fixture {
   }
   private async openPage(): Promise<void> {
     await this.page.goto(`/list1111111111111`);
+    await this.page.waitForTimeout(1000);
   }
   public async initList(): Promise<void> {
     await this.loadData();

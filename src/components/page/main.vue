@@ -7,24 +7,22 @@ defineOptions({
   inheritAttrs: false,
 });
 defineProps<{
-  status: typeof main.state.status;
+  stateList: typeof list.state;
+  stateMain: typeof main.state;
   listId: typeof app.getter.listId;
   classStatus: typeof main.getter.classStatus;
   classLimit: typeof main.getter.classLimit;
   textCount: typeof main.getter.textCount;
-  listUnit: typeof list.action.getUnit;
-  mainFull: typeof main.action.getFull;
-  mainUnit: typeof main.action.getUnit;
 }>();
 const emit = defineEmits<{
   routerList: [];
   routerSub: [arg: { mainId: string }];
   routerConf: [];
+  editItem: [arg?: { mainId: string }];
   entryItem: [];
   copyItem: [arg: { mainId: string }];
   moveItem: [arg: { mainId: string }];
   deleteItem: [arg: { mainId: string }];
-  editItem: [arg?: { mainId: string }];
   dragInit: [arg: { mainId: string; y: number }];
   dragStart: [];
   dragMove: [arg: { y: number }];
@@ -34,6 +32,7 @@ const emit = defineEmits<{
 
 <template>
   <div
+    v-if="stateList.data.data[listId()]"
     data-testid="MainRoot"
     class="theme-color-grad absolute inset-0 z-[1] flex flex-col"
     @touchmove="
@@ -55,7 +54,7 @@ const emit = defineEmits<{
       <IconList data-testid="MainList" class="flex-initial" @click="emit(`routerList`)" />
       <client-only>
         <InputTextbox
-          v-model="listUnit().title"
+          v-model="stateList.data.data[listId()]!.title"
           data-testid="MainTitle"
           class="flex-1 text-xl"
           :placeholder="i18next.t(`placeholder.list`)"
@@ -68,12 +67,12 @@ const emit = defineEmits<{
       <client-only>
         <transition-group appear>
           <li
-            v-for="mainId of mainFull().sort"
-            :key="`list${listId()}main${mainId}`"
+            v-for="mainId of stateMain.data[listId()]!.sort"
+            :key="mainId"
             :data-id="`MainItem${mainId}`"
             data-testid="MainItem"
             class="theme-color-border theme-color-back trans-select-label trans-edit-item trans-check-item anime-scale-item group relative flex h-16 items-center gap-3 overflow-hidden border-b-[0.1rem] border-solid p-3"
-            :class="{ ...classStatus(mainId), ...classLimit(mainId) }"
+            :class="`${classStatus({ mainId })} ${classLimit({ mainId })}`"
             @contextmenu.prevent
             @longtouch="
               emit(`editItem`, { mainId });
@@ -83,14 +82,19 @@ const emit = defineEmits<{
               emit(`editItem`, { mainId });
               emit(`dragInit`, { mainId, y: $event.detail.clientY });
             "
-            @click="status[mainId] !== `edit` && emit(`routerSub`, { mainId })"
+            @click="stateMain.status[mainId] !== `edit` && emit(`routerSub`, { mainId })"
           >
-            <InputCheck v-model="mainUnit({ mainId }).check" data-testid="MainCheck" class="flex-initial" @click.stop />
+            <InputCheck
+              v-model="stateMain.data[listId()]!.data[mainId]!.check"
+              data-testid="MainCheck"
+              class="flex-initial"
+              @click.stop
+            />
             <div data-testid="MainTask" class="line-clamp-1 flex-1">
-              {{ mainUnit({ mainId }).title }}
+              {{ stateMain.data[listId()]!.data[mainId]!.title }}
             </div>
             <div data-testid="MainCount" class="flex-initial">
-              {{ textCount(mainId) }}
+              {{ textCount({ mainId }) }}
             </div>
             <div class="theme-color-back trans-option-label absolute right-3 flex translate-x-[150%] gap-3">
               <IconClone data-testid="MainClone" class="flex-initial" @click.stop="emit(`copyItem`, { mainId })" />

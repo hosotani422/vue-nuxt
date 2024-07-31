@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   ssr: true,
   rootDir: `src`,
   buildDir: `../.nuxt`,
-  css: [`@/assets/style/tailwind.css`],
+  css: [`@/styles/tailwind.css`],
   components: {
     global: true,
     dirs: [`@/components`],

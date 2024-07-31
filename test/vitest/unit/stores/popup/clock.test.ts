@@ -23,8 +23,8 @@ describe(`action`, () => {
     expect(clock.state.clear).toBe(`clear`);
     expect(clock.state.ok).toBe(`ok`);
     expect(canvasMock).toBeCalledTimes(2);
-    expect(canvasMock).toBeCalledWith({ mode: `hour` });
-    expect(canvasMock).toBeCalledWith({ mode: `minute` });
+    expect(canvasMock).toBeCalledWith({ type: `hour` });
+    expect(canvasMock).toBeCalledWith({ type: `minute` });
   });
   it(`close`, () => {
     clock.action.close();
@@ -40,17 +40,17 @@ describe(`action`, () => {
       return undefined as unknown as Element;
     });
     const canvasMock = vi.spyOn(clock.action, `drawCanvas`).mockReturnValue();
-    clock.action.inputTime({ mode: `hour`, x: 240, y: 120 });
+    clock.action.inputTime({ type: `hour`, x: 240, y: 120 });
     expect(getByIdMock).toBeCalledTimes(1);
     expect(getByIdMock).toBeCalledWith(`ClockHour`);
     expect(canvasMock).toBeCalledTimes(1);
-    expect(canvasMock).toBeCalledWith({ mode: `hour` });
+    expect(canvasMock).toBeCalledWith({ type: `hour` });
     expect(clock.state.hour).toBe(1);
-    clock.action.inputTime({ mode: `minute`, x: 240, y: 360 });
+    clock.action.inputTime({ type: `minute`, x: 240, y: 360 });
     expect(getByIdMock).toBeCalledTimes(2);
     expect(getByIdMock).toBeCalledWith(`ClockMinute`);
     expect(canvasMock).toBeCalledTimes(2);
-    expect(canvasMock).toBeCalledWith({ mode: `minute` });
+    expect(canvasMock).toBeCalledWith({ type: `minute` });
     expect(clock.state.minute).toBe(5);
   });
   it(`drawCanvas - hour`, () => {
@@ -65,7 +65,7 @@ describe(`action`, () => {
     const circleMock = vi.spyOn(clock.action, `drawCircle`).mockReturnValue();
     const lineMock = vi.spyOn(clock.action, `drawLine`).mockReturnValue();
     const charMock = vi.spyOn(clock.action, `drawChar`).mockReturnValue();
-    clock.action.drawCanvas({ mode: `hour` });
+    clock.action.drawCanvas({ type: `hour` });
     expect(getByIdMock).toBeCalledTimes(1);
     expect(getByIdMock).toBeCalledWith(`ClockHour`);
     expect(attributeMock).toBeCalledTimes(2);
@@ -118,7 +118,7 @@ describe(`action`, () => {
     const circleMock = vi.spyOn(clock.action, `drawCircle`).mockReturnValue();
     const lineMock = vi.spyOn(clock.action, `drawLine`).mockReturnValue();
     const charMock = vi.spyOn(clock.action, `drawChar`).mockReturnValue();
-    clock.action.drawCanvas({ mode: `minute` });
+    clock.action.drawCanvas({ type: `minute` });
     expect(getByIdMock).toBeCalledTimes(1);
     expect(getByIdMock).toBeCalledWith(`ClockMinute`);
     expect(attributeMock).toBeCalledTimes(2);
@@ -154,10 +154,10 @@ describe(`action`, () => {
     expect(charMock.mock.calls[0]![0]!.radius).toBe(41);
     expect(charMock.mock.calls[0]![0]!.color).toBe(`#ffffff`);
     conf.state.data.size = 1;
-    clock.action.drawCanvas({ mode: `minute` });
+    clock.action.drawCanvas({ type: `minute` });
     expect(circleMock.mock.calls[5]![0]!.radius).toBe(18);
     conf.state.data.size = 3;
-    clock.action.drawCanvas({ mode: `minute` });
+    clock.action.drawCanvas({ type: `minute` });
     expect(circleMock.mock.calls[8]![0]!.radius).toBe(22);
   });
   it(`drawCircle`, () => {

@@ -43,12 +43,7 @@ const emit = defineEmits<{
         <IconNext data-testid="CalendarNext" class="flex-initial" @click="emit(`pageMove`, { mode: `next` })" />
       </div>
       <ul class="flex flex-initial">
-        <li
-          v-for="week of getWeek()"
-          :key="`week${week}`"
-          data-testid="CalendarWeek"
-          class="flex-1 text-center text-xs"
-        >
+        <li v-for="week of getWeek()" :key="week" data-testid="CalendarWeek" class="flex-1 text-center text-xs">
           {{ week }}
         </li>
       </ul>
@@ -61,18 +56,13 @@ const emit = defineEmits<{
         @touchstart="emit(`swipeInit`, { x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY })"
         @mousedown="emit(`swipeInit`, { x: $event.clientX, y: $event.clientY })"
       >
-        <ul
-          v-for="month in getDay()"
-          :key="`month${month.id}`"
-          data-testid="CalendarMonth"
-          class="flex flex-1 flex-wrap"
-        >
+        <ul v-for="month in getDay()" :key="month.id" data-testid="CalendarMonth" class="flex flex-1 flex-wrap">
           <li
             v-for="day in month.day"
-            :key="`month${month.id}day${day.id}`"
+            :key="day.id"
             data-testid="CalendarDay"
             class="flex flex-[0_0_14.285%] items-center justify-center border-[0.1rem] border-solid border-transparent [&.hide]:invisible [&.select]:!border-theme-fine [&.today]:text-theme-fine"
-            :class="classStatus(month.id, day.id)"
+            :class="classStatus({ month: month.id, day: day.id })"
             @click="temp.callback(day.id)"
           >
             {{ day.text }}

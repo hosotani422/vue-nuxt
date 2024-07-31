@@ -6,15 +6,14 @@ import sub from "@/stores/page/sub";
 
 <template>
   <PageSub
+    :state-main="main.state"
+    :state-sub="sub.state"
     :list-id="app.getter.listId"
     :main-id="app.getter.mainId"
     :class-status="sub.getter.classStatus"
     :class-limit="sub.getter.classLimit"
     :text-memo="sub.getter.textMemo"
     :text-alarm="sub.getter.textAlarm"
-    :main-unit="main.action.getUnit"
-    :sub-full="sub.action.getFull"
-    :sub-unit="sub.action.getUnit"
     @router-back="app.action.routerBack"
     @toggle-mode="sub.action.toggleMode"
     @convert-item="sub.action.convertItem"

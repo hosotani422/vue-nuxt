@@ -9,7 +9,7 @@ defineOptions({
 defineProps<{
   constant: typeof constants;
   updateKey: typeof app.state.updateKey;
-  state: typeof conf.state.data;
+  state: typeof conf.state;
 }>();
 const emit = defineEmits<{
   routerBack: [];
@@ -47,7 +47,7 @@ const emit = defineEmits<{
       @mousedown="emit(`swipeInit`, { x: $event.clientX, y: $event.clientY })"
     />
     <div
-      :key="`Conf${updateKey}`"
+      :key="updateKey"
       data-testid="ConfHome"
       class="theme-color-grad theme-shadow-outer absolute inset-x-0 bottom-0 z-[1] flex h-[45%] flex-col"
     >
@@ -67,26 +67,42 @@ const emit = defineEmits<{
           class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
         >
           <p data-testid="ConfSizeTitle" class="flex-[0_1_5rem]">{{ i18next.t(`conf.size.title`) }}</p>
-          <InputRange v-model="state.size" data-testid="ConfSizeValue" class="flex-1" :min="1" :max="3" :step="1" />
-          <p data-testid="ConfSizeName" class="flex-initial">{{ i18next.t(`conf.size.value.${state.size}`) }}</p>
+          <InputRange
+            v-model="state.data.size"
+            data-testid="ConfSizeValue"
+            class="flex-1"
+            :min="1"
+            :max="3"
+            :step="1"
+          />
+          <p data-testid="ConfSizeName" class="flex-initial">{{ i18next.t(`conf.size.value.${state.data.size}`) }}</p>
         </li>
         <li
           data-testid="ConfItem"
           class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
         >
           <p data-testid="ConfSpeedTitle" class="flex-[0_1_5rem]">{{ i18next.t(`conf.speed.title`) }}</p>
-          <InputRange v-model="state.speed" data-testid="ConfSpeedValue" class="flex-1" :min="1" :max="3" :step="1" />
-          <p data-testid="ConfSpeedName" class="flex-initial">{{ i18next.t(`conf.speed.value.${state.speed}`) }}</p>
+          <InputRange
+            v-model="state.data.speed"
+            data-testid="ConfSpeedValue"
+            class="flex-1"
+            :min="1"
+            :max="3"
+            :step="1"
+          />
+          <p data-testid="ConfSpeedName" class="flex-initial">
+            {{ i18next.t(`conf.speed.value.${state.data.speed}`) }}
+          </p>
         </li>
         <li
           data-testid="ConfItem"
           class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
         >
           <p data-testid="ConfThemeTitle" class="flex-1">{{ i18next.t(`conf.theme.title`) }}</p>
-          <InputRadio v-model="state.theme" data-testid="ConfThemeLight" class="flex-initial" value="light">{{
+          <InputRadio v-model="state.data.theme" data-testid="ConfThemeLight" class="flex-initial" value="light">{{
             i18next.t(`conf.theme.value.light`)
           }}</InputRadio>
-          <InputRadio v-model="state.theme" data-testid="ConfThemeDark" class="flex-initial" value="dark">{{
+          <InputRadio v-model="state.data.theme" data-testid="ConfThemeDark" class="flex-initial" value="dark">{{
             i18next.t(`conf.theme.value.dark`)
           }}</InputRadio>
         </li>
@@ -95,10 +111,10 @@ const emit = defineEmits<{
           class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
         >
           <p data-testid="ConfLangTitle" class="flex-1">{{ i18next.t(`conf.lang.title`) }}</p>
-          <InputRadio v-model="state.lang" data-testid="ConfLangEn" class="flex-initial" value="en">{{
+          <InputRadio v-model="state.data.lang" data-testid="ConfLangEn" class="flex-initial" value="en">{{
             i18next.t(`conf.lang.value.en`)
           }}</InputRadio>
-          <InputRadio v-model="state.lang" data-testid="ConfLangJa" class="flex-initial" value="ja">{{
+          <InputRadio v-model="state.data.lang" data-testid="ConfLangJa" class="flex-initial" value="ja">{{
             i18next.t(`conf.lang.value.ja`)
           }}</InputRadio>
         </li>
@@ -107,10 +123,10 @@ const emit = defineEmits<{
           class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
         >
           <p data-testid="ConfVibrateTitle" class="flex-1">{{ i18next.t(`conf.vibrate.title`) }}</p>
-          <InputRadio v-model="state.vibrate" data-testid="ConfVibrateOff" class="flex-initial" value="off">{{
+          <InputRadio v-model="state.data.vibrate" data-testid="ConfVibrateOff" class="flex-initial" value="off">{{
             i18next.t(`conf.vibrate.value.off`)
           }}</InputRadio>
-          <InputRadio v-model="state.vibrate" data-testid="ConfVibrateOn" class="flex-initial" value="on">{{
+          <InputRadio v-model="state.data.vibrate" data-testid="ConfVibrateOn" class="flex-initial" value="on">{{
             i18next.t(`conf.vibrate.value.on`)
           }}</InputRadio>
         </li>
@@ -119,13 +135,13 @@ const emit = defineEmits<{
           class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
         >
           <p data-testid="ConfSaveTitle" class="flex-1">{{ i18next.t(`conf.save.title`) }}</p>
-          <InputRadio v-model="state.save" data-testid="ConfSaveLocal" class="flex-initial" value="local">{{
+          <InputRadio v-model="state.data.save" data-testid="ConfSaveLocal" class="flex-initial" value="local">{{
             i18next.t(`conf.save.value.local`)
           }}</InputRadio>
-          <InputRadio v-model="state.save" data-testid="ConfSaveRest" class="flex-initial" value="rest">{{
+          <InputRadio v-model="state.data.save" data-testid="ConfSaveRest" class="flex-initial" value="rest">{{
             i18next.t(`conf.save.value.rest`)
           }}</InputRadio>
-          <InputRadio v-model="state.save" data-testid="ConfSaveGql" class="flex-initial" value="gql">{{
+          <InputRadio v-model="state.data.save" data-testid="ConfSaveGql" class="flex-initial" value="gql">{{
             i18next.t(`conf.save.value.gql`)
           }}</InputRadio>
         </li>

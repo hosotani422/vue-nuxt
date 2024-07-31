@@ -11,7 +11,7 @@ export default class Conf extends Base {
       props: {
         constant,
         updateKey: app.state.updateKey,
-        state: conf.state.data,
+        state: conf.state,
       },
     });
     return wrapper;
