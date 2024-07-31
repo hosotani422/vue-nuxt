@@ -9,18 +9,18 @@ export default class Main extends Base {
   public static getWrapper(): VueWrapper {
     const wrapper = mount(PageMain, {
       props: {
-        status: main.state.status,
+        stateList: list.state,
+        stateMain: main.state,
         listId: app.getter.listId,
-        classStatus: (mainId: string) => ({
-          select: mainId === `main1111111111111`,
-          edit: mainId === `main2222222222222`,
-          hide: mainId === `main2222222222222`,
-        }),
+        classStatus: (arg: { mainId: string }) => {
+          const classStatus: string[] = [];
+          arg.mainId === `main1111111111111` && classStatus.push(`select`);
+          arg.mainId === `main2222222222222` && classStatus.push(`edit`);
+          arg.mainId === `main2222222222222` && classStatus.push(`hide`);
+          return classStatus.join(` `);
+        },
         classLimit: main.getter.classLimit,
-        textCount: (mainId: string) => (mainId === `main1111111111111` ? `1/1` : `1/2`),
-        listUnit: list.action.getUnit,
-        mainFull: main.action.getFull,
-        mainUnit: main.action.getUnit,
+        textCount: (arg: { mainId: string }) => (arg.mainId === `main1111111111111` ? `1/1` : `1/2`),
       },
       global: {
         stubs: {

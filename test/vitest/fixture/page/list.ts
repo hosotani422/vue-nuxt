@@ -10,28 +10,30 @@ export default class List extends Base {
     const wrapper = mount(PageList, {
       props: {
         constant,
-        status: list.state.status,
+        stateList: list.state,
         selectId: app.getter.listId,
-        classStatus: (listId: string) => ({
-          select: listId === `list1111111111111`,
-          edit: listId === `list0000000000000`,
-          hide: listId === `list0000000000000`,
-        }),
-        classLimit: (listId: string) => ({
-          "text-theme-care": listId === `list0000000000000`,
-          "text-theme-warn": listId === `list1111111111111`,
-        }),
+        classStatus: (arg: { listId: string }) => {
+          const classStatus: string[] = [];
+          arg.listId === `list1111111111111` && classStatus.push(`select`);
+          arg.listId === `list0000000000000` && classStatus.push(`edit`);
+          arg.listId === `list0000000000000` && classStatus.push(`hide`);
+          return classStatus.join(` `);
+        },
+        classLimit: (arg: { listId: string }) => {
+          const classLimit: string[] = [];
+          arg.listId === `list0000000000000` && classLimit.push(`text-theme-care`);
+          arg.listId === `list1111111111111` && classLimit.push(`text-theme-warn`);
+          return classLimit.join(` `);
+        },
         typeIcon: list.getter.typeIcon,
-        textCount: (listId: string) => {
-          if (listId === `list1111111111111`) {
+        textCount: (arg: { listId: string }) => {
+          if (arg.listId === `list1111111111111`) {
             return `1/1`;
-          } else if (listId === `list0000000000000`) {
+          } else if (arg.listId === `list0000000000000`) {
             return `0/0`;
           }
           return `9/9`;
         },
-        listFull: list.action.getFull,
-        listUnit: list.action.getUnit,
       },
     });
     return wrapper;

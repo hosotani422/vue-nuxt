@@ -28,11 +28,13 @@ const useStore = defineStore(`calendar`, () => {
   } = reactive(constant.init.calendar);
 
   const getter = reactive({
-    classStatus: computed(() => (month: string, day: string): { [K in `select` | `today` | `hide`]: boolean } => ({
-      select: day === state.select,
-      today: day === datefns.format(new Date(), `yyyy/MM/dd`),
-      hide: month !== datefns.format(day, `yyyy/MM`),
-    })),
+    classStatus: computed(() => (arg: { month: string; day: string }): string => {
+      const classStatus: string[] = [];
+      arg.day === state.select && classStatus.push(`select`);
+      arg.day === datefns.format(new Date(), `yyyy/MM/dd`) && classStatus.push(`today`);
+      arg.month !== datefns.format(arg.day, `yyyy/MM`) && classStatus.push(`hide`);
+      return classStatus.join(` `);
+    }),
   });
 
   const action = {
@@ -85,7 +87,8 @@ const useStore = defineStore(`calendar`, () => {
           { transform: `translateX(${arg.mode === `prev` ? `0px` : `-66.666%`})` },
           { duration: app.action.getDuration(), easing: `ease-in-out` },
         )
-        .addEventListener(`finish`, () => {
+        .addEventListener(`finish`, function listener() {
+          Util.getById(`CalendarArea`).removeEventListener(`finish`, listener);
           Util.getById<HTMLElement>(`CalendarArea`).style.transform = `translateX(-33.333%)`;
           state.current = datefns.format(datefns.addMonths(state.current, arg.mode === `prev` ? -1 : 1), `yyyy/MM`);
         });
@@ -129,7 +132,8 @@ const useStore = defineStore(`calendar`, () => {
               { transform: `translateX(-33.333%)` },
               { duration: app.action.getDuration(), easing: `ease-in-out` },
             )
-            .addEventListener(`finish`, () => {
+            .addEventListener(`finish`, function listener() {
+              temp.swipe.elem!.removeEventListener(`finish`, listener);
               temp.swipe.elem!.style.transform = `translateX(-33.333%)`;
               temp.swipe = {};
             });

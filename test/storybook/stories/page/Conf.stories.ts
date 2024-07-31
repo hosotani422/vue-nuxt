@@ -14,7 +14,7 @@ const meta: Meta<typeof PageConf> = {
       return {
         updateKey: app.state.updateKey,
         constant: constant,
-        state: conf.state.data,
+        state: conf.state,
         routerBack: app.action.routerBack,
         downloadBackup: conf.action.downloadBackup,
         uploadBackup: conf.action.uploadBackup,

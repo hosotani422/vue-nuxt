@@ -43,7 +43,7 @@ const emit = defineEmits<{
         >
         <InputCheck
           v-for="checkId of state.check!.sort"
-          :key="`DialogCheck${checkId}`"
+          :key="checkId"
           v-model="state.check!.data[checkId]!.check"
           data-testid="DialogCheck"
           class="flex-initial"
@@ -61,7 +61,7 @@ const emit = defineEmits<{
         >
         <InputRadio
           v-for="radioId of state.radio!.sort"
-          :key="`radio${radioId}`"
+          :key="radioId"
           v-model="state.radio!.select"
           data-testid="DialogRadio"
           class="flex-initial"

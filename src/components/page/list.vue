@@ -7,21 +7,19 @@ defineOptions({
 });
 defineProps<{
   constant: typeof constants;
-  status: typeof list.state.status;
+  stateList: typeof list.state;
   selectId: typeof app.getter.listId;
   classStatus: typeof list.getter.classStatus;
   classLimit: typeof list.getter.classLimit;
   typeIcon: typeof list.getter.typeIcon;
   textCount: typeof list.getter.textCount;
-  listFull: typeof list.action.getFull;
-  listUnit: typeof list.action.getUnit;
 }>();
 const emit = defineEmits<{
   routerBack: [arg?: { listId: string }];
+  editItem: [arg?: { listId: string }];
   entryItem: [];
   copyItem: [arg: { listId: string }];
   deleteItem: [arg: { listId: string }];
-  editItem: [arg?: { listId: string }];
   dragInit: [arg: { listId: string; y: number }];
   dragStart: [];
   dragMove: [arg: { y: number }];
@@ -81,12 +79,12 @@ const emit = defineEmits<{
       <ul data-id="ListBody" data-testid="ListBody" class="flex-1 select-none overflow-auto p-3">
         <transition-group>
           <li
-            v-for="listId of listFull().sort"
-            :key="`list${listId}`"
+            v-for="listId of stateList.data.sort"
+            :key="listId"
             :data-id="`ListItem${listId}`"
             data-testid="ListItem"
             class="theme-color-border theme-color-back trans-select-label trans-edit-item anime-scale-item group relative flex h-16 items-center gap-3 overflow-hidden border-b-[0.1rem] border-solid p-3"
-            :class="{ ...classStatus(listId), ...classLimit(listId) }"
+            :class="`${classStatus({ listId })} ${classLimit({ listId })}`"
             @contextmenu.prevent
             @longtouch="
               emit(`editItem`, { listId });
@@ -96,14 +94,14 @@ const emit = defineEmits<{
               emit(`editItem`, { listId });
               emit(`dragInit`, { listId, y: $event.detail.clientY });
             "
-            @click="status[listId] !== `edit` && emit(`routerBack`, { listId })"
+            @click="stateList.status[listId] !== `edit` && emit(`routerBack`, { listId })"
           >
-            <component :is="typeIcon(listId)" data-testid="ListIcon" class="flex-initial" />
+            <component :is="typeIcon({ listId })" data-testid="ListIcon" class="flex-initial" />
             <p data-testid="ListTask" class="line-clamp-1 flex-1">
-              {{ listUnit({ listId }).title }}
+              {{ stateList.data.data[listId]!.title }}
             </p>
             <p data-testid="ListCount" class="flex-initial">
-              {{ textCount(listId) }}
+              {{ textCount({ listId }) }}
             </p>
             <div class="theme-color-back trans-option-label absolute right-3 flex translate-x-[150%] gap-3">
               <IconClone

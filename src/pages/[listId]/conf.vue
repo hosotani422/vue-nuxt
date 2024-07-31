@@ -8,7 +8,7 @@ import conf from "@/stores/page/conf";
   <PageConf
     :update-key="app.state.updateKey"
     :constant="constant"
-    :state="conf.state.data"
+    :state="conf.state"
     @router-back="app.action.routerBack"
     @download-backup="conf.action.downloadBackup"
     @upload-backup="conf.action.uploadBackup"

@@ -50,24 +50,24 @@ const useStore = defineStore(`main`, () => {
   });
 
   const getter = reactive({
-    classStatus: computed(() => (mainId: string): { [K in `select` | `edit` | `hide`]: boolean } => {
-      return {
-        select: app.getter.mainId() === mainId,
-        edit: state.status[mainId] === `edit`,
-        hide: state.status[mainId] === `hide`,
-      };
+    classStatus: computed(() => (arg: { mainId: string }): string => {
+      const classStatus: string[] = [];
+      app.getter.mainId() === arg.mainId && classStatus.push(`select`);
+      state.status[arg.mainId] === `edit` && classStatus.push(`edit`);
+      state.status[arg.mainId] === `hide` && classStatus.push(`hide`);
+      return classStatus.join(` `);
     }),
-    classLimit: computed(() => (mainId: string): { [K in `text-theme-care` | `text-theme-warn`]: boolean } => {
-      const item = action.getUnit({ mainId });
+    classLimit: computed(() => (arg: { mainId: string }): string => {
+      const classLimit: string[] = [];
+      const item = state.data[app.getter.listId()]!.data[arg.mainId]!;
       const now = new Date();
       const date = `${item.date || `9999/99/99`} ${item.time || `00:00`}`;
-      return {
-        "text-theme-care": datefns.isBefore(date, datefns.addDays(now, 2)),
-        "text-theme-warn": datefns.isBefore(date, datefns.addDays(now, 1)),
-      };
+      datefns.isBefore(date, datefns.addDays(now, 2)) && classLimit.push(`text-theme-care`);
+      datefns.isBefore(date, datefns.addDays(now, 1)) && classLimit.push(`text-theme-warn`);
+      return classLimit.join(` `);
     }),
-    textCount: computed(() => (mainId: string): string => {
-      const itemList = Object.values(sub.action.getFull({ mainId }).data);
+    textCount: computed(() => (arg: { mainId: string }): string => {
+      const itemList = Object.values(sub.state.data[app.getter.listId()]!.data[arg.mainId]!.data);
       return `${itemList.filter((item) => !item.check).length}/${itemList.length}`;
     }),
   });
@@ -83,16 +83,14 @@ const useStore = defineStore(`main`, () => {
         { deep: true },
       );
     },
-    getFull: (arg?: { listId: string }): (typeof state)[`data`][string] => {
-      if (arg && state.data[arg.listId]) {
-        return state.data[arg.listId]!;
-      } else if (state.data[app.getter.listId()]) {
-        return state.data[app.getter.listId()]!;
+    editItem: (arg?: { mainId: string }): void => {
+      for (const mainId of state.data[app.getter.listId()]!.sort) {
+        if (mainId === arg?.mainId) {
+          state.status[mainId] = `edit`;
+        } else {
+          delete state.status[mainId];
+        }
       }
-      return { sort: [], data: {} };
-    },
-    getUnit: (arg?: { listId?: string; mainId?: string }): (typeof state)[`data`][string][`data`][string] => {
-      return state.data[arg?.listId || app.getter.listId()]!.data[arg?.mainId || app.getter.mainId()]!;
     },
     entryItem: (): void => {
       dialog.action.open({
@@ -109,8 +107,8 @@ const useStore = defineStore(`main`, () => {
         callback: {
           ok: () => {
             const id = new Date().valueOf();
-            action.getFull().sort.unshift(`main${id}`);
-            action.getFull().data[`main${id}`] = {
+            state.data[app.getter.listId()]!.sort.unshift(`main${id}`);
+            state.data[app.getter.listId()]!.data[`main${id}`] = {
               check: false,
               title: dialog.state.text!.value,
               date: ``,
@@ -132,9 +130,17 @@ const useStore = defineStore(`main`, () => {
     },
     copyItem: (arg: { mainId: string }): void => {
       const mainId = `main${new Date().valueOf()}`;
-      action.getFull().sort.splice(action.getFull().sort.indexOf(arg.mainId) + 1, 0, mainId);
-      action.getFull().data[mainId] = lodash.cloneDeep(action.getUnit({ mainId: arg.mainId }));
-      sub.state.data[app.getter.listId()]!.data[mainId] = lodash.cloneDeep(sub.action.getFull({ mainId: arg.mainId }));
+      state.data[app.getter.listId()]!.sort.splice(
+        state.data[app.getter.listId()]!.sort.indexOf(arg.mainId) + 1,
+        0,
+        mainId,
+      );
+      state.data[app.getter.listId()]!.data[mainId] = lodash.cloneDeep(
+        state.data[app.getter.listId()]!.data[arg.mainId]!,
+      );
+      sub.state.data[app.getter.listId()]!.data[mainId] = lodash.cloneDeep(
+        sub.state.data[app.getter.listId()]!.data[arg.mainId]!,
+      );
       delete state.status[arg.mainId];
     },
     moveItem: (arg: { mainId: string }): void => {
@@ -154,11 +160,14 @@ const useStore = defineStore(`main`, () => {
           ok: () => {
             const listId = dialog.state.radio!.select;
             if (listId !== app.getter.listId()) {
-              action.getFull({ listId }).sort.unshift(arg.mainId);
-              action.getFull({ listId }).data[arg.mainId] = action.getUnit({ mainId: arg.mainId });
-              sub.state.data[listId]!.data[arg.mainId] = sub.action.getFull({ mainId: arg.mainId });
-              action.getFull().sort.splice(action.getFull().sort.indexOf(arg.mainId), 1);
-              delete action.getFull().data[arg.mainId];
+              state.data[listId]!.sort.unshift(arg.mainId);
+              state.data[listId]!.data[arg.mainId] = state.data[app.getter.listId()]!.data[arg.mainId]!;
+              sub.state.data[listId]!.data[arg.mainId] = sub.state.data[app.getter.listId()]!.data[arg.mainId]!;
+              state.data[app.getter.listId()]!.sort.splice(
+                state.data[app.getter.listId()]!.sort.indexOf(arg.mainId),
+                1,
+              );
+              delete state.data[app.getter.listId()]!.data[arg.mainId];
               delete sub.state.data[app.getter.listId()]!.data[arg.mainId];
             }
             delete state.status[arg.mainId];
@@ -175,12 +184,12 @@ const useStore = defineStore(`main`, () => {
       const backup = { main: lodash.cloneDeep(state.data), sub: lodash.cloneDeep(sub.state.data) };
       const listId = constant.base.id.trash;
       if (listId !== app.getter.listId()) {
-        action.getFull({ listId }).sort.unshift(arg.mainId);
-        action.getFull({ listId }).data[arg.mainId] = action.getUnit({ mainId: arg.mainId });
-        sub.state.data[listId]!.data[arg.mainId] = sub.action.getFull({ mainId: arg.mainId });
+        state.data[listId]!.sort.unshift(arg.mainId);
+        state.data[listId]!.data[arg.mainId] = state.data[app.getter.listId()]!.data[arg.mainId]!;
+        sub.state.data[listId]!.data[arg.mainId] = sub.state.data[app.getter.listId()]!.data[arg.mainId]!;
       }
-      action.getFull().sort.splice(action.getFull().sort.indexOf(arg.mainId), 1);
-      delete action.getFull().data[arg.mainId];
+      state.data[app.getter.listId()]!.sort.splice(state.data[app.getter.listId()]!.sort.indexOf(arg.mainId), 1);
+      delete state.data[app.getter.listId()]!.data[arg.mainId];
       delete sub.state.data[app.getter.listId()]!.data[arg.mainId];
       delete state.status[arg.mainId];
       notice.action.open({
@@ -192,15 +201,6 @@ const useStore = defineStore(`main`, () => {
           notice.action.close();
         },
       });
-    },
-    editItem: (arg?: { mainId: string }): void => {
-      for (const mainId of action.getFull().sort) {
-        if (mainId === arg?.mainId) {
-          state.status[mainId] = `edit`;
-        } else {
-          delete state.status[mainId];
-        }
-      }
     },
     dragInit: (arg: { mainId: string; y: number }): void => {
       if (!temp.drag.status) {
@@ -219,6 +219,7 @@ const useStore = defineStore(`main`, () => {
       if (temp.drag.status === `start`) {
         temp.drag.status = `move`;
         temp.drag.clone = Util.getById(`MainItem${temp.drag.id}`).cloneNode(true) as HTMLElement;
+        temp.drag.clone.removeAttribute(`data-id`);
         temp.drag.clone.style.position = `absolute`;
         temp.drag.clone.style.zIndex = `1`;
         temp.drag.clone.style.top = `${temp.drag.top}px`;
@@ -232,16 +233,28 @@ const useStore = defineStore(`main`, () => {
     dragMove: (arg: { y: number }): void => {
       if (temp.drag.status === `move`) {
         temp.drag.clone!.style.top = `${temp.drag.top! + arg.y - temp.drag.y!}px`;
-        const index = action.getFull().sort.indexOf(temp.drag.id!);
+        const index = state.data[app.getter.listId()]!.sort.indexOf(temp.drag.id!);
         const clone = temp.drag.clone!.getBoundingClientRect();
-        const prev = Util.getById(`MainItem${action.getFull().sort[index - 1]}`)?.getBoundingClientRect();
-        const current = Util.getById(`MainItem${action.getFull().sort[index]}`).getBoundingClientRect();
-        const next = Util.getById(`MainItem${action.getFull().sort[index + 1]}`)?.getBoundingClientRect();
+        const prev = Util.getById(
+          `MainItem${state.data[app.getter.listId()]!.sort[index - 1]}`,
+        )?.getBoundingClientRect();
+        const current = Util.getById(`MainItem${state.data[app.getter.listId()]!.sort[index]}`).getBoundingClientRect();
+        const next = Util.getById(
+          `MainItem${state.data[app.getter.listId()]!.sort[index + 1]}`,
+        )?.getBoundingClientRect();
         if (prev && clone.top + clone.height / 2 < (next?.top || current.bottom) - (prev.height + current.height) / 2) {
-          action.getFull().sort.splice(index - 1, 0, ...action.getFull().sort.splice(index, 1));
+          state.data[app.getter.listId()]!.sort.splice(
+            index - 1,
+            0,
+            ...state.data[app.getter.listId()]!.sort.splice(index, 1),
+          );
         }
         if (next && clone.top + clone.height / 2 > (prev?.bottom || current.top) + (current.height + next.height) / 2) {
-          action.getFull().sort.splice(index + 1, 0, ...action.getFull().sort.splice(index, 1));
+          state.data[app.getter.listId()]!.sort.splice(
+            index + 1,
+            0,
+            ...state.data[app.getter.listId()]!.sort.splice(index, 1),
+          );
         }
       }
     },
@@ -254,7 +267,8 @@ const useStore = defineStore(`main`, () => {
             { top: `${Util.getById(`MainItem${temp.drag.id}`).getBoundingClientRect().top}px` },
             { duration: app.action.getDuration(), easing: `ease-in-out` },
           )
-          .addEventListener(`finish`, () => {
+          .addEventListener(`finish`, function listener() {
+            temp.drag.clone!.removeEventListener(`finish`, listener);
             delete state.status[temp.drag.id!];
             temp.drag.clone!.remove();
             temp.drag = {};

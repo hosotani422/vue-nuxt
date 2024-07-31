@@ -13,19 +13,17 @@ const meta: Meta<typeof PageList> = {
       mock();
       return {
         constant: constant,
-        status: list.state.status,
+        stateList: list.state,
         selectId: app.getter.listId,
         classStatus: list.getter.classStatus,
         classLimit: list.getter.classLimit,
         typeIcon: list.getter.typeIcon,
         textCount: list.getter.textCount,
-        listFull: list.action.getFull,
-        listUnit: list.action.getUnit,
         routerBack: app.action.routerBack,
+        editItem: list.action.editItem,
         entryItem: list.action.entryItem,
         copyItem: list.action.copyItem,
         deleteItem: list.action.deleteItem,
-        editItem: list.action.editItem,
         dragInit: list.action.dragInit,
         dragStart: list.action.dragStart,
         dragMove: list.action.dragMove,
@@ -38,19 +36,18 @@ const meta: Meta<typeof PageList> = {
     },
     template: `<PageList
         :constant="constant"
-        :status="status"
+        :stateList="stateList"
         :selectId="selectId"
         :classStatus="classStatus"
         :classLimit="classLimit"
         :typeIcon="typeIcon"
         :textCount="textCount"
         :listFull="listFull"
-        :listUnit="listUnit"
         @routerBack="routerBack"
+        @editItem="editItem"
         @entryItem="entryItem"
         @copyItem="copyItem"
         @deleteItem="deleteItem"
-        @editItem="editItem"
         @dragInit="dragInit"
         @dragStart="dragStart"
         @dragMove="dragMove"

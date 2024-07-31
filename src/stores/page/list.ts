@@ -51,34 +51,38 @@ const useStore = defineStore(`list`, () => {
   });
 
   const getter = reactive({
-    classStatus: computed(() => (listId: string): { [K in `select` | `edit` | `hide`]: boolean } => {
-      return {
-        select: app.getter.listId() === listId,
-        edit: state.status[listId] === `edit`,
-        hide: state.status[listId] === `hide`,
-      };
+    classStatus: computed(() => (arg: { listId: string }): string => {
+      const classStatus: string[] = [];
+      app.getter.listId() === arg.listId && classStatus.push(`select`);
+      state.status[arg.listId] === `edit` && classStatus.push(`edit`);
+      state.status[arg.listId] === `hide` && classStatus.push(`hide`);
+      return classStatus.join(` `);
     }),
-    classLimit: computed(() => (listId: string): { [K in `text-theme-care` | `text-theme-warn`]: boolean } => {
-      const classLimit: ReturnType<typeof getter.classLimit> = { "text-theme-care": false, "text-theme-warn": false };
-      for (const mainId of main.action.getFull({ listId }).sort) {
-        const item = main.action.getUnit({ listId, mainId });
+    classLimit: computed(() => (arg: { listId: string }): string => {
+      const classLimit: string[] = [];
+      for (const mainId of main.state.data[arg.listId]!.sort) {
+        const item = main.state.data[arg.listId]!.data[mainId]!;
         const now = new Date();
         const date = `${item.date || `9999/99/99`} ${item.time || `00:00`}`;
-        datefns.isBefore(date, datefns.addDays(now, 2)) && (classLimit[`text-theme-care`] = true);
-        datefns.isBefore(date, datefns.addDays(now, 1)) && (classLimit[`text-theme-warn`] = true);
+        datefns.isBefore(date, datefns.addDays(now, 2)) &&
+          !classLimit.includes(`text-theme-care`) &&
+          classLimit.push(`text-theme-care`);
+        datefns.isBefore(date, datefns.addDays(now, 1)) &&
+          !classLimit.includes(`text-theme-warn`) &&
+          classLimit.push(`text-theme-warn`);
       }
-      return classLimit;
+      return classLimit.join(` `);
     }),
-    typeIcon: computed(() => (listId: string): `IconInbox` | `IconTrash` | `IconList` => {
-      if (listId === constant.base.id.inbox) {
+    typeIcon: computed(() => (arg: { listId: string }): `IconInbox` | `IconTrash` | `IconList` => {
+      if (arg.listId === constant.base.id.inbox) {
         return `IconInbox`;
-      } else if (listId === constant.base.id.trash) {
+      } else if (arg.listId === constant.base.id.trash) {
         return `IconTrash`;
       }
       return `IconList`;
     }),
-    textCount: computed(() => (listId: string): string => {
-      const itemList = Object.values(main.action.getFull({ listId }).data);
+    textCount: computed(() => (arg: { listId: string }): string => {
+      const itemList = Object.values(main.state.data[arg.listId]!.data);
       return `${itemList.filter((item) => !item.check).length}/${itemList.length}`;
     }),
   });
@@ -94,16 +98,14 @@ const useStore = defineStore(`list`, () => {
         { deep: true },
       );
     },
-    getFull: (): (typeof state)[`data`] => {
-      return state.data;
-    },
-    getUnit: (arg?: { listId: string }): (typeof state)[`data`][`data`][string] => {
-      if (arg && state.data.data[arg.listId]) {
-        return state.data.data[arg.listId]!;
-      } else if (state.data.data[app.getter.listId()]) {
-        return state.data.data[app.getter.listId()]!;
+    editItem: (arg?: { listId: string }): void => {
+      for (const listId of state.data.sort) {
+        if (listId === arg?.listId) {
+          state.status[listId] = `edit`;
+        } else {
+          delete state.status[listId];
+        }
       }
-      return { title: `` };
     },
     entryItem: (): void => {
       dialog.action.open({
@@ -120,8 +122,8 @@ const useStore = defineStore(`list`, () => {
         callback: {
           ok: () => {
             const listId = `list${new Date().valueOf()}`;
-            action.getFull().sort.unshift(listId);
-            action.getFull().data[listId] = { title: dialog.state.text!.value };
+            state.data.sort.unshift(listId);
+            state.data.data[listId] = { title: dialog.state.text!.value };
             main.state.data[listId] = { sort: [], data: {} };
             sub.state.data[listId] = { data: {} };
             dialog.action.close();
@@ -134,9 +136,9 @@ const useStore = defineStore(`list`, () => {
     },
     copyItem: (arg: { listId: string }): void => {
       const listId = `list${new Date().valueOf()}`;
-      action.getFull().sort.splice(action.getFull().sort.indexOf(arg.listId) + 1, 0, listId);
-      action.getFull().data[listId] = lodash.cloneDeep(action.getUnit({ listId: arg.listId }));
-      main.state.data[listId] = lodash.cloneDeep(main.action.getFull({ listId: arg.listId }));
+      state.data.sort.splice(state.data.sort.indexOf(arg.listId) + 1, 0, listId);
+      state.data.data[listId] = lodash.cloneDeep(state.data.data[arg.listId]!);
+      main.state.data[listId] = lodash.cloneDeep(main.state.data[arg.listId]!);
       sub.state.data[listId] = lodash.cloneDeep(sub.state.data[arg.listId]!);
       delete state.status[arg.listId];
     },
@@ -155,13 +157,13 @@ const useStore = defineStore(`list`, () => {
               sub: lodash.cloneDeep(sub.state.data),
             };
             const listId = constant.base.id.trash;
-            for (const mainId of main.action.getFull({ listId: arg.listId }).sort) {
-              main.action.getFull({ listId }).sort.push(mainId);
-              main.action.getFull({ listId }).data[mainId] = main.action.getUnit({ listId: arg.listId, mainId });
-              sub.state.data[listId]!.data[mainId] = sub.action.getFull({ listId: arg.listId, mainId });
+            for (const mainId of main.state.data[arg.listId]!.sort) {
+              main.state.data[listId]!.sort.push(mainId);
+              main.state.data[listId]!.data[mainId] = main.state.data[arg.listId]!.data[mainId]!;
+              sub.state.data[listId]!.data[mainId] = sub.state.data[arg.listId]!.data[mainId]!;
             }
-            action.getFull().sort.splice(action.getFull().sort.indexOf(arg.listId), 1);
-            delete action.getFull().data[arg.listId];
+            state.data.sort.splice(state.data.sort.indexOf(arg.listId), 1);
+            delete state.data.data[arg.listId];
             delete main.state.data[arg.listId];
             delete sub.state.data[arg.listId];
             delete state.status[arg.listId];
@@ -184,15 +186,6 @@ const useStore = defineStore(`list`, () => {
         },
       });
     },
-    editItem: (arg?: { listId: string }): void => {
-      for (const listId of action.getFull().sort) {
-        if (listId === arg?.listId) {
-          state.status[listId] = `edit`;
-        } else {
-          delete state.status[listId];
-        }
-      }
-    },
     dragInit: (arg: { listId: string; y: number }): void => {
       if (!temp.drag.status) {
         const item = Util.getById(`ListItem${arg.listId}`).getBoundingClientRect();
@@ -210,6 +203,7 @@ const useStore = defineStore(`list`, () => {
       if (temp.drag.status === `start`) {
         temp.drag.status = `move`;
         temp.drag.clone = Util.getById(`ListItem${temp.drag.id}`).cloneNode(true) as HTMLElement;
+        temp.drag.clone.removeAttribute(`data-id`);
         temp.drag.clone.style.position = `absolute`;
         temp.drag.clone.style.zIndex = `1`;
         temp.drag.clone.style.top = `${temp.drag.top}px`;
@@ -223,16 +217,16 @@ const useStore = defineStore(`list`, () => {
     dragMove: (arg: { y: number }): void => {
       if (temp.drag.status === `move`) {
         temp.drag.clone!.style.top = `${temp.drag.top! + arg.y - temp.drag.y!}px`;
-        const index = action.getFull().sort.indexOf(temp.drag.id!);
+        const index = state.data.sort.indexOf(temp.drag.id!);
         const clone = temp.drag.clone!.getBoundingClientRect();
-        const prev = Util.getById(`ListItem${action.getFull().sort[index - 1]}`)?.getBoundingClientRect();
-        const current = Util.getById(`ListItem${action.getFull().sort[index]}`).getBoundingClientRect();
-        const next = Util.getById(`ListItem${action.getFull().sort[index + 1]}`)?.getBoundingClientRect();
+        const prev = Util.getById(`ListItem${state.data.sort[index - 1]}`)?.getBoundingClientRect();
+        const current = Util.getById(`ListItem${state.data.sort[index]}`).getBoundingClientRect();
+        const next = Util.getById(`ListItem${state.data.sort[index + 1]}`)?.getBoundingClientRect();
         if (prev && clone.top + clone.height / 2 < (next?.top || current.bottom) - (prev.height + current.height) / 2) {
-          action.getFull().sort.splice(index - 1, 0, ...action.getFull().sort.splice(index, 1));
+          state.data.sort.splice(index - 1, 0, ...state.data.sort.splice(index, 1));
         }
         if (next && clone.top + clone.height / 2 > (prev?.bottom || current.top) + (current.height + next.height) / 2) {
-          action.getFull().sort.splice(index + 1, 0, ...action.getFull().sort.splice(index, 1));
+          state.data.sort.splice(index + 1, 0, ...state.data.sort.splice(index, 1));
         }
       }
     },
@@ -245,7 +239,8 @@ const useStore = defineStore(`list`, () => {
             { top: `${Util.getById(`ListItem${temp.drag.id}`).getBoundingClientRect().top}px` },
             { duration: app.action.getDuration(), easing: `ease-in-out` },
           )
-          .addEventListener(`finish`, () => {
+          .addEventListener(`finish`, function listener() {
+            temp.drag.clone!.removeEventListener(`finish`, listener);
             delete state.status[temp.drag.id!];
             temp.drag.clone!.remove();
             temp.drag = {};
@@ -291,7 +286,8 @@ const useStore = defineStore(`list`, () => {
               { transform: `translateX(0px)` },
               { duration: app.action.getDuration(), easing: `ease-in-out` },
             )
-            .addEventListener(`finish`, () => {
+            .addEventListener(`finish`, function listener() {
+              temp.swipe.elem!.removeEventListener(`finish`, listener);
               temp.swipe.elem!.style.transform = `translateX(0px)`;
               temp.swipe = {};
             });

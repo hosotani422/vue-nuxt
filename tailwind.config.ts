@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import tailwind from "./src/assets/style/tailwind";
+import tailwind from "./src/styles/tailwind";
 
 export default {
   content: {

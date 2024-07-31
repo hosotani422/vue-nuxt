@@ -9,15 +9,19 @@ export default class Sub extends Base {
   public static getWrapper(): VueWrapper {
     const wrapper = mount(PageSub, {
       props: {
+        stateMain: main.state,
+        stateSub: sub.state,
         listId: app.getter.listId,
         mainId: app.getter.mainId,
-        classStatus: (subId: string) => ({ edit: subId === `sub1111111111111`, hide: subId === `sub1111111111111` }),
-        classLimit: () => ({ "text-theme-care": true, "text-theme-warn": false }),
+        classStatus: (arg: { subId: string }) => {
+          const classStatus: string[] = [];
+          arg.subId === `sub1111111111111` && classStatus.push(`edit`);
+          arg.subId === `sub1111111111111` && classStatus.push(`hide`);
+          return classStatus.join(` `);
+        },
+        classLimit: () => `text-theme-care`,
         textMemo: sub.getter.textMemo,
         textAlarm: sub.getter.textAlarm,
-        mainUnit: main.action.getUnit,
-        subFull: sub.action.getFull,
-        subUnit: sub.action.getUnit,
       },
     });
     return wrapper;
