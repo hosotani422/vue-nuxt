@@ -37,21 +37,11 @@ describe(`action`, () => {
     expect(writeMock).toBeCalledTimes(1);
     expect(writeMock).toBeCalledWith({ sort: [`list1111111111111`], data: { list1111111111111: { title: `list2` } } });
   });
-  it(`getFull`, () => {
-    expect(list.action.getFull()).toEqual({
-      sort: [`list1111111111111`, `list0000000000000`, `list9999999999999`],
-      data: {
-        list1111111111111: { title: `list1` },
-        list0000000000000: { title: `Inbox` },
-        list9999999999999: { title: `Trash` },
-      },
-    });
-  });
-  it(`getUnit`, () => {
-    expect(list.action.getUnit()).toEqual({ title: `list1` });
-    expect(list.action.getUnit({ listId: `list0000000000000` })).toEqual({ title: `Inbox` });
-    list.state.data = { sort: [], data: {} };
-    expect(list.action.getUnit()).toEqual({ title: `` });
+  it(`editItem`, () => {
+    list.action.editItem({ listId: `list1111111111111` });
+    expect(list.state.status).toEqual({ list1111111111111: `edit` });
+    list.action.editItem();
+    expect(list.state.status).toEqual({});
   });
   it(`entryItem`, () => {
     vi.setSystemTime(new Date(9465660000000));
@@ -231,12 +221,6 @@ describe(`action`, () => {
     expect(closeDialogMock).toBeCalledTimes(2);
     expect(closeDialogMock).toBeCalledWith();
   });
-  it(`editItem`, () => {
-    list.action.editItem({ listId: `list1111111111111` });
-    expect(list.state.status).toEqual({ list1111111111111: `edit` });
-    list.action.editItem();
-    expect(list.state.status).toEqual({});
-  });
   it(`dragInit`, () => {
     const getByIdMock = vi.spyOn(Util, `getById`).mockReturnValue({
       getBoundingClientRect: () => ({ top: 40, left: 60, height: 40, width: 120 }),
@@ -259,7 +243,8 @@ describe(`action`, () => {
     expect(vibrateMock).toBeCalledWith(40);
   });
   it(`dragStart`, () => {
-    const cloneMock = vi.fn(() => ({ style: {} }));
+    const removeMock = vi.fn();
+    const cloneMock = vi.fn(() => ({ style: {}, removeAttribute: removeMock }));
     const appendMock = vi.fn();
     const getByIdMock = vi
       .spyOn(Util, `getById`)
@@ -272,15 +257,13 @@ describe(`action`, () => {
     expect(cloneMock).toBeCalledTimes(1);
     expect(cloneMock).toBeCalledWith(true);
     expect(appendMock).toBeCalledTimes(1);
-    expect(appendMock).toBeCalledWith({
-      style: {
-        position: `absolute`,
-        zIndex: `1`,
-        top: `40px`,
-        left: `60px`,
-        height: `40px`,
-        width: `120px`,
-      },
+    expect(appendMock.mock.calls[0]![0].style).toEqual({
+      position: `absolute`,
+      zIndex: `1`,
+      top: `40px`,
+      left: `60px`,
+      height: `40px`,
+      width: `120px`,
     });
     expect(list.state.status[`list1111111111111`]).toBe(`hide`);
   });
@@ -319,11 +302,13 @@ describe(`action`, () => {
     const removeClassMock = vi.fn();
     const removeCloneMock = vi.fn();
     const addListenerMock = vi.fn((_: string, listener: () => void) => listener());
+    const removeListenerMock = vi.fn((_: string) => _);
     const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
     (list.temp.drag.clone as unknown as { [K in string]: object }) = {
       classList: { remove: removeClassMock },
       animate: animateMock,
       remove: removeCloneMock,
+      removeEventListener: removeListenerMock,
     };
     list.action.dragEnd();
     expect(removeClassMock).toBeCalledTimes(1);
@@ -334,6 +319,8 @@ describe(`action`, () => {
     expect(getByIdMock).toBeCalledWith(`ListItemlist1111111111111`);
     expect(addListenerMock).toBeCalledTimes(1);
     expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
+    expect(removeListenerMock).toBeCalledTimes(1);
+    expect(removeListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(removeCloneMock).toBeCalledTimes(1);
     expect(removeCloneMock).toBeCalledWith();
     expect(list.state.status[`list1111111111111`]).toBeUndefined();
@@ -372,13 +359,17 @@ describe(`action`, () => {
   });
   it(`swipeEnd`, () => {
     const addListenerMock = vi.fn((_: string, listener: () => void) => listener());
+    const removeListenerMock = vi.fn((_: string) => _);
     const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
     (list.temp.swipe.elem as unknown as { [K in string]: object }).animate = animateMock;
+    (list.temp.swipe.elem as unknown as { [K in string]: object }).removeEventListener = removeListenerMock;
     list.action.swipeEnd({ x: 100 });
     expect(animateMock).toBeCalledTimes(1);
     expect(animateMock).toBeCalledWith({ transform: `translateX(0px)` }, { duration: 250, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(1);
     expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
+    expect(removeListenerMock).toBeCalledTimes(1);
+    expect(removeListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(list.temp.swipe).toEqual({});
   });
   it(`swipeEnd - extra`, () => {
@@ -396,34 +387,25 @@ describe(`action`, () => {
 
 describe(`getter`, () => {
   it(`classStatus`, () => {
-    expect(list.getter.classStatus(`list1111111111111`)).toEqual({ select: true, edit: false, hide: false });
-    expect(list.getter.classStatus(`list0000000000000`)).toEqual({ select: false, edit: false, hide: false });
+    expect(list.getter.classStatus({ listId: `list1111111111111` })).toEqual(`select`);
+    expect(list.getter.classStatus({ listId: `list0000000000000` })).toEqual(``);
   });
   it(`classLimit`, () => {
     vi.setSystemTime(new Date(1999, 11, 30, 0, 0, 0, 0));
-    expect(list.getter.classLimit(`list1111111111111`)).toEqual({
-      "text-theme-care": false,
-      "text-theme-warn": false,
-    });
+    expect(list.getter.classLimit({ listId: `list1111111111111` })).toEqual(``);
     vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0, 0));
-    expect(list.getter.classLimit(`list1111111111111`)).toEqual({
-      "text-theme-care": true,
-      "text-theme-warn": false,
-    });
+    expect(list.getter.classLimit({ listId: `list1111111111111` })).toEqual(`text-theme-care`);
     vi.setSystemTime(new Date(2000, 1, 1, 0, 0, 0, 0));
-    expect(list.getter.classLimit(`list1111111111111`)).toEqual({
-      "text-theme-care": true,
-      "text-theme-warn": true,
-    });
+    expect(list.getter.classLimit({ listId: `list1111111111111` })).toEqual(`text-theme-care text-theme-warn`);
   });
   it(`typeIcon`, () => {
-    expect(list.getter.typeIcon(`list1111111111111`)).toBe(`IconList`);
-    expect(list.getter.typeIcon(`list0000000000000`)).toBe(`IconInbox`);
-    expect(list.getter.typeIcon(`list9999999999999`)).toBe(`IconTrash`);
+    expect(list.getter.typeIcon({ listId: `list1111111111111` })).toBe(`IconList`);
+    expect(list.getter.typeIcon({ listId: `list0000000000000` })).toBe(`IconInbox`);
+    expect(list.getter.typeIcon({ listId: `list9999999999999` })).toBe(`IconTrash`);
   });
   it(`textCount`, () => {
-    expect(list.getter.textCount(`list1111111111111`)).toBe(`1/2`);
-    expect(list.getter.textCount(`list0000000000000`)).toBe(`0/0`);
-    expect(list.getter.textCount(`list9999999999999`)).toBe(`0/0`);
+    expect(list.getter.textCount({ listId: `list1111111111111` })).toBe(`1/2`);
+    expect(list.getter.textCount({ listId: `list0000000000000` })).toBe(`0/0`);
+    expect(list.getter.textCount({ listId: `list9999999999999` })).toBe(`0/0`);
   });
 });

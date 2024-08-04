@@ -61,58 +61,11 @@ describe(`action`, () => {
       },
     });
   });
-  it(`getFull`, () => {
-    expect(main.action.getFull()).toEqual({
-      sort: [`main1111111111111`, `main2222222222222`],
-      data: {
-        main1111111111111: {
-          check: false,
-          title: `main1`,
-          date: `2000/01/01`,
-          time: `00:00`,
-          alarm: [`2`, `6`],
-          task: true,
-        },
-        main2222222222222: { check: true, title: `main2`, date: ``, time: ``, alarm: [], task: true },
-      },
-    });
-    expect(main.action.getFull({ listId: `list0000000000000` })).toEqual({ sort: [], data: {} });
-    main.state.data = {};
-    expect(main.action.getFull()).toEqual({ sort: [], data: {} });
-  });
-  it(`getUnit`, () => {
-    expect(main.action.getUnit()).toEqual({
-      check: false,
-      title: `main1`,
-      date: `2000/01/01`,
-      time: `00:00`,
-      alarm: [`2`, `6`],
-      task: true,
-    });
-    expect(main.action.getUnit({ listId: `list1111111111111` })).toEqual({
-      check: false,
-      title: `main1`,
-      date: `2000/01/01`,
-      time: `00:00`,
-      alarm: [`2`, `6`],
-      task: true,
-    });
-    expect(main.action.getUnit({ mainId: `main2222222222222` })).toEqual({
-      check: true,
-      title: `main2`,
-      date: ``,
-      time: ``,
-      alarm: [],
-      task: true,
-    });
-    expect(main.action.getUnit({ listId: `list1111111111111`, mainId: `main2222222222222` })).toEqual({
-      check: true,
-      title: `main2`,
-      date: ``,
-      time: ``,
-      alarm: [],
-      task: true,
-    });
+  it(`editItem`, () => {
+    main.action.editItem({ mainId: `main2222222222222` });
+    expect(main.state.status).toEqual({ main2222222222222: `edit` });
+    main.action.editItem();
+    expect(main.state.status).toEqual({});
   });
   it(`entryItem`, () => {
     vi.setSystemTime(new Date(9465660000000));
@@ -334,12 +287,6 @@ describe(`action`, () => {
     expect(closeMock).toBeCalledTimes(1);
     expect(closeMock).toBeCalledWith();
   });
-  it(`editItem`, () => {
-    main.action.editItem({ mainId: `main2222222222222` });
-    expect(main.state.status).toEqual({ main2222222222222: `edit` });
-    main.action.editItem();
-    expect(main.state.status).toEqual({});
-  });
   it(`dragInit`, () => {
     const getByIdMock = vi.spyOn(Util, `getById`).mockReturnValue({
       getBoundingClientRect: () => ({ top: 40, left: 60, height: 40, width: 120 }),
@@ -362,7 +309,8 @@ describe(`action`, () => {
     expect(vibrateMock).toBeCalledWith(40);
   });
   it(`dragStart`, () => {
-    const cloneMock = vi.fn(() => ({ style: {} }));
+    const removeMock = vi.fn();
+    const cloneMock = vi.fn(() => ({ style: {}, removeAttribute: removeMock }));
     const appendMock = vi.fn();
     const getByIdMock = vi
       .spyOn(Util, `getById`)
@@ -374,16 +322,16 @@ describe(`action`, () => {
     expect(getByIdMock).toBeCalledWith(`MainBody`);
     expect(cloneMock).toBeCalledTimes(1);
     expect(cloneMock).toBeCalledWith(true);
+    expect(removeMock).toBeCalledTimes(1);
+    expect(removeMock).toBeCalledWith(`data-id`);
     expect(appendMock).toBeCalledTimes(1);
-    expect(appendMock).toBeCalledWith({
-      style: {
-        position: `absolute`,
-        zIndex: `1`,
-        top: `40px`,
-        left: `60px`,
-        height: `40px`,
-        width: `120px`,
-      },
+    expect(appendMock.mock.calls[0]![0].style).toEqual({
+      position: `absolute`,
+      zIndex: `1`,
+      top: `40px`,
+      left: `60px`,
+      height: `40px`,
+      width: `120px`,
     });
     expect(main.state.status[`main1111111111111`]).toBe(`hide`);
   });
@@ -420,11 +368,13 @@ describe(`action`, () => {
     const removeClassMock = vi.fn();
     const removeCloneMock = vi.fn();
     const addListenerMock = vi.fn((_: string, listener: () => void) => listener());
+    const removeListenerMock = vi.fn((_: string) => _);
     const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
     (main.temp.drag.clone as unknown as { [K in string]: object }) = {
       classList: { remove: removeClassMock },
       animate: animateMock,
       remove: removeCloneMock,
+      removeEventListener: removeListenerMock,
     };
     main.action.dragEnd();
     expect(removeClassMock).toBeCalledTimes(1);
@@ -435,6 +385,8 @@ describe(`action`, () => {
     expect(getByIdMock).toBeCalledWith(`MainItemmain1111111111111`);
     expect(addListenerMock).toBeCalledTimes(1);
     expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
+    expect(removeListenerMock).toBeCalledTimes(1);
+    expect(removeListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(removeCloneMock).toBeCalledTimes(1);
     expect(removeCloneMock).toBeCalledWith();
     expect(main.state.status[`main1111111111111`]).toBeUndefined();
@@ -449,28 +401,19 @@ describe(`action`, () => {
 
 describe(`getter`, () => {
   it(`classStatus`, () => {
-    expect(main.getter.classStatus(`main1111111111111`)).toEqual({ select: true, edit: false, hide: false });
-    expect(main.getter.classStatus(`main2222222222222`)).toEqual({ select: false, edit: false, hide: false });
+    expect(main.getter.classStatus({ mainId: `main1111111111111` })).toEqual(`select`);
+    expect(main.getter.classStatus({ mainId: `main2222222222222` })).toEqual(``);
   });
   it(`classLimit`, () => {
     vi.setSystemTime(new Date(1999, 11, 30, 0, 0, 0, 0));
-    expect(main.getter.classLimit(`main1111111111111`)).toEqual({
-      "text-theme-care": false,
-      "text-theme-warn": false,
-    });
+    expect(main.getter.classLimit({ mainId: `main1111111111111` })).toEqual(``);
     vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0, 0));
-    expect(main.getter.classLimit(`main1111111111111`)).toEqual({
-      "text-theme-care": true,
-      "text-theme-warn": false,
-    });
+    expect(main.getter.classLimit({ mainId: `main1111111111111` })).toEqual(`text-theme-care`);
     vi.setSystemTime(new Date(2000, 1, 1, 0, 0, 0, 0));
-    expect(main.getter.classLimit(`main1111111111111`)).toEqual({
-      "text-theme-care": true,
-      "text-theme-warn": true,
-    });
+    expect(main.getter.classLimit({ mainId: `main1111111111111` })).toEqual(`text-theme-care text-theme-warn`);
   });
   it(`textCount`, () => {
-    expect(main.getter.textCount(`main1111111111111`)).toBe(`1/2`);
-    expect(main.getter.textCount(`main2222222222222`)).toBe(`0/0`);
+    expect(main.getter.textCount({ mainId: `main1111111111111` })).toBe(`1/2`);
+    expect(main.getter.textCount({ mainId: `main2222222222222` })).toBe(`0/0`);
   });
 });

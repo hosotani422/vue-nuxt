@@ -9,7 +9,7 @@ defineProps<{
 }>();
 const emit = defineEmits<{
   close: [];
-  inputTime: [arg: { mode: `hour` | `minute`; x: number; y: number }];
+  inputTime: [arg: { type: `hour` | `minute`; x: number; y: number }];
 }>();
 </script>
 
@@ -20,19 +20,19 @@ const emit = defineEmits<{
         data-id="ClockHour"
         data-testid="ClockHour"
         class="aspect-square flex-1"
-        @touchstart="emit(`inputTime`, { mode: `hour`, x: $event.touches[0]!.pageX, y: $event.touches[0]!.pageY })"
-        @touchmove="emit(`inputTime`, { mode: `hour`, x: $event.touches[0]!.pageX, y: $event.touches[0]!.pageY })"
-        @mousedown="emit(`inputTime`, { mode: `hour`, x: $event.pageX, y: $event.pageY })"
-        @mousemove="emit(`inputTime`, { mode: `hour`, x: $event.pageX, y: $event.pageY })"
+        @touchstart="emit(`inputTime`, { type: `hour`, x: $event.touches[0]!.pageX, y: $event.touches[0]!.pageY })"
+        @touchmove="emit(`inputTime`, { type: `hour`, x: $event.touches[0]!.pageX, y: $event.touches[0]!.pageY })"
+        @mousedown="emit(`inputTime`, { type: `hour`, x: $event.pageX, y: $event.pageY })"
+        @mousemove="emit(`inputTime`, { type: `hour`, x: $event.pageX, y: $event.pageY })"
       />
       <canvas
         data-id="ClockMinute"
         data-testid="ClockMinute"
         class="flex-1"
-        @touchstart="emit(`inputTime`, { mode: `minute`, x: $event.touches[0]!.pageX, y: $event.touches[0]!.pageY })"
-        @touchmove="emit(`inputTime`, { mode: `minute`, x: $event.touches[0]!.pageX, y: $event.touches[0]!.pageY })"
-        @mousedown="emit(`inputTime`, { mode: `minute`, x: $event.pageX, y: $event.pageY })"
-        @mousemove="emit(`inputTime`, { mode: `minute`, x: $event.pageX, y: $event.pageY })"
+        @touchstart="emit(`inputTime`, { type: `minute`, x: $event.touches[0]!.pageX, y: $event.touches[0]!.pageY })"
+        @touchmove="emit(`inputTime`, { type: `minute`, x: $event.touches[0]!.pageX, y: $event.touches[0]!.pageY })"
+        @mousedown="emit(`inputTime`, { type: `minute`, x: $event.pageX, y: $event.pageY })"
+        @mousemove="emit(`inputTime`, { type: `minute`, x: $event.pageX, y: $event.pageY })"
       />
     </div>
     <div class="flex flex-initial items-center justify-end gap-3">

@@ -61,31 +61,31 @@ describe(`action`, () => {
     expect(app.action.getDuration()).toBe(100);
   });
   it(`routerList`, async () => {
-    const routerMock = vi.spyOn(app.temp.router, `push`).mockReturnThis();
+    const routerMock = vi.spyOn(app.temp.router!, `push`).mockReturnThis();
     app.action.routerList();
     expect(routerMock).toBeCalledTimes(1);
     expect(routerMock).toBeCalledWith(`/list1111111111111/list`);
   });
   it(`routerMain`, async () => {
-    const routerMock = vi.spyOn(app.temp.router, `push`).mockReturnThis();
+    const routerMock = vi.spyOn(app.temp.router!, `push`).mockReturnThis();
     app.action.routerMain({ listId: `list1111111111111` });
     expect(routerMock).toBeCalledTimes(1);
     expect(routerMock).toBeCalledWith(`/list1111111111111`);
   });
   it(`routerSub`, async () => {
-    const routerMock = vi.spyOn(app.temp.router, `push`).mockReturnThis();
+    const routerMock = vi.spyOn(app.temp.router!, `push`).mockReturnThis();
     app.action.routerSub({ mainId: `main1111111111111` });
     expect(routerMock).toBeCalledTimes(1);
     expect(routerMock).toBeCalledWith(`/list1111111111111/sub/main1111111111111`);
   });
   it(`routerConf`, async () => {
-    const routerMock = vi.spyOn(app.temp.router, `push`).mockReturnThis();
+    const routerMock = vi.spyOn(app.temp.router!, `push`).mockReturnThis();
     app.action.routerConf();
     expect(routerMock).toBeCalledTimes(1);
     expect(routerMock).toBeCalledWith(`/list1111111111111/conf`);
   });
   it(`routerBack`, async () => {
-    const routerMock = vi.spyOn(app.temp.router, `back`).mockReturnThis();
+    const routerMock = vi.spyOn(app.temp.router!, `back`).mockReturnThis();
     const writeMock = vi.spyOn(Api, `writeRoute`).mockReturnValue();
     app.action.routerBack();
     expect(app.temp.backId).toBe(``);
@@ -119,10 +119,10 @@ describe(`getter`, () => {
     expect(app.getter.mainId()).toBe(`main1111111111111`);
   });
   it(`attrClass`, () => {
-    expect(app.getter.attrClass({ hoge: `hoge`, class: `class` })).toEqual({ class: `class` });
+    expect(app.getter.attrClass({ attrs: { hoge: `hoge`, class: `class` } })).toEqual({ class: `class` });
   });
   it(`attrAlmost`, () => {
-    expect(app.getter.attrAlmost({ hoge: `hoge`, class: `class` })).toEqual({ hoge: `hoge` });
+    expect(app.getter.attrAlmost({ attrs: { hoge: `hoge`, class: `class` } })).toEqual({ hoge: `hoge` });
   });
   it(`classTheme`, () => {
     expect(app.getter.classTheme()).toBe(`dark`);

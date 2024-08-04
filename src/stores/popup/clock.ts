@@ -35,28 +35,28 @@ const useStore = defineStore(`clock`, () => {
       state.ok = arg.ok;
       temp.callback = arg.callback;
       await nextTick();
-      action.drawCanvas({ mode: `hour` });
-      action.drawCanvas({ mode: `minute` });
+      action.drawCanvas({ type: `hour` });
+      action.drawCanvas({ type: `minute` });
     },
     close: (): void => {
       state.open = false;
     },
-    inputTime: (arg: { mode: `hour` | `minute`; x: number; y: number }): void => {
-      const elem = Util.getById<HTMLCanvasElement>(arg.mode === `hour` ? `ClockHour` : `ClockMinute`);
+    inputTime: (arg: { type: `hour` | `minute`; x: number; y: number }): void => {
+      const elem = Util.getById<HTMLCanvasElement>(arg.type === `hour` ? `ClockHour` : `ClockMinute`);
       const radius = elem.getBoundingClientRect().height / 2;
       const x = arg.x - elem.getBoundingClientRect().left;
       const y = arg.y - elem.getBoundingClientRect().top;
       const angle = (Math.atan((radius - y) / (radius - x)) * 360) / (Math.PI * 2) + (x >= radius ? 90 : 270);
-      if (arg.mode === `hour`) {
+      if (arg.type === `hour`) {
         const inner = Math.sqrt((radius - x) ** 2 + (radius - y) ** 2) < radius * 0.66;
         state.hour = (Math.round(angle / 30) === 12 ? 0 : Math.round(angle / 30)) + (inner ? 12 : 0);
       } else {
         state.minute = Math.round(angle / 6) === 60 ? 0 : Math.round(angle / 6);
       }
-      action.drawCanvas({ mode: arg.mode });
+      action.drawCanvas({ type: arg.type });
     },
-    drawCanvas: (arg: { mode: `hour` | `minute` }): void => {
-      const elem = Util.getById<HTMLCanvasElement>(arg.mode === `hour` ? `ClockHour` : `ClockMinute`);
+    drawCanvas: (arg: { type: `hour` | `minute` }): void => {
+      const elem = Util.getById<HTMLCanvasElement>(arg.type === `hour` ? `ClockHour` : `ClockMinute`);
       const radius = elem.getBoundingClientRect().height / 2;
       elem.setAttribute(`width`, `${radius * 2}px`);
       elem.setAttribute(`height`, `${radius * 2}px`);
@@ -74,12 +74,12 @@ const useStore = defineStore(`clock`, () => {
       // 中心円
       action.drawCircle({ ctx, x: 0, y: 0, radius: 3, color: `#1188dd` });
       // 回転開始
-      ctx.rotate(arg.mode === `hour` ? state.hour * 30 * (Math.PI / 180) : state.minute * 6 * (Math.PI / 180));
+      ctx.rotate(arg.type === `hour` ? state.hour * 30 * (Math.PI / 180) : state.minute * 6 * (Math.PI / 180));
       // 選択円
       action.drawCircle({
         ctx,
         x: 0,
-        y: arg.mode === `hour` ? radius * (state.hour > 11 ? -0.52 : -0.82) : radius * -0.82,
+        y: arg.type === `hour` ? radius * (state.hour > 11 ? -0.52 : -0.82) : radius * -0.82,
         radius: (() => {
           if (conf.state.data.size === 1) {
             return 18;
@@ -94,13 +94,13 @@ const useStore = defineStore(`clock`, () => {
       action.drawLine({
         ctx,
         from: { x: 0, y: 0 },
-        to: arg.mode === `hour` ? { x: 0, y: radius * (state.hour > 11 ? -0.52 : -0.82) } : { x: 0, y: radius * -0.82 },
+        to: arg.type === `hour` ? { x: 0, y: radius * (state.hour > 11 ? -0.52 : -0.82) } : { x: 0, y: radius * -0.82 },
         width: 1,
         color: `#1188dd`,
       });
       // 回転終了
-      ctx.rotate(arg.mode === `hour` ? -state.hour * 30 * (Math.PI / 180) : -state.minute * 6 * (Math.PI / 180));
-      if (arg.mode === `hour`) {
+      ctx.rotate(arg.type === `hour` ? -state.hour * 30 * (Math.PI / 180) : -state.minute * 6 * (Math.PI / 180));
+      if (arg.type === `hour`) {
         // 外側文字
         action.drawChar({
           ctx,

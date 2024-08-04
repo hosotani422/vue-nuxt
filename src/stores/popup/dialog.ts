@@ -1,4 +1,4 @@
-import Validation from "@/validation/schema";
+import Validation from "@/validations/schema";
 import constant from "@/utils/const";
 
 const temp: {

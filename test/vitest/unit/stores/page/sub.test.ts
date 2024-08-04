@@ -54,38 +54,6 @@ describe(`action`, () => {
       },
     });
   });
-  it(`getFull`, () => {
-    expect(sub.action.getFull()).toEqual({
-      sort: [`sub1111111111111`, `sub2222222222222`],
-      data: { sub1111111111111: { check: false, title: `sub1` }, sub2222222222222: { check: true, title: `sub2` } },
-    });
-    expect(sub.action.getFull({ listId: `list1111111111111` })).toEqual({
-      sort: [`sub1111111111111`, `sub2222222222222`],
-      data: { sub1111111111111: { check: false, title: `sub1` }, sub2222222222222: { check: true, title: `sub2` } },
-    });
-    expect(sub.action.getFull({ mainId: `main2222222222222` })).toEqual({ sort: [], data: {} });
-    expect(sub.action.getFull({ listId: `list1111111111111`, mainId: `main2222222222222` })).toEqual({
-      sort: [],
-      data: {},
-    });
-  });
-  it(`getUnit`, () => {
-    expect(sub.action.getUnit({ subId: `sub1111111111111` })).toEqual({ check: false, title: `sub1` });
-    expect(sub.action.getUnit({ mainId: `main1111111111111`, subId: `sub1111111111111` })).toEqual({
-      check: false,
-      title: `sub1`,
-    });
-    expect(sub.action.getUnit({ listId: `list1111111111111`, subId: `sub1111111111111` })).toEqual({
-      check: false,
-      title: `sub1`,
-    });
-    expect(
-      sub.action.getUnit({ listId: `list1111111111111`, mainId: `main1111111111111`, subId: `sub2222222222222` }),
-    ).toEqual({
-      check: true,
-      title: `sub2`,
-    });
-  });
   it(`toggleMode`, () => {
     sub.action.toggleMode();
     expect(main.state.data[`list1111111111111`]!.data[`main1111111111111`]!.task).toBe(false);
@@ -161,7 +129,7 @@ describe(`action`, () => {
     expect(closeMock).toBeCalledWith();
   });
   it(`openCalendar`, () => {
-    main.action.getUnit().date = `1999/12/31`;
+    main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.date = `1999/12/31`;
     const openMock = vi.spyOn(calendar.action, `open`);
     const closeMock = vi.spyOn(calendar.action, `close`).mockReturnValue();
     sub.action.openCalendar();
@@ -170,12 +138,12 @@ describe(`action`, () => {
     expect(openMock.mock.calls[0]![0]!.cancel).toBe(`キャンセル`);
     expect(openMock.mock.calls[0]![0]!.clear).toBe(`クリア`);
     calendar.temp.callback(`2000/01/01`);
-    expect(main.action.getUnit().date).toBe(`2000/01/01`);
+    expect(main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.date).toBe(`2000/01/01`);
     expect(closeMock).toBeCalledTimes(1);
     expect(closeMock).toBeCalledWith();
   });
   it(`openClock`, () => {
-    main.action.getUnit().time = `12:45`;
+    main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.time = `12:45`;
     const openMock = vi.spyOn(clock.action, `open`);
     const closeMock = vi.spyOn(clock.action, `close`).mockReturnValue();
     vi.spyOn(clock.action, `drawCanvas`).mockReturnValue();
@@ -186,7 +154,7 @@ describe(`action`, () => {
     expect(openMock.mock.calls[0]![0]!.clear).toBe(`クリア`);
     expect(openMock.mock.calls[0]![0]!.ok).toBe(`決定`);
     clock.temp.callback({ hour: 23, minute: 59 });
-    expect(main.action.getUnit().time).toBe(`23:59`);
+    expect(main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.time).toBe(`23:59`);
     expect(closeMock).toBeCalledTimes(1);
     expect(closeMock).toBeCalledWith();
   });
@@ -220,12 +188,12 @@ describe(`action`, () => {
     expect(openMock.mock.calls[0]![0]!.cancel).toBe(`キャンセル`);
     dialog.state.check.data[`1`]!.check = true;
     dialog.temp.callback.cancel!();
-    expect(main.action.getUnit().alarm).toEqual([`2`, `6`]);
+    expect(main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.alarm).toEqual([`2`, `6`]);
     expect(closeMock).toBeCalledTimes(1);
     expect(closeMock).toBeCalledWith();
     dialog.state.check.data[`1`]!.check = true;
     dialog.temp.callback.ok!();
-    expect(main.action.getUnit().alarm).toEqual([`1`, `2`, `6`]);
+    expect(main.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.alarm).toEqual([`1`, `2`, `6`]);
     expect(closeMock).toBeCalledTimes(2);
     expect(closeMock).toBeCalledWith();
   });
@@ -253,7 +221,8 @@ describe(`action`, () => {
     expect(vibrateMock).toBeCalledWith(40);
   });
   it(`dragStart`, () => {
-    const cloneMock = vi.fn(() => ({ style: {} }));
+    const removeMock = vi.fn();
+    const cloneMock = vi.fn(() => ({ style: {}, removeAttribute: removeMock }));
     const appendMock = vi.fn();
     const getByIdMock = vi
       .spyOn(Util, `getById`)
@@ -265,16 +234,16 @@ describe(`action`, () => {
     expect(getByIdMock).toBeCalledWith(`SubBody`);
     expect(cloneMock).toBeCalledTimes(1);
     expect(cloneMock).toBeCalledWith(true);
+    expect(removeMock).toBeCalledTimes(1);
+    expect(removeMock).toBeCalledWith(`data-id`);
     expect(appendMock).toBeCalledTimes(1);
-    expect(appendMock).toBeCalledWith({
-      style: {
-        position: `absolute`,
-        zIndex: `1`,
-        top: `40px`,
-        left: `0px`,
-        height: `40px`,
-        width: `120px`,
-      },
+    expect(appendMock.mock.calls[0]![0].style).toEqual({
+      position: `absolute`,
+      zIndex: `1`,
+      top: `40px`,
+      left: `0px`,
+      height: `40px`,
+      width: `120px`,
     });
     expect(sub.state.status[`sub1111111111111`]).toBe(`hide`);
   });
@@ -302,10 +271,16 @@ describe(`action`, () => {
     expect(getByIdMock).toBeCalledWith(`SubItemundefined`);
     expect(getByIdMock).toBeCalledWith(`SubItemsub1111111111111`);
     expect(getByIdMock).toBeCalledWith(`SubItemsub2222222222222`);
-    expect(sub.action.getFull().sort).toEqual([`sub2222222222222`, `sub1111111111111`]);
+    expect(sub.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort).toEqual([
+      `sub2222222222222`,
+      `sub1111111111111`,
+    ]);
     sub.temp.drag.clone!.getBoundingClientRect = () => ({ top: 40, height: 40 }) as DOMRect;
     sub.action.dragMove({ y: 0 });
-    expect(sub.action.getFull().sort).toEqual([`sub1111111111111`, `sub2222222222222`]);
+    expect(sub.state.data[app.getter.listId()]!.data[app.getter.mainId()]!.sort).toEqual([
+      `sub1111111111111`,
+      `sub2222222222222`,
+    ]);
   });
   it(`dragEnd`, () => {
     const getByIdMock = vi
@@ -314,11 +289,13 @@ describe(`action`, () => {
     const removeClassMock = vi.fn();
     const removeCloneMock = vi.fn();
     const addListenerMock = vi.fn((_: string, listener: () => void) => listener());
+    const removeListenerMock = vi.fn((_: string) => _);
     const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
     (sub.temp.drag.clone as unknown as { [K in string]: object }) = {
       classList: { remove: removeClassMock },
       animate: animateMock,
       remove: removeCloneMock,
+      removeEventListener: removeListenerMock,
     };
     sub.action.dragEnd();
     expect(removeClassMock).toBeCalledTimes(1);
@@ -329,6 +306,8 @@ describe(`action`, () => {
     expect(getByIdMock).toBeCalledWith(`SubItemsub1111111111111`);
     expect(addListenerMock).toBeCalledTimes(1);
     expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
+    expect(removeListenerMock).toBeCalledTimes(1);
+    expect(removeListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(removeCloneMock).toBeCalledTimes(1);
     expect(removeCloneMock).toBeCalledWith();
     expect(sub.state.status[`sub1111111111111`]).toBeUndefined();
@@ -369,13 +348,17 @@ describe(`action`, () => {
   });
   it(`swipeEnd`, () => {
     const addListenerMock = vi.fn((_: string, listener: () => void) => listener());
+    const removeListenerMock = vi.fn((_: string) => _);
     const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
     (sub.temp.swipe.elem as unknown as { [K in string]: object }).animate = animateMock;
+    (sub.temp.swipe.elem as unknown as { [K in string]: object }).removeEventListener = removeListenerMock;
     sub.action.swipeEnd({ x: 100 });
     expect(animateMock).toBeCalledTimes(1);
     expect(animateMock).toBeCalledWith({ transform: `translateX(0px)` }, { duration: 250, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(1);
     expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
+    expect(removeListenerMock).toBeCalledTimes(1);
+    expect(removeListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(sub.temp.swipe).toEqual({});
   });
   it(`swipeEnd - extra`, () => {
@@ -393,15 +376,15 @@ describe(`action`, () => {
 
 describe(`getter`, () => {
   it(`classStatus`, () => {
-    expect(sub.getter.classStatus(`sub1111111111111`)).toEqual({ edit: false, hide: false });
+    expect(sub.getter.classStatus({ subId: `sub1111111111111` })).toEqual(``);
   });
   it(`classLimit`, () => {
     vi.setSystemTime(new Date(1999, 11, 30, 0, 0, 0, 0));
-    expect(sub.getter.classLimit()).toEqual({ "text-theme-care": false, "text-theme-warn": false });
+    expect(sub.getter.classLimit()).toEqual(``);
     vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0, 0));
-    expect(sub.getter.classLimit()).toEqual({ "text-theme-care": true, "text-theme-warn": false });
+    expect(sub.getter.classLimit()).toEqual(`text-theme-care`);
     vi.setSystemTime(new Date(2000, 1, 1, 0, 0, 0, 0));
-    expect(sub.getter.classLimit()).toEqual({ "text-theme-care": true, "text-theme-warn": true });
+    expect(sub.getter.classLimit()).toEqual(`text-theme-care text-theme-warn`);
   });
   it(`textMemo`, () => {
     expect(sub.getter.textMemo()).toEqual(`sub1\nsub2`);

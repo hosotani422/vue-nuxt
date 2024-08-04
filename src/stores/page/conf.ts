@@ -120,7 +120,7 @@ const useStore = defineStore(`conf`, () => {
         ok: i18next.t(`button.ok`),
         cancel: i18next.t(`button.cancel`),
         callback: {
-          ok: async () => {
+          ok: () => {
             list.state.data = constant.init.list;
             main.state.data = constant.init.main;
             sub.state.data = constant.init.sub;
@@ -171,7 +171,8 @@ const useStore = defineStore(`conf`, () => {
               { transform: `translateY(0px)` },
               { duration: app.action.getDuration(), easing: `ease-in-out` },
             )
-            .addEventListener(`finish`, () => {
+            .addEventListener(`finish`, function listener() {
+              temp.swipe.elem!.removeEventListener(`finish`, listener);
               temp.swipe.elem!.style.transform = `translateY(0px)`;
               temp.swipe = {};
             });

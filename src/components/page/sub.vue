@@ -7,15 +7,14 @@ defineOptions({
   inheritAttrs: false,
 });
 defineProps<{
+  stateMain: typeof main.state;
+  stateSub: typeof sub.state;
   listId: typeof app.getter.listId;
   mainId: typeof app.getter.mainId;
   classStatus: typeof sub.getter.classStatus;
   classLimit: typeof sub.getter.classLimit;
   textMemo: typeof sub.getter.textMemo;
   textAlarm: typeof sub.getter.textAlarm;
-  mainUnit: typeof main.action.getUnit;
-  subFull: typeof sub.action.getFull;
-  subUnit: typeof sub.action.getUnit;
 }>();
 const emit = defineEmits<{
   routerBack: [arg?: { listId: string }];
@@ -81,7 +80,7 @@ const emit = defineEmits<{
       >
         <IconRight data-testid="SubRight" class="flex-initial" @click="emit(`routerBack`)" />
         <InputTextbox
-          v-model="mainUnit().title"
+          v-model="stateMain.data[listId()]!.data[mainId()]!.title"
           data-testid="SubTitle"
           class="flex-1 text-xl"
           :placeholder="i18next.t(`placeholder.main`)"
@@ -91,7 +90,7 @@ const emit = defineEmits<{
       <div data-testid="SubBody" class="flex-1 overflow-auto p-3">
         <transition mode="out-in">
           <InputTextarea
-            v-if="!mainUnit().task"
+            v-if="!stateMain.data[listId()]!.data[mainId()]!.task"
             data-testid="SubMemo"
             class="theme-color-back anime-fade-item size-full"
             :placeholder="i18next.t(`placeholder.memo`)"
@@ -101,16 +100,20 @@ const emit = defineEmits<{
           <ul v-else data-id="SubBody" class="anime-fade-item">
             <transition-group>
               <li
-                v-for="(subId, index) of subFull().sort"
-                :key="`list${listId()}main${mainId()}sub${subId}`"
+                v-for="(subId, index) of stateSub.data[listId()]!.data[mainId()]!.sort"
+                :key="subId"
                 :data-id="`SubItem${subId}`"
                 data-testid="SubItem"
                 class="theme-color-border theme-color-back trans-select-text trans-edit-item trans-check-item anime-scale-item group relative flex items-start gap-3 overflow-hidden border-b-[0.1rem] border-solid p-3"
-                :class="classStatus(subId)"
+                :class="classStatus({ subId })"
               >
-                <InputCheck v-model="subUnit({ subId }).check" data-testid="SubCheck" class="peer/check flex-initial" />
+                <InputCheck
+                  v-model="stateSub.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[subId]!.check"
+                  data-testid="SubCheck"
+                  class="peer/check flex-initial"
+                />
                 <InputTextarea
-                  v-model="subUnit({ subId }).title"
+                  v-model="stateSub.data[app.getter.listId()]!.data[app.getter.mainId()]!.data[subId]!.title"
                   :data-id="`SubTask${subId}`"
                   data-testid="SubTask"
                   class="peer/text flex-1 !p-0"
@@ -153,7 +156,7 @@ const emit = defineEmits<{
           data-testid="SubCalendar"
           class="w-full flex-1"
           :placeholder="i18next.t(`placeholder.date`)"
-          :model-value="mainUnit().date"
+          :model-value="stateMain.data[listId()]!.data[mainId()]!.date"
           readonly
           @click="emit(`openCalendar`)"
         />
@@ -161,7 +164,7 @@ const emit = defineEmits<{
           data-testid="SubClock"
           class="w-full flex-1"
           :placeholder="i18next.t(`placeholder.time`)"
-          :model-value="mainUnit().time"
+          :model-value="stateMain.data[listId()]!.data[mainId()]!.time"
           readonly
           @click="emit(`openClock`)"
         />

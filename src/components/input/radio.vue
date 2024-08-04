@@ -23,14 +23,14 @@ const updateValue = (value: string): void => {
   <label
     data-testid="InputRadioLabel"
     class="flex select-none items-center gap-3"
-    v-bind="app.getter.attrClass($attrs)"
+    v-bind="app.getter.attrClass({ attrs: $attrs })"
   >
     <input
       data-testid="InputRadio"
       class="relative z-[2] size-8 appearance-none rounded-full border-[0.1rem] border-solid border-theme-half bg-transparent before:absolute before:left-2 before:top-2 before:z-[1] before:size-[0.8rem] before:rounded-full checked:before:bg-theme-fine"
       type="radio"
       :checked="modelValue === $attrs.value"
-      v-bind="app.getter.attrAlmost($attrs)"
+      v-bind="app.getter.attrAlmost({ attrs: $attrs })"
       @change="updateValue(($event.target as HTMLInputElement).value)"
     />
     <slot />

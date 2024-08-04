@@ -83,22 +83,27 @@ describe(`action`, () => {
   it(`pageMove`, () => {
     calendar.state.current = `1999/12`;
     const addListenerMock = vi.fn((_: string, listener: () => void) => listener());
+    const removeListenerMock = vi.fn((_: string) => _);
     const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
     const styleMock = { transform: `` };
-    const getByIdMock = vi
-      .spyOn(Util, `getById`)
-      .mockReturnValue({ animate: animateMock, style: styleMock } as unknown as HTMLElement);
+    const getByIdMock = vi.spyOn(Util, `getById`).mockReturnValue({
+      animate: animateMock,
+      removeEventListener: removeListenerMock,
+      style: styleMock,
+    } as unknown as HTMLElement);
     calendar.action.pageMove({ mode: `prev` });
-    expect(getByIdMock).toBeCalledTimes(2);
+    expect(getByIdMock).toBeCalledTimes(3);
     expect(getByIdMock).toBeCalledWith(`CalendarArea`);
     expect(animateMock).toBeCalledTimes(1);
     expect(animateMock).toBeCalledWith({ transform: `translateX(0px)` }, { duration: 250, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(1);
     expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
+    expect(removeListenerMock).toBeCalledTimes(1);
+    expect(removeListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(styleMock.transform).toBe(`translateX(-33.333%)`);
     expect(calendar.state.current).toBe(`1999/11`);
     calendar.action.pageMove({ mode: `next` });
-    expect(getByIdMock).toBeCalledTimes(4);
+    expect(getByIdMock).toBeCalledTimes(6);
     expect(getByIdMock).toBeCalledWith(`CalendarArea`);
     expect(animateMock).toBeCalledTimes(2);
     expect(animateMock).toBeCalledWith({ transform: `translateX(-66.666%)` }, { duration: 250, easing: `ease-in-out` });
@@ -135,13 +140,17 @@ describe(`action`, () => {
   });
   it(`swipeEnd`, () => {
     const addListenerMock = vi.fn((_: string, listener: () => void) => listener());
+    const removeListenerMock = vi.fn((_: string) => _);
     const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
     (calendar.temp.swipe.elem as unknown as { [K in string]: object }).animate = animateMock;
+    (calendar.temp.swipe.elem as unknown as { [K in string]: object }).removeEventListener = removeListenerMock;
     calendar.action.swipeEnd({ x: 0 });
     expect(animateMock).toBeCalledTimes(1);
     expect(animateMock).toBeCalledWith({ transform: `translateX(-33.333%)` }, { duration: 250, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(1);
     expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
+    expect(removeListenerMock).toBeCalledTimes(1);
+    expect(removeListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(calendar.temp.swipe).toEqual({});
   });
   it(`swipeEnd - extra`, () => {
@@ -166,15 +175,7 @@ describe(`getter`, () => {
   it(`classStatus`, () => {
     vi.setSystemTime(new Date(1999, 11, 31, 0, 0, 0, 0));
     calendar.state.select = `1999/12/31`;
-    expect(calendar.getter.classStatus(`1999/12`, `1999/12/31`)).toEqual({
-      select: true,
-      today: true,
-      hide: false,
-    });
-    expect(calendar.getter.classStatus(`1999/12`, `2000/01/01`)).toEqual({
-      select: false,
-      today: false,
-      hide: true,
-    });
+    expect(calendar.getter.classStatus({ month: `1999/12`, day: `1999/12/31` })).toEqual(`select today`);
+    expect(calendar.getter.classStatus({ month: `1999/12`, day: `2000/01/01` })).toEqual(`hide`);
   });
 });

@@ -12,15 +12,14 @@ const meta: Meta<typeof PageSub> = {
     setup() {
       mock();
       return {
+        stateMain: main.state,
+        stateSub: sub.state,
         listId: app.getter.listId,
         mainId: app.getter.mainId,
         classStatus: sub.getter.classStatus,
         classLimit: sub.getter.classLimit,
         textMemo: sub.getter.textMemo,
         textAlarm: sub.getter.textAlarm,
-        mainUnit: main.action.getUnit,
-        subFull: sub.action.getFull,
-        subUnit: sub.action.getUnit,
         routerBack: app.action.routerBack,
         toggleMode: sub.action.toggleMode,
         convertItem: sub.action.convertItem,
@@ -41,15 +40,14 @@ const meta: Meta<typeof PageSub> = {
       };
     },
     template: `<PageSub
+        :stateMain="stateMain"
+        :stateSub="stateSub"
         :listId="listId"
         :mainId="mainId"
         :classStatus="classStatus"
         :classLimit="classLimit"
         :textMemo="textMemo"
         :textAlarm="textAlarm"
-        :mainUnit="mainUnit"
-        :subFull="subFull"
-        :subUnit="subUnit"
         @routerBack="routerBack"
         @toggleMode="toggleMode"
         @convertItem="convertItem"

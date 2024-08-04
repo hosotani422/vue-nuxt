@@ -235,13 +235,17 @@ describe(`action`, () => {
   });
   it(`swipeEnd`, () => {
     const addListenerMock = vi.fn((_: string, listener: () => void) => listener());
+    const removeListenerMock = vi.fn((_: string) => _);
     const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
     (conf.temp.swipe.elem as unknown as { [K in string]: object }).animate = animateMock;
+    (conf.temp.swipe.elem as unknown as { [K in string]: object }).removeEventListener = removeListenerMock;
     conf.action.swipeEnd({ y: 100 });
     expect(animateMock).toBeCalledTimes(1);
     expect(animateMock).toBeCalledWith({ transform: `translateY(0px)` }, { duration: 250, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(1);
     expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
+    expect(removeListenerMock).toBeCalledTimes(1);
+    expect(removeListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(conf.temp.swipe).toEqual({});
   });
   it(`swipeEnd - extra`, () => {
