@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
 import PopupNotice from "@/components/popup/notice.vue";
-import notice from "@/stores/popup/notice";
+import notice from "@/store/popup/notice";
 
 const meta: Meta<typeof PopupNotice> = {
   component: PopupNotice,
@@ -12,15 +12,9 @@ const meta: Meta<typeof PopupNotice> = {
         button: `button`,
         callback: () => ``,
       });
-      return {
-        refer: notice.refer,
-        state: notice.state,
-      };
+      return { notice };
     },
-    template: `<PopupNotice
-        :refer="refer"
-        :state="state"
-      />`,
+    template: `<PopupNotice :notice="notice" />`,
   }),
 };
 

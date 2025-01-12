@@ -1,4 +1,4 @@
-import "@/styles/tailwind.css";
+import "@/../.nuxt/tailwind.css";
 
 export default {
   parameters: {
@@ -8,8 +8,8 @@ export default {
         mobile: {
           name: `Mobile`,
           styles: {
-            width: `400px`,
-            height: `600px`,
+            width: `600px`,
+            height: `400px`,
           },
         },
       },

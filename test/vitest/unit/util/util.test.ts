@@ -1,5 +1,5 @@
 import { vi, describe, it, expect } from "vitest";
-import app from "@/stores/page/app";
+import app from "@/store/page/app";
 
 describe(`util`, () => {
   it(`getById`, () => {
