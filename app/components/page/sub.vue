@@ -1,39 +1,15 @@
 <script setup lang="ts">
 import i18next from "i18next";
-import app from "@/stores/page/app";
-import main from "@/stores/page/main";
-import sub from "@/stores/page/sub";
+import storeApp from "@/store/page/app";
+import storeMain from "@/store/page/main";
+import storeSub from "@/store/page/sub";
 defineOptions({
   inheritAttrs: false,
 });
 defineProps<{
-  stateMain: typeof main.state;
-  stateSub: typeof sub.state;
-  listId: typeof app.render.listId;
-  mainId: typeof app.render.mainId;
-  classStatus: typeof sub.render.classStatus;
-  classLimit: typeof sub.render.classLimit;
-  textMemo: typeof sub.render.textMemo;
-  textAlarm: typeof sub.render.textAlarm;
-}>();
-const emit = defineEmits<{
-  routerBack: [arg?: { listId: string }];
-  toggleMode: [];
-  convertItem: [arg: { text: string }];
-  divideItem: [arg: { subId: string; caret: number }];
-  connectItem: [arg: { subId: string }];
-  deleteItem: [arg: { subId: string }];
-  openCalendar: [];
-  openClock: [];
-  openAlarm: [];
-  dragInit: [arg: { subId: string; y: number }];
-  dragStart: [];
-  dragMove: [arg: { y: number }];
-  dragEnd: [];
-  swipeInit: [arg: { x: number; y: number }];
-  swipeStart: [arg: { x: number; y: number }];
-  swipeMove: [arg: { x: number }];
-  swipeEnd: [arg: { x: number }];
+  app: typeof storeApp;
+  main: typeof storeMain;
+  sub: typeof storeSub;
 }>();
 </script>
 
@@ -43,31 +19,31 @@ const emit = defineEmits<{
     data-testid="SubRoot"
     class="theme-color-mask anime-slide-sub absolute inset-y-0 right-0 z-10 w-[200%]"
     @touchmove="
-      emit(`dragStart`);
-      emit(`dragMove`, { y: $event.changedTouches[0]!.clientY });
-      emit(`swipeStart`, { x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY });
-      emit(`swipeMove`, { x: $event.changedTouches[0]!.clientX });
+      sub.handle.dragStart();
+      sub.handle.dragMove({ y: $event.changedTouches[0]!.clientY });
+      sub.handle.swipeStart({ x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY });
+      sub.handle.swipeMove({ x: $event.changedTouches[0]!.clientX });
     "
     @mousemove="
-      emit(`dragStart`);
-      emit(`dragMove`, { y: $event.clientY });
-      emit(`swipeStart`, { x: $event.clientX, y: $event.clientY });
-      emit(`swipeMove`, { x: $event.clientX });
+      sub.handle.dragStart();
+      sub.handle.dragMove({ y: $event.clientY });
+      sub.handle.swipeStart({ x: $event.clientX, y: $event.clientY });
+      sub.handle.swipeMove({ x: $event.clientX });
     "
     @touchend="
-      emit(`dragEnd`);
-      emit(`swipeEnd`, { x: $event.changedTouches[0]!.clientX });
+      sub.handle.dragEnd();
+      sub.handle.swipeEnd({ x: $event.changedTouches[0]!.clientX });
     "
     @mouseup="
-      emit(`dragEnd`);
-      emit(`swipeEnd`, { x: $event.clientX });
+      sub.handle.dragEnd();
+      sub.handle.swipeEnd({ x: $event.clientX });
     "
   >
     <div
       data-testid="SubBack"
       class="absolute inset-y-0 left-0 z-[1] w-[57%]"
-      @touchstart="emit(`swipeInit`, { x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY })"
-      @mousedown="emit(`swipeInit`, { x: $event.clientX, y: $event.clientY })"
+      @touchstart="sub.handle.swipeInit({ x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY })"
+      @mousedown="sub.handle.swipeInit({ x: $event.clientX, y: $event.clientY })"
     />
     <div
       data-id="SubHome"
@@ -78,68 +54,68 @@ const emit = defineEmits<{
         data-testid="SubHead"
         class="theme-color-grad theme-shadow-outer relative z-[9] flex flex-initial items-center gap-3 p-3"
       >
-        <IconRight data-testid="SubRight" class="flex-initial" @click="emit(`routerBack`)" />
+        <IconArrow data-testid="SubRight" class="flex-initial" @click="app.handle.routerBack()" />
         <InputTextbox
-          v-model="stateMain.data[listId()]!.data[mainId()]!.title"
+          v-model="main.state.data[app.render.listId()]!.data[app.render.mainId()]!.title"
           data-testid="SubTitle"
           class="flex-1 text-xl"
           :placeholder="i18next.t(`placeholder.main`)"
         />
-        <IconMode data-testid="SubMode" class="flex-initial" @click="emit(`toggleMode`)" />
+        <IconMode data-testid="SubMode" class="flex-initial" @click="sub.handle.toggleMode()" />
       </div>
       <div data-testid="SubBody" class="flex-1 overflow-auto p-3">
         <transition mode="out-in">
           <InputTextarea
-            v-if="!stateMain.data[listId()]!.data[mainId()]!.task"
+            v-if="!main.state.data[app.render.listId()]!.data[app.render.mainId()]!.task"
             data-testid="SubMemo"
             class="theme-color-back anime-fade-item size-full"
             :placeholder="i18next.t(`placeholder.memo`)"
-            :model-value="textMemo()"
-            @input="emit(`convertItem`, { text: ($event.target as HTMLInputElement).value })"
+            :model-value="sub.render.textMemo()"
+            @input="sub.handle.convertItem({ text: ($event.target as HTMLInputElement).value })"
           />
           <ul v-else data-id="SubBody" class="anime-fade-item">
             <transition-group>
               <li
-                v-for="(subId, index) of stateSub.data[listId()]!.data[mainId()]!.sort"
+                v-for="(subId, index) of sub.state.data[app.render.listId()]!.data[app.render.mainId()]!.sort"
                 :key="subId"
                 :data-id="`SubItem${subId}`"
                 data-testid="SubItem"
                 class="theme-color-border theme-color-back trans-select-text trans-edit-item trans-check-item anime-scale-item group relative flex items-start gap-3 overflow-hidden border-b-[0.1rem] border-solid p-3"
-                :class="classStatus({ subId })"
+                :class="sub.render.classStatus({ subId })"
               >
                 <InputCheck
-                  v-model="stateSub.data[app.render.listId()]!.data[app.render.mainId()]!.data[subId]!.check"
+                  v-model="sub.state.data[app.render.listId()]!.data[app.render.mainId()]!.data[subId]!.check"
                   data-testid="SubCheck"
                   class="peer/check flex-initial"
                 />
                 <InputTextarea
-                  v-model="stateSub.data[app.render.listId()]!.data[app.render.mainId()]!.data[subId]!.title"
+                  v-model="sub.state.data[app.render.listId()]!.data[app.render.mainId()]!.data[subId]!.title"
                   :data-id="`SubTask${subId}`"
                   data-testid="SubTask"
-                  class="peer/text flex-1 !p-0"
+                  class="peer/text flex-1 p-0!"
                   :placeholder="i18next.t(`placeholder.sub`)"
-                  sizing="content"
+                  :resize="true"
                   @keydown.enter.prevent="
-                    emit(`divideItem`, { subId, caret: ($event.target as HTMLInputElement).selectionStart! })
+                    sub.handle.divideItem({ subId, caret: ($event.target as HTMLInputElement).selectionStart! })
                   "
                   @keydown.backspace="
                     index > 0 &&
                     ($event.target as HTMLInputElement).selectionStart === 0 &&
                     ($event.target as HTMLInputElement).selectionEnd === 0 &&
-                    ($event.preventDefault(), emit(`connectItem`, { subId }))
+                    ($event.preventDefault(), sub.handle.connectItem({ subId }))
                   "
                 />
                 <IconDrag
                   data-testid="SubDrag"
                   class="flex-initial"
-                  @touchstart="emit(`dragInit`, { subId, y: $event.changedTouches[0]?.clientY })"
-                  @mousedown="emit(`dragInit`, { subId, y: $event.clientY })"
+                  @touchstart="sub.handle.dragInit({ subId, y: $event.changedTouches[0]?.clientY })"
+                  @mousedown="sub.handle.dragInit({ subId, y: $event.clientY })"
                 />
                 <transition>
                   <IconTrash
                     data-testid="SubTrash"
-                    class="theme-color-back trans-option-text absolute right-3 translate-x-[150%]"
-                    @click="emit(`deleteItem`, { subId })"
+                    class="theme-color-back trans-option-text absolute right-3 [transform:translateX(150%)]"
+                    @click="sub.handle.deleteItem({ subId })"
                   />
                 </transition>
               </li>
@@ -150,31 +126,31 @@ const emit = defineEmits<{
       <div
         data-testid="SubFoot"
         class="theme-color-grad theme-shadow-outer flex flex-initial items-center gap-3 p-3"
-        :class="classLimit()"
+        :class="sub.render.classLimit()"
       >
         <InputTextbox
-          data-testid="SubCalendar"
+          data-testid="SubDate"
           class="w-full flex-1"
           :placeholder="i18next.t(`placeholder.date`)"
-          :model-value="stateMain.data[listId()]!.data[mainId()]!.date"
+          :model-value="main.state.data[app.render.listId()]!.data[app.render.mainId()]!.date"
           readonly
-          @click="emit(`openCalendar`)"
+          @click="sub.handle.openDate()"
         />
         <InputTextbox
-          data-testid="SubClock"
+          data-testid="SubTime"
           class="w-full flex-1"
           :placeholder="i18next.t(`placeholder.time`)"
-          :model-value="stateMain.data[listId()]!.data[mainId()]!.time"
+          :model-value="main.state.data[app.render.listId()]!.data[app.render.mainId()]!.time"
           readonly
-          @click="emit(`openClock`)"
+          @click="sub.handle.openTime()"
         />
         <InputTextbox
           data-testid="SubDialog"
           class="w-full flex-1"
           :placeholder="i18next.t(`placeholder.alarm`)"
-          :model-value="textAlarm()"
+          :model-value="sub.render.textAlarm()"
           readonly
-          @click="emit(`openAlarm`)"
+          @click="sub.handle.openAlarm()"
         />
       </div>
     </div>

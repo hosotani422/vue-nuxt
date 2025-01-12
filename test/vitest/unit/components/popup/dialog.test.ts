@@ -1,7 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { VueWrapper } from "@vue/test-utils";
 import fixture from "../../../fixture/popup/dialog";
-import dialog from "@/stores/popup/dialog";
+import dialog from "@/store/popup/dialog";
 
 const it = test.extend<{ wrapper: VueWrapper }>({
   wrapper: async ({}, use) => {
@@ -120,10 +120,11 @@ describe(`event`, () => {
     expect(dialog.state.init).toBe(false);
   });
   it(`check`, async ({ wrapper }) => {
+    const clickCheckAllMock = vi.spyOn(dialog.handle, `clickCheckAll`).mockReturnValue();
     await (dialog.state.mode = `check`);
     wrapper.findByTestId(`DialogCheckAll`).trigger(`change`);
-    expect(wrapper.emitted(`clickCheckAll`)).toHaveLength(1);
-    expect(wrapper.emitted(`clickCheckAll`)).toEqual([[{ check: false }]]);
+    expect(clickCheckAllMock).toBeCalledTimes(1);
+    expect(clickCheckAllMock).toBeCalledWith({ check: false });
   });
   it(`footer`, async ({ wrapper }) => {
     await (dialog.state.mode = `confirm`);
