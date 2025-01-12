@@ -6,7 +6,13 @@ export default {
     "at-rule-no-unknown": [
       true,
       {
-        ignoreAtRules: [`extends`, `tailwind`],
+        ignoreAtRules: [`extends`, `tailwind`, `apply`, `theme`, `variant`, `custom-variant`, `utility`],
+      },
+    ],
+    "at-rule-no-deprecated": [
+      true,
+      {
+        ignoreAtRules: [`extends`, `tailwind`, `apply`, `theme`, `variant`, `custom-variant`, `utility`],
       },
     ],
   },

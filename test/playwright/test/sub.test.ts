@@ -25,8 +25,8 @@ test.describe(`sub`, () => {
     await expect(page.getByTestId(`SubItem`).nth(1).getByTestId(`SubDrag`)).toHaveCount(1);
     await expect(page.getByTestId(`SubItem`).nth(0).getByTestId(`SubTrash`)).toHaveCount(1);
     await expect(page.getByTestId(`SubItem`).nth(1).getByTestId(`SubTrash`)).toHaveCount(1);
-    await expect(page.getByTestId(`SubCalendar`)).toHaveValue(`2000/01/01`);
-    await expect(page.getByTestId(`SubClock`)).toHaveValue(`00:00`);
+    await expect(page.getByTestId(`SubDate`)).toHaveValue(`2000/01/01`);
+    await expect(page.getByTestId(`SubTime`)).toHaveValue(`00:00`);
     await expect(page.getByTestId(`SubDialog`)).toHaveValue(`5分前,1時間前`);
   });
   test(`page - swipe`, async ({ page, fixture }) => {
@@ -83,21 +83,21 @@ test.describe(`sub`, () => {
     await fixture.dragDrop(page.getByTestId(`SubDrag`).nth(0), page.getByTestId(`SubDrag`).nth(1));
     await expect(page.getByTestId(`SubTask`).nth(1)).toHaveValue(`sub1`);
   });
-  test(`option - calendar`, async ({ page }) => {
-    await page.getByTestId(`SubCalendar`).click();
-    await page.getByTestId(`CalendarDay`).nth(41).click();
-    await expect(page.getByTestId(`SubCalendar`)).toHaveValue(`2000/01/02`);
-    await page.getByTestId(`SubCalendar`).click();
-    await page.getByTestId(`CalendarClear`).click();
-    await expect(page.getByTestId(`SubCalendar`)).toHaveValue(``);
+  test(`option - date`, async ({ page }) => {
+    await page.getByTestId(`SubDate`).click();
+    await page.getByTestId(`DateDay`).nth(41).click();
+    await expect(page.getByTestId(`SubDate`)).toHaveValue(`2000/01/02`);
+    await page.getByTestId(`SubDate`).click();
+    await page.getByTestId(`DateClear`).click();
+    await expect(page.getByTestId(`SubDate`)).toHaveValue(``);
   });
-  test(`option - clock`, async ({ page }) => {
-    await page.getByTestId(`SubClock`).click();
-    await page.getByTestId(`ClockOk`).click();
-    await expect(page.getByTestId(`SubClock`)).toHaveValue(`00:00`);
-    await page.getByTestId(`SubClock`).click();
-    await page.getByTestId(`ClockClear`).click();
-    await expect(page.getByTestId(`SubClock`)).toHaveValue(``);
+  test(`option - time`, async ({ page }) => {
+    await page.getByTestId(`SubTime`).click();
+    await page.getByTestId(`TimeOk`).click();
+    await expect(page.getByTestId(`SubTime`)).toHaveValue(`00:00`);
+    await page.getByTestId(`SubTime`).click();
+    await page.getByTestId(`TimeClear`).click();
+    await expect(page.getByTestId(`SubTime`)).toHaveValue(``);
   });
   test(`option - dialog`, async ({ page }) => {
     await page.getByTestId(`SubDialog`).click();
@@ -106,10 +106,10 @@ test.describe(`sub`, () => {
     await expect(page.getByTestId(`SubDialog`)).toHaveValue(`5分前,1時間前,2日前`);
   });
   test(`option - limit`, async ({ page }) => {
-    await page.getByTestId(`SubCalendar`).click();
-    await page.getByTestId(`CalendarClear`).click();
-    await expect(page.getByTestId(`SubCalendar`)).not.toHaveClass(/ text-theme-warn/);
-    await expect(page.getByTestId(`SubClock`)).not.toHaveClass(/ text-theme-warn/);
+    await page.getByTestId(`SubDate`).click();
+    await page.getByTestId(`DateClear`).click();
+    await expect(page.getByTestId(`SubDate`)).not.toHaveClass(/ text-theme-warn/);
+    await expect(page.getByTestId(`SubTime`)).not.toHaveClass(/ text-theme-warn/);
     await expect(page.getByTestId(`SubDialog`)).not.toHaveClass(/ text-theme-warn/);
   });
 });

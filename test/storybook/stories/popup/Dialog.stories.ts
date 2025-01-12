@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
 import PopupDialog from "@/components/popup/dialog.vue";
-import dialog from "@/stores/popup/dialog";
+import dialog from "@/store/popup/dialog";
 
 const meta: Meta<typeof PopupDialog> = {
   component: PopupDialog,
@@ -42,21 +42,9 @@ const meta: Meta<typeof PopupDialog> = {
           cancel: () => ``,
         },
       });
-      return {
-        refer: dialog.refer,
-        state: dialog.state,
-        stateCheckAll: dialog.render.stateCheckAll,
-        errorValidation: dialog.render.errorValidation,
-        clickCheckAll: dialog.handle.clickCheckAll,
-      };
+      return { dialog };
     },
-    template: `<PopupDialog
-        :refer="refer"
-        :state="state"
-        :stateCheckAll="stateCheckAll"
-        :errorValidation="errorValidation"
-        @clickCheckAll="clickCheckAll"
-      />`,
+    template: `<PopupDialog :dialog="dialog" />`,
   }),
 };
 
