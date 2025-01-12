@@ -23,13 +23,13 @@ jobs:
       - name: Setup Pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9.15.1
+          version: 10.6.1
       - name: Install Dependency
         run: pnpm install
       - name: Build Storybook
         run: pnpm build:ui
       - name: Upload Storybook
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./.storybook
       - name: Deploy Storybook

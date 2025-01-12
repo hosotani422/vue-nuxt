@@ -29,8 +29,10 @@ describe(`dom`, () => {
 });
 
 describe(`logic`, () => {
-  it(`updateStyle`, () => {
+  it(`styleLine`, () => {
     const wrapper = mount(InputRange, { props: { min: 0, max: 100, step: 1, modelValue: 33 } });
-    expect(wrapper.vm.updateStyle()).toBe(`background: linear-gradient(to right, #18d 33%, #959595 33%)`);
+    expect(wrapper.vm.render.styleLine()).toEqual({
+      background: `linear-gradient(to right, var(--color-theme-fine) 33%, var(--color-theme-half) 33%)`,
+    });
   });
 });

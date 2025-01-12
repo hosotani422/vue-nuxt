@@ -1,0 +1,20 @@
+@theme {
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-theme-fine: #18d;
+  --color-theme-care: #f80;
+  --color-theme-warn: #ff0800;
+  --color-theme-half: #959595;
+  --color-font-light: #383838;
+  --color-font-dark: #efefff;
+  --color-back-light: #fafafa;
+  --color-back-dark: #303030;
+  --color-mask-light: rgba(0, 0, 0, 0.3);
+  --color-mask-dark: rgba(255, 255, 255, 0.3);
+  --color-grad-light: linear-gradient(145deg, #d0d0d0, #e7e7e7);
+  --color-grad-dark: linear-gradient(145deg, #454545, #6a6a6a);
+  --shadow-outer-light: 0px 0px 5px 5px rgba(0, 0, 0, 0.5);
+  --shadow-outer-dark: 0px 0px 5px 5px rgba(255, 255, 255, 0.5);
+  --shadow-inner-light: 0px 0px 5px 5px rgba(0, 0, 0, 0.5) inset;
+  --shadow-inner-dark: 0px 0px 5px 5px rgba(255, 255, 255, 0.5) inset;
+}
