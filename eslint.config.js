@@ -3,7 +3,6 @@ import eslintJs from "@eslint/js";
 import eslintTs from "typescript-eslint";
 import eslintVue from "eslint-plugin-vue";
 import eslintPrettier from "eslint-config-prettier";
-import tailwind from "eslint-plugin-tailwindcss";
 
 const nuxtGlobals = {
   useAppConfig: "readonly",
@@ -112,7 +111,6 @@ export default eslintTs.config(
   eslintJs.configs.recommended,
   ...eslintTs.configs.recommended,
   ...eslintVue.configs[`flat/recommended`],
-  ...tailwind.configs["flat/recommended"],
   eslintPrettier,
   {
     name: `custom/recommended`,

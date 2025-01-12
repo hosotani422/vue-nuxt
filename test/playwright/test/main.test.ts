@@ -72,8 +72,8 @@ test.describe(`main`, () => {
   });
   test(`item - limit`, async ({ page }) => {
     await page.getByTestId(`MainItem`).nth(0).click();
-    await page.getByTestId(`SubCalendar`).click();
-    await page.getByTestId(`CalendarClear`).click();
+    await page.getByTestId(`SubDate`).click();
+    await page.getByTestId(`DateClear`).click();
     await page.getByTestId(`SubRight`).click();
     await expect(page.getByTestId(`MainTask`).nth(0)).not.toHaveClass(/text-theme-warn/);
   });
