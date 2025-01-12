@@ -1,10 +1,11 @@
 import path from "path";
+import postcss from "./postcss.config.js";
 
 export default defineNuxtConfig({
   ssr: true,
-  rootDir: `src`,
+  rootDir: `app`,
   buildDir: `../.nuxt`,
-  css: [`@/assets/style/tailwind.css`],
+  css: [`@/styles/tailwind.css`],
   components: {
     global: true,
     dirs: [`@/components`],
@@ -12,7 +13,7 @@ export default defineNuxtConfig({
   vite: {
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, `src`),
+        "@": path.resolve(__dirname, `app`),
       },
     },
   },
@@ -28,5 +29,5 @@ export default defineNuxtConfig({
       },
     ],
   },
-  postcss: require(`./postcss.config.js`),
+  postcss,
 });

@@ -10,7 +10,7 @@ export default defineConfig(() => ({
     include: [`test/vitest/unit/**/*.test.ts`],
     environment: `happy-dom`,
     alias: {
-      "@": path.join(__dirname, `../../src`),
+      "@": path.join(__dirname, `../../app`),
     },
   },
   plugins: [
@@ -20,7 +20,7 @@ export default defineConfig(() => ({
       dts: false,
     }),
     Components({
-      dirs: [`./src/components`],
+      dirs: [`./app/components`],
       directoryAsNamespace: true,
       dts: false,
     }),

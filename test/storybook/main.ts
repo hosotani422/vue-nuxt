@@ -8,17 +8,7 @@ import path from "path";
 const config: StorybookConfig = {
   stories: [`./stories/**/*.stories.ts`],
   framework: `@storybook/vue3-vite`,
-  addons: [
-    `@storybook/addon-essentials`,
-    {
-      name: `@storybook/addon-postcss`,
-      options: {
-        postcssLoaderOptions: {
-          implementation: import(`postcss`),
-        },
-      },
-    },
-  ],
+  addons: [`@storybook/addon-essentials`],
   viteFinal: (config) => ({
     ...mergeConfig(config, {
       plugins: [
@@ -28,15 +18,15 @@ const config: StorybookConfig = {
           dts: false,
         }),
         Components({
-          dirs: [`../src/components`],
+          dirs: [`../app/components`],
           directoryAsNamespace: true,
           dts: false,
         }),
       ],
       resolve: {
         alias: {
-          "@": path.resolve(__dirname, `../../src`),
-          "~": path.resolve(__dirname, `../../src`),
+          "@": path.resolve(__dirname, `../../app`),
+          "~": path.resolve(__dirname, `../../app`),
         },
       },
     }),

@@ -7,7 +7,7 @@ const meta: Meta<typeof PopupDialog> = {
   render: () => ({
     components: { PopupDialog },
     setup() {
-      dialog.action.open({
+      dialog.handle.open({
         mode: `text`,
         title: `title`,
         message: `message`,
@@ -43,14 +43,18 @@ const meta: Meta<typeof PopupDialog> = {
         },
       });
       return {
+        refer: dialog.refer,
         state: dialog.state,
-        stateCheckAll: dialog.getter.stateCheckAll,
-        clickCheckAll: dialog.action.clickCheckAll,
+        stateCheckAll: dialog.render.stateCheckAll,
+        errorValidation: dialog.render.errorValidation,
+        clickCheckAll: dialog.handle.clickCheckAll,
       };
     },
     template: `<PopupDialog
+        :refer="refer"
         :state="state"
         :stateCheckAll="stateCheckAll"
+        :errorValidation="errorValidation"
         @clickCheckAll="clickCheckAll"
       />`,
   }),
