@@ -1,0 +1,49 @@
+@custom-variant theme-current {
+  &.back,
+  &.prev,
+  &.next {
+    @slot;
+  }
+}
+@custom-variant theme-light {
+  &.light,
+  .light & {
+    @slot;
+  }
+}
+@custom-variant theme-dark {
+  &.dark,
+  .dark & {
+    @slot;
+  }
+}
+@custom-variant speed-slow {
+  &.slow,
+  .slow & {
+    @slot;
+  }
+}
+@custom-variant speed-just {
+  &.just,
+  .just & {
+    @slot;
+  }
+}
+@custom-variant speed-fast {
+  &.fast,
+  .fast & {
+    @slot;
+  }
+}
+@custom-variant anime-active {
+  &.v-enter-active,
+  &.v-leave-active {
+    @slot;
+  }
+}
+@custom-variant anime-fromto {
+  &.v-enter-from,
+  &.v-leave-to {
+    @slot;
+  }
+}

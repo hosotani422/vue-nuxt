@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from "@vue/test-utils";
 import Base from "../base";
-import notice from "@/stores/popup/notice";
+import notice from "@/store/popup/notice";
 import PopupNotice from "@/components/popup/notice.vue";
 
 export default class Notice extends Base {
@@ -9,10 +9,7 @@ export default class Notice extends Base {
     notice.state.message = `message`;
     notice.state.button = `button`;
     const wrapper = mount(PopupNotice, {
-      props: {
-        refer: notice.refer,
-        state: notice.state,
-      },
+      props: { notice },
     });
     return wrapper;
   }
