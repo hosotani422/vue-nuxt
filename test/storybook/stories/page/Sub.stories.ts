@@ -12,56 +12,48 @@ const meta: Meta<typeof PageSub> = {
     setup() {
       mock();
       return {
-        refer: sub.refer,
-        listId: app.getter.listId,
-        mainId: app.getter.mainId,
-        mainUnit: main.getter.stateUnit,
-        stateFull: sub.getter.stateFull,
-        stateUnit: sub.getter.stateUnit,
-        classItem: sub.getter.classItem,
-        textMemo: sub.getter.textMemo,
-        classLimit: sub.getter.classLimit,
-        textAlarm: sub.getter.textAlarm,
-        routerBack: app.action.routerBack,
-        enterItem: sub.action.enterItem,
-        backItem: sub.action.backItem,
-        deleteItem: sub.action.deleteItem,
-        checkItem: sub.action.checkItem,
-        switchItem: sub.action.switchItem,
-        switchEdit: sub.action.switchEdit,
-        inputMemo: sub.action.inputMemo,
-        openCalendar: sub.action.openCalendar,
-        openClock: sub.action.openClock,
-        openAlarm: sub.action.openAlarm,
-        dragInit: sub.action.dragInit,
-        dragStart: sub.action.dragStart,
-        dragMove: sub.action.dragMove,
-        dragEnd: sub.action.dragEnd,
-        swipeInit: sub.action.swipeInit,
-        swipeStart: sub.action.swipeStart,
-        swipeMove: sub.action.swipeMove,
-        swipeEnd: sub.action.swipeEnd,
+        stateMain: main.state,
+        stateSub: sub.state,
+        listId: app.render.listId,
+        mainId: app.render.mainId,
+        classStatus: sub.render.classStatus,
+        classLimit: sub.render.classLimit,
+        textMemo: sub.render.textMemo,
+        textAlarm: sub.render.textAlarm,
+        routerBack: app.handle.routerBack,
+        toggleMode: sub.handle.toggleMode,
+        convertItem: sub.handle.convertItem,
+        divideItem: sub.handle.divideItem,
+        connectItem: sub.handle.connectItem,
+        deleteItem: sub.handle.deleteItem,
+        openCalendar: sub.handle.openCalendar,
+        openClock: sub.handle.openClock,
+        openAlarm: sub.handle.openAlarm,
+        dragInit: sub.handle.dragInit,
+        dragStart: sub.handle.dragStart,
+        dragMove: sub.handle.dragMove,
+        dragEnd: sub.handle.dragEnd,
+        swipeInit: sub.handle.swipeInit,
+        swipeStart: sub.handle.swipeStart,
+        swipeMove: sub.handle.swipeMove,
+        swipeEnd: sub.handle.swipeEnd,
       };
     },
     template: `<PageSub
-        :refer="refer"
+        :stateMain="stateMain"
+        :stateSub="stateSub"
         :listId="listId"
         :mainId="mainId"
-        :mainUnit="mainUnit"
-        :stateFull="stateFull"
-        :stateUnit="stateUnit"
-        :classItem="classItem"
-        :textMemo="textMemo"
+        :classStatus="classStatus"
         :classLimit="classLimit"
+        :textMemo="textMemo"
         :textAlarm="textAlarm"
         @routerBack="routerBack"
-        @enterItem="enterItem"
-        @backItem="backItem"
+        @toggleMode="toggleMode"
+        @convertItem="convertItem"
+        @divideItem="divideItem"
+        @connectItem="connectItem"
         @deleteItem="deleteItem"
-        @checkItem="checkItem"
-        @switchItem="switchItem"
-        @switchEdit="switchEdit"
-        @inputMemo="inputMemo"
         @openCalendar="openCalendar"
         @openClock="openClock"
         @openAlarm="openAlarm"

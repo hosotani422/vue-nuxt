@@ -19,7 +19,4 @@ export default class Clock extends Base {
     });
     return wrapper;
   }
-  public static setAction(): void {
-    vi.spyOn(clock.state, `callback`).mockReturnValue();
-  }
 }

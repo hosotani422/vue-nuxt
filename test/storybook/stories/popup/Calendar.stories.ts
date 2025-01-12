@@ -1,15 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
 import PopupCalendar from "@/components/popup/calendar.vue";
 import calendar from "@/stores/popup/calendar";
+import mock from "../../mock/mock";
 
 const meta: Meta<typeof PopupCalendar> = {
   component: PopupCalendar,
   render: () => ({
     components: { PopupCalendar },
     setup() {
-      calendar.action.open({
+      mock();
+      calendar.handle.open({
         select: `1999/12/24`,
-        current: `1999/12`,
         cancel: `cancel`,
         clear: `clear`,
         callback: () => ``,
@@ -17,23 +18,23 @@ const meta: Meta<typeof PopupCalendar> = {
       return {
         refer: calendar.refer,
         state: calendar.state,
-        textWeek: calendar.getter.textWeek,
-        textDay: calendar.getter.textDay,
-        classDay: calendar.getter.classDay,
-        close: calendar.action.close,
-        pageMove: calendar.action.pageMove,
-        swipeInit: calendar.action.swipeInit,
-        swipeStart: calendar.action.swipeStart,
-        swipeMove: calendar.action.swipeMove,
-        swipeEnd: calendar.action.swipeEnd,
+        classStatus: calendar.render.classStatus,
+        getWeek: calendar.handle.getWeek,
+        getDay: calendar.handle.getDay,
+        close: calendar.handle.close,
+        pageMove: calendar.handle.pageMove,
+        swipeInit: calendar.handle.swipeInit,
+        swipeStart: calendar.handle.swipeStart,
+        swipeMove: calendar.handle.swipeMove,
+        swipeEnd: calendar.handle.swipeEnd,
       };
     },
     template: `<PopupCalendar
         :refer="refer"
         :state="state"
-        :textWeek="textWeek"
-        :textDay="textDay"
-        :classDay="classDay"
+        :classStatus="classStatus"
+        :getWeek="getWeek"
+        :getDay="getDay"
         @close="close"
         @pageMove="pageMove"
         @swipeInit="swipeInit"

@@ -1,8 +1,6 @@
-import { vi, beforeEach, afterEach, describe, it, expect, MockInstance } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import i18next from "i18next";
-import * as Api from "@/api/api";
-import * as Cordova from "@/utils/cordova/cordova";
-import constant from "@/utils/const";
+import Api from "@/api/api";
 import app from "@/stores/page/app";
 import list from "@/stores/page/list";
 import main from "@/stores/page/main";
@@ -12,100 +10,76 @@ import dialog from "@/stores/popup/dialog";
 import fixture from "../../../fixture/base";
 
 beforeEach(async () => {
-  process.client = true;
-  fixture.loadLang();
-  fixture.loadData();
-  fixture.setRouter();
+  await fixture.init();
+  vi.mock(`vue-router`, () => ({
+    useRoute: () => ({
+      params: { listId: `list1111111111111`, mainId: `main1111111111111` },
+    }),
+    useRouter: () => ({ push: () => {}, replace: () => {}, back: () => {} }),
+  }));
 });
 
 afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe(`action`, () => {
-  it(`initPage`, async () => {
-    vi.spyOn(conf.action, `loadItem`).mockResolvedValue();
-    await conf.action.initPage();
-    expect(conf.action.loadItem).toBeCalledTimes(1);
-  });
-  it(`actPage`, async () => {
-    vi.spyOn(conf.action, `saveItem`).mockReturnValue();
-    vi.spyOn(conf.action, `reactSound`).mockReturnValue();
-    conf.action.actPage();
-    conf.state.data.volume = 3;
-    expect(await conf.action.saveItem).toBeCalledTimes(1);
-    expect(await conf.action.reactSound).toBeCalledTimes(1);
-    conf.state.data.speed = 3;
-    expect(await conf.action.saveItem).toBeCalledTimes(2);
-    expect(await conf.action.reactSound).toBeCalledTimes(1);
-  });
-  it(`loadItem`, async () => {
-    const readConfData: typeof conf.state.data = {
+describe(`handle`, () => {
+  it(`init`, async () => {
+    const readMock = vi.spyOn(Api, `readConf`).mockResolvedValue({
       size: 2,
       speed: 2,
-      volume: 1,
-      vibrate: `on`,
-      theme: `dark`,
+      theme: `light`,
       lang: `ja`,
+      vibrate: `on`,
       save: `local`,
-    };
-    vi.spyOn(Api, `readConf`).mockResolvedValue(readConfData);
-    await conf.action.loadItem();
-    expect(Api.readConf).toBeCalledTimes(1);
-    expect(conf.state.data).toEqual(readConfData);
-  });
-  it(`saveItem`, () => {
-    vi.spyOn(Api, `writeConf`).mockReturnValue();
-    conf.action.saveItem();
-    expect(Api.writeConf).toBeCalledTimes(1);
-    expect(Api.writeConf).toBeCalledWith({
+    });
+    const writeMock = vi.spyOn(Api, `writeConf`).mockReturnValue();
+    const langMock = vi.spyOn(conf.handle, `setLang`).mockResolvedValue();
+    await conf.handle.init();
+    expect(readMock).toBeCalledTimes(1);
+    expect(readMock).toBeCalledWith();
+    expect(langMock).toBeCalledTimes(1);
+    expect(langMock).toBeCalledWith({ lang: `ja` });
+    expect(conf.state.data).toEqual({
       size: 2,
       speed: 2,
-      volume: 1,
-      vibrate: `on`,
-      theme: `dark`,
+      theme: `light`,
       lang: `ja`,
+      vibrate: `on`,
       save: `local`,
     });
-  });
-  it(`reactSound`, () => {
-    vi.spyOn(constant.sound, `volume`).mockReturnValue();
-    conf.action.reactSound();
-    expect(constant.sound.volume).toBeCalledTimes(1);
-    expect(constant.sound.volume).toBeCalledWith(1 / 3);
-  });
-  it(`reactLang`, () => {
-    vi.spyOn(i18next, `changeLanguage`).mockReturnThis();
-    conf.action.reactLang({ value: `reactLang` });
-    expect(i18next.changeLanguage).toBeCalledTimes(1);
-    expect(i18next.changeLanguage).toBeCalledWith(`reactLang`);
-  });
-  it(`reactAlarm`, () => {
-    vi.spyOn(Cordova.Notice, `removeAll`).mockReturnValue();
-    vi.spyOn(Cordova.Notice, `insert`).mockReturnValue();
-    conf.action.reactAlarm();
-    expect(Cordova.Notice.removeAll).toBeCalledTimes(1);
-    expect(Cordova.Notice.insert).toBeCalledTimes(2);
-    expect(Cordova.Notice.insert).toBeCalledWith({
-      title: `Memotea アラーム`,
-      message: `list1 ⇒ main1`,
-      date: new Date(`1999/12/31 23:55`),
+    conf.state.data.lang = `en`;
+    expect(writeMock).toBeCalledTimes(1);
+    expect(writeMock).toBeCalledWith({
+      size: 2,
+      speed: 2,
+      theme: `light`,
+      lang: `en`,
+      vibrate: `on`,
+      save: `local`,
     });
-    expect(Cordova.Notice.insert).toBeCalledWith({
-      title: `Memotea アラーム`,
-      message: `list1 ⇒ main1`,
-      date: new Date(`1999/12/31 23:00`),
-    });
+    expect(langMock).toBeCalledTimes(3);
+    expect(langMock).toBeCalledWith({ lang: `en` });
+  });
+  it(`setLang`, async () => {
+    const langMock = vi.spyOn(i18next, `changeLanguage`).mockReturnThis();
+    const updateMock = vi.spyOn(app.handle, `forceUpdate`).mockReturnValue();
+    await conf.handle.setLang({ lang: `en` });
+    expect(langMock).toBeCalledTimes(1);
+    expect(langMock).toBeCalledWith(`en`);
+    expect(updateMock).toBeCalledTimes(1);
+    expect(updateMock).toBeCalledWith();
   });
   it(`downloadBackup`, () => {
-    const event = { currentTarget: { setAttribute: vi.fn() } } as unknown as Event;
-    conf.action.downloadBackup({ event });
-    expect((event.currentTarget as HTMLElement).setAttribute).toBeCalledTimes(2);
-    expect((event.currentTarget as HTMLElement).setAttribute).toBeCalledWith(`download`, `memotea.bak`);
-    expect((event.currentTarget as HTMLElement).setAttribute).toBeCalledWith(
+    const attributeMock = vi.fn();
+    const elem = { setAttribute: attributeMock } as unknown as HTMLElement;
+    conf.handle.downloadBackup({ elem });
+    expect(attributeMock).toBeCalledTimes(2);
+    expect(attributeMock).toBeCalledWith(`download`, `memosuku.bak`);
+    expect(attributeMock).toBeCalledWith(
       `href`,
       `data:text/plain,${encodeURIComponent(
-        `${app.getter.listId()}\n` +
+        `${app.render.listId()}\n` +
           `${JSON.stringify(list.state.data)}\n` +
           `${JSON.stringify(main.state.data)}\n` +
           `${JSON.stringify(sub.state.data)}\n` +
@@ -113,52 +87,99 @@ describe(`action`, () => {
       )}`,
     );
   });
-  it(`uploadBackup`, () => {
-    vi.spyOn(FileReader.prototype, `readAsText`).mockReturnValue();
-    conf.action.uploadBackup({ event: { target: { files: [`uploadFile`] } } as unknown as Event });
-    expect(FileReader.prototype.readAsText).toBeCalledTimes(1);
-    expect(FileReader.prototype.readAsText).toBeCalledWith(`uploadFile`);
-  });
-  it(`resetConf`, () => {
-    vi.spyOn(dialog.action, `open`);
-    vi.spyOn(dialog.action, `close`).mockReturnValue();
-    conf.action.resetConf();
-    expect(dialog.action.open).toBeCalledTimes(1);
-    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.mode).toBe(`confirm`);
-    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.title).toBe(`本当にリセットしますか`);
-    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.message).toBe(``);
-    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.ok).toBe(`決定`);
-    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.cancel).toBe(`キャンセル`);
-    dialog.state.callback.ok!();
+  it(`uploadBackup`, async () => {
+    const readMock = vi.spyOn(FileReader.prototype, `readAsText`);
+    const listenerMock = vi.spyOn(FileReader.prototype, `addEventListener`);
+    const routerMock = vi.spyOn(app.handle, `routerBack`).mockReturnValue();
+    const openMock = vi.spyOn(dialog.handle, `open`);
+    const closeMock = vi.spyOn(dialog.handle, `close`).mockReturnValue();
+    conf.handle.uploadBackup({
+      files: [
+        new File(
+          [
+            `list0000000000000\n` +
+              `{"sort":["list0000000000000"],"data":{"list0000000000000":{"title":"Inbox"}}}\n` +
+              `{"list0000000000000":{"sort":[],"data":{}}}\n` +
+              `{"list0000000000000":{"data":{}}}\n` +
+              `{"size":2,"speed":2,"theme":"dark","lang":"ja","vibrate":"on","save":"local"}`,
+          ],
+          `memosuku.bak`,
+          { type: `text/plain` },
+        ),
+      ] as unknown as FileList,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(readMock).toBeCalledTimes(1);
+    expect(listenerMock).toBeCalledTimes(1);
+    expect(listenerMock.mock.calls[0]![0]).toBe(`load`);
     expect(conf.state.data).toEqual({
       size: 2,
       speed: 2,
-      volume: 1,
-      vibrate: `on`,
-      theme: `light`,
+      theme: `dark`,
       lang: `ja`,
+      vibrate: `on`,
       save: `local`,
     });
-    expect(dialog.action.close).toBeCalledTimes(1);
-    dialog.state.callback.cancel!();
-    expect(dialog.action.close).toBeCalledTimes(2);
+    expect(list.state.data).toEqual({
+      sort: ["list0000000000000"],
+      data: { list0000000000000: { title: "Inbox" } },
+    });
+    expect(main.state.data).toEqual({ list0000000000000: { sort: [], data: {} } });
+    expect(sub.state.data).toEqual({ list0000000000000: { data: {} } });
+    expect(routerMock).toBeCalledTimes(1);
+    expect(routerMock).toBeCalledWith({ listId: `list0000000000000` });
+    conf.handle.uploadBackup({ files: [new File([``], ``)] as unknown as FileList });
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(openMock).toBeCalledTimes(1);
+    expect(openMock.mock.calls[0]![0]!.mode).toBe(`alert`);
+    expect(openMock.mock.calls[0]![0]!.title).toBe(`ファイルの形式が違います`);
+    expect(openMock.mock.calls[0]![0]!.message).toBe(``);
+    expect(openMock.mock.calls[0]![0]!.cancel).toBe(`決定`);
+    dialog.refer.callback.cancel!();
+    expect(closeMock).toBeCalledTimes(1);
+    expect(closeMock).toBeCalledWith();
+  });
+  it(`resetConf`, () => {
+    const openMock = vi.spyOn(dialog.handle, `open`);
+    const closeMock = vi.spyOn(dialog.handle, `close`).mockReturnValue();
+    conf.handle.resetConf();
+    expect(openMock).toBeCalledTimes(1);
+    expect(openMock.mock.calls[0]![0]!.mode).toBe(`confirm`);
+    expect(openMock.mock.calls[0]![0]!.title).toBe(`本当にリセットしますか`);
+    expect(openMock.mock.calls[0]![0]!.message).toBe(``);
+    expect(openMock.mock.calls[0]![0]!.ok).toBe(`決定`);
+    expect(openMock.mock.calls[0]![0]!.cancel).toBe(`キャンセル`);
+    dialog.refer.callback.ok!();
+    expect(conf.state.data).toEqual({
+      size: 2,
+      speed: 2,
+      theme: `light`,
+      lang: `ja`,
+      vibrate: `on`,
+      save: `local`,
+    });
+    expect(closeMock).toBeCalledTimes(1);
+    expect(closeMock).toBeCalledWith();
+    dialog.refer.callback.cancel!();
+    expect(closeMock).toBeCalledTimes(2);
+    expect(closeMock).toBeCalledWith();
   });
   it(`resetList`, async () => {
-    vi.spyOn(dialog.action, `open`);
-    vi.spyOn(dialog.action, `close`).mockReturnValue();
-    vi.spyOn(app.action, `routerBack`).mockReturnValue();
-    conf.action.resetList();
-    expect(dialog.action.open).toBeCalledTimes(1);
-    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.mode).toBe(`confirm`);
-    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.title).toBe(`本当にリセットしますか`);
-    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.message).toBe(``);
-    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.ok).toBe(`決定`);
-    expect((dialog.action.open as unknown as MockInstance).mock.calls[0]![0]!.cancel).toBe(`キャンセル`);
-    dialog.state.callback.ok!();
-    expect(app.action.routerBack).toBeCalledTimes(1);
-    expect(app.action.routerBack).toBeCalledWith({ listId: `list0000000000000` });
-    expect(dialog.action.close).toBeCalledTimes(1);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const openMock = vi.spyOn(dialog.handle, `open`);
+    const closeMock = vi.spyOn(dialog.handle, `close`).mockReturnValue();
+    const routerMock = vi.spyOn(app.handle, `routerBack`).mockReturnValue();
+    conf.handle.resetList();
+    expect(openMock).toBeCalledTimes(1);
+    expect(openMock.mock.calls[0]![0]!.mode).toBe(`confirm`);
+    expect(openMock.mock.calls[0]![0]!.title).toBe(`本当にリセットしますか`);
+    expect(openMock.mock.calls[0]![0]!.message).toBe(``);
+    expect(openMock.mock.calls[0]![0]!.ok).toBe(`決定`);
+    expect(openMock.mock.calls[0]![0]!.cancel).toBe(`キャンセル`);
+    dialog.refer.callback.ok!();
+    expect(routerMock).toBeCalledTimes(1);
+    expect(routerMock).toBeCalledWith({ listId: `list0000000000000` });
+    expect(closeMock).toBeCalledTimes(1);
+    expect(closeMock).toBeCalledWith();
     expect(list.state.data).toEqual({
       sort: [`list0000000000000`, `list9999999999999`],
       data: {
@@ -181,50 +202,60 @@ describe(`action`, () => {
       },
       list9999999999999: { data: {} },
     });
-    dialog.state.callback.cancel!();
-    expect(dialog.action.close).toBeCalledTimes(2);
+    dialog.refer.callback.cancel!();
+    expect(closeMock).toBeCalledTimes(2);
+    expect(closeMock).toBeCalledWith();
   });
   it(`swipeInit`, () => {
-    const target = { style: {}, getBoundingClientRect: () => ({ top: 40, height: 40 }) } as unknown as HTMLElement;
-    conf.action.swipeInit({ target, clientX: 0, clientY: 0 });
-    expect(conf.prop.swipe).toEqual({ status: `start`, target, x: 0, y: 0, top: 60 });
+    const getByIdMock = vi
+      .spyOn(app.refer, `getById`)
+      .mockReturnValue({ getBoundingClientRect: () => ({ top: 0, height: 0 }) } as HTMLElement);
+    conf.handle.swipeInit({ x: 0, y: 0 });
+    expect(getByIdMock).toBeCalledTimes(1);
+    expect(getByIdMock).toBeCalledWith(`ConfRoot`);
+    expect(conf.refer.swipe.status).toBe(`start`);
+    expect(conf.refer.swipe.x).toBe(0);
+    expect(conf.refer.swipe.y).toBe(0);
+    expect(conf.refer.swipe.top).toBe(0);
   });
   it(`swipeStart`, () => {
-    conf.action.swipeStart({ clientX: 0, clientY: 20 });
-    expect(conf.prop.swipe.status).toBe(`move`);
+    conf.handle.swipeStart({ x: 20, y: 0 });
+    expect(conf.refer.swipe).toEqual({});
+    conf.refer.swipe = { status: `start`, x: 0, y: 0, top: 0 };
+    conf.handle.swipeStart({ x: 0, y: 20 });
+    expect(conf.refer.swipe.status).toBe(`move`);
   });
   it(`swipeMove`, () => {
-    conf.action.swipeMove({ clientY: 20 });
-    expect(conf.prop.swipe.target!.style.transform).toBe(`translateY(80px)`);
-    conf.action.swipeMove({ clientY: -200 });
-    expect(conf.prop.swipe.target!.style.transform).toBe(`translateY(0px)`);
+    conf.refer.swipe.elem = { style: {} } as HTMLElement;
+    conf.handle.swipeMove({ y: 100 });
+    expect(conf.refer.swipe.elem!.style.transform).toBe(`translateY(100px)`);
+    conf.handle.swipeMove({ y: -100 });
+    expect(conf.refer.swipe.elem!.style.transform).toBe(`translateY(0px)`);
   });
   it(`swipeEnd`, () => {
-    const addListenerMock = vi.fn((_mode: string, listener: () => void) => {
-      listener();
-    });
+    const addListenerMock = vi.fn((_: string, listener: () => void) => listener());
+    const removeListenerMock = vi.fn((_: string) => _);
     const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
-    (conf.prop.swipe.target as unknown as { [K in string]: object }).animate = animateMock;
-    conf.action.swipeEnd({ clientY: 20 });
+    (conf.refer.swipe.elem as unknown as { [K in string]: object }).animate = animateMock;
+    (conf.refer.swipe.elem as unknown as { [K in string]: object }).removeEventListener = removeListenerMock;
+    conf.handle.swipeEnd({ y: 100 });
     expect(animateMock).toBeCalledTimes(1);
-    expect(animateMock).toBeCalledWith({ transform: `translateY(0px)` }, { duration: 150, easing: `ease-in-out` });
+    expect(animateMock).toBeCalledWith({ transform: `translateY(0px)` }, { duration: 250, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(1);
     expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
-    expect(conf.prop.swipe).toEqual({});
-  });
-  it(`swipeStart - extra`, () => {
-    conf.prop.swipe = { status: `start`, x: 0, y: 0 };
-    conf.action.swipeStart({ clientX: 20, clientY: 0 });
-    expect(conf.prop.swipe).toEqual({});
+    expect(removeListenerMock).toBeCalledTimes(1);
+    expect(removeListenerMock.mock.calls[0]![0]).toBe(`finish`);
+    expect(conf.refer.swipe).toEqual({});
   });
   it(`swipeEnd - extra`, () => {
-    conf.prop.swipe = { status: `move`, top: 60, y: 0 };
-    vi.spyOn(app.action, `routerBack`).mockReturnValue();
-    conf.action.swipeEnd({ clientY: 100 });
-    expect(app.action.routerBack).toBeCalledTimes(1);
-    expect(conf.prop.swipe).toEqual({});
-    conf.prop.swipe = { status: `end` };
-    conf.action.swipeEnd({ clientY: 100 });
-    expect(conf.prop.swipe).toEqual({});
+    conf.refer.swipe = { status: `move`, y: 0, top: 0 };
+    const routerMock = vi.spyOn(app.handle, `routerBack`).mockReturnValue();
+    conf.handle.swipeEnd({ y: 200 });
+    expect(routerMock).toBeCalledTimes(1);
+    expect(routerMock).toBeCalledWith();
+    expect(conf.refer.swipe).toEqual({});
+    conf.refer.swipe = { status: `start` };
+    conf.handle.swipeEnd({ y: 0 });
+    expect(conf.refer.swipe).toEqual({});
   });
 });

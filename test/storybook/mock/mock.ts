@@ -1,15 +1,16 @@
-import constant from "@/utils/const";
+import app from "@/stores/page/app";
 import list from "@/stores/page/list";
 import main from "@/stores/page/main";
 import sub from "@/stores/page/sub";
 import conf from "@/stores/page/conf";
 
 export default (): void => {
+  app.handle.init();
   list.state.data = {
-    sort: [``, ...constant.init.list.sort],
+    sort: [``, ...list.refer.init.sort],
     data: {
       "": { title: `listTitle` },
-      ...constant.init.list.data,
+      ...list.refer.init.data,
     },
   };
   main.state.data = {
@@ -42,7 +43,7 @@ export default (): void => {
         },
       },
     },
-    ...constant.init.main,
+    ...main.refer.init,
   };
   sub.state.data = {
     "": {
@@ -84,9 +85,9 @@ export default (): void => {
         },
       },
     },
-    ...constant.init.sub,
+    ...sub.refer.init,
   };
   conf.state.data = {
-    ...constant.init.conf,
+    ...conf.refer.init,
   };
 };

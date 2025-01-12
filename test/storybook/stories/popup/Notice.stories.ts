@@ -7,16 +7,18 @@ const meta: Meta<typeof PopupNotice> = {
   render: () => ({
     components: { PopupNotice },
     setup() {
-      notice.action.open({
+      notice.handle.open({
         message: `message`,
         button: `button`,
         callback: () => ``,
       });
       return {
+        refer: notice.refer,
         state: notice.state,
       };
     },
     template: `<PopupNotice
+        :refer="refer"
         :state="state"
       />`,
   }),

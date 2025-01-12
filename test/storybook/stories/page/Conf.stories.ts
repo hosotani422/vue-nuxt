@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
 import PageConf from "@/components/page/conf.vue";
-import constant from "@/utils/const";
 import app from "@/stores/page/app";
 import conf from "@/stores/page/conf";
 import mock from "../../mock/mock";
@@ -12,21 +11,23 @@ const meta: Meta<typeof PageConf> = {
     setup() {
       mock();
       return {
-        title: `${constant.base.title} ${constant.base.version}`,
-        state: conf.state.data,
-        routerBack: app.action.routerBack,
-        downloadBackup: conf.action.downloadBackup,
-        uploadBackup: conf.action.uploadBackup,
-        resetConf: conf.action.resetConf,
-        resetList: conf.action.resetList,
-        swipeInit: conf.action.swipeInit,
-        swipeStart: conf.action.swipeStart,
-        swipeMove: conf.action.swipeMove,
-        swipeEnd: conf.action.swipeEnd,
+        updateKey: app.state.updateKey,
+        constant: app.refer.constant,
+        state: conf.state,
+        routerBack: app.handle.routerBack,
+        downloadBackup: conf.handle.downloadBackup,
+        uploadBackup: conf.handle.uploadBackup,
+        resetConf: conf.handle.resetConf,
+        resetList: conf.handle.resetList,
+        swipeInit: conf.handle.swipeInit,
+        swipeStart: conf.handle.swipeStart,
+        swipeMove: conf.handle.swipeMove,
+        swipeEnd: conf.handle.swipeEnd,
       };
     },
     template: `<PageConf
-        :title="title"
+        :updateKey="updateKey"
+        :constant="constant"
         :state="state"
         @routerBack="routerBack"
         @downloadBackup="downloadBackup"
