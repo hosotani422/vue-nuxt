@@ -39,16 +39,12 @@ test.describe(`conf`, () => {
     await expect(page.getByTestId(`ConfVibrateOn`)).toBeChecked();
     await expect(page.getByTestId(`InputRadioLabel`).nth(4)).toHaveText(`無`);
     await expect(page.getByTestId(`InputRadioLabel`).nth(5)).toHaveText(`有`);
-    await expect(page.getByTestId(`ConfSaveTitle`)).toHaveText(`自動保存`);
-    await expect(page.getByTestId(`ConfSaveLocal`)).toBeChecked();
-    await expect(page.getByTestId(`ConfSaveRest`)).not.toBeChecked();
-    await expect(page.getByTestId(`ConfSaveGql`)).not.toBeChecked();
-    await expect(page.getByTestId(`InputRadioLabel`).nth(6)).toHaveText(`LOCAL`);
-    await expect(page.getByTestId(`InputRadioLabel`).nth(7)).toHaveText(`REST`);
-    await expect(page.getByTestId(`InputRadioLabel`).nth(8)).toHaveText(`GQL`);
-    await expect(page.getByTestId(`ConfBackupTitle`)).toHaveText(`保存ファイル`);
-    await expect(page.getByTestId(`ConfBackupDownload`)).toHaveText(`保存`);
-    await expect(page.getByTestId(`InputFileLabel`)).toHaveText(`復元`);
+    await expect(page.getByTestId(`ConfSaveTitle`)).toHaveText(`ファイル保存`);
+    await expect(page.getByTestId(`ConfSaveLocal`)).toHaveText(`ローカル`);
+    await expect(page.getByTestId(`ConfSaveServer`)).toHaveText(`サーバー`);
+    await expect(page.getByTestId(`ConfLoadTitle`)).toHaveText(`ファイル復元`);
+    await expect(page.getByTestId(`InputFileLabel`)).toHaveText(`ローカル`);
+    await expect(page.getByTestId(`ConfLoadServer`)).toHaveText(`サーバー`);
     await expect(page.getByTestId(`ConfResetTitle`)).toHaveText(`初期化`);
     await expect(page.getByTestId(`ConfResetConf`)).toHaveText(`設定`);
     await expect(page.getByTestId(`ConfResetList`)).toHaveText(`メモ`);
@@ -84,16 +80,10 @@ test.describe(`conf`, () => {
     await expect(page.getByTestId(`ConfLangEn`)).toBeChecked();
     await expect(page.getByTestId(`ConfLangJa`)).not.toBeChecked();
   });
-  test(`item - save`, async ({ page }) => {
-    await page.getByTestId(`ConfSaveGql`).check();
-    await expect(page.getByTestId(`ConfSaveLocal`)).not.toBeChecked();
-    await expect(page.getByTestId(`ConfSaveRest`)).not.toBeChecked();
-    await expect(page.getByTestId(`ConfSaveGql`)).toBeChecked();
-  });
   test(`item - download`, async ({ page }) => {
     let download = ``;
     const downloadPromise = page.waitForEvent(`download`);
-    await page.getByTestId(`ConfBackupDownload`).click();
+    await page.getByTestId(`ConfSaveLocal`).click();
     const stream = await (await downloadPromise).createReadStream();
     for await (const chunk of stream) {
       download += chunk;
@@ -103,7 +93,7 @@ test.describe(`conf`, () => {
   });
   test(`item - upload`, async ({ page }) => {
     await page.getByTestId(`ConfThemeLight`).check();
-    await page.getByTestId(`ConfBackupUpload`).setInputFiles(`./test/memosuku.bak`);
+    await page.getByTestId(`ConfLoadLocal`).setInputFiles(`./test/memosuku.bak`);
     await expect(page.getByTestId(`ConfThemeLight`)).not.toBeChecked();
     await expect(page.getByTestId(`ConfThemeDark`)).toBeChecked();
   });

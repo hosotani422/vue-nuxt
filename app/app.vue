@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import app from "@/stores/page/app";
-import calendar from "@/stores/popup/calendar";
-import clock from "@/stores/popup/clock";
-import dialog from "@/stores/popup/dialog";
-import notice from "@/stores/popup/notice";
+import app from "@/store/page/app";
+import date from "@/store/popup/date";
+import time from "@/store/popup/time";
+import dialog from "@/store/popup/dialog";
+import notice from "@/store/popup/notice";
 await app.handle.init();
 </script>
 
@@ -11,7 +11,7 @@ await app.handle.init();
   <Html
     data-testid="AppRoot"
     class="theme-color-font"
-    :class="[app.render.classTheme(), app.render.classSize(), app.render.classSpeed()]"
+    :class="{ ...app.render.classTheme(), ...app.render.classSize(), ...app.render.classSpeed() }"
   >
     <Head>
       <Title data-testid="AppTitle">Memosuku</Title>
@@ -23,33 +23,10 @@ await app.handle.init();
     </Head>
     <Body class="fixed inset-0 z-[1]">
       <NuxtPage page-key="pageKey" />
-      <PopupCalendar
-        :refer="calendar.refer"
-        :state="calendar.state"
-        :class-status="calendar.render.classStatus"
-        :get-week="calendar.handle.getWeek"
-        :get-day="calendar.handle.getDay"
-        @close="calendar.handle.close"
-        @page-move="calendar.handle.pageMove"
-        @swipe-init="calendar.handle.swipeInit"
-        @swipe-start="calendar.handle.swipeStart"
-        @swipe-move="calendar.handle.swipeMove"
-        @swipe-end="calendar.handle.swipeEnd"
-      />
-      <PopupClock
-        :refer="clock.refer"
-        :state="clock.state"
-        @close="clock.handle.close"
-        @input-time="clock.handle.inputTime"
-      />
-      <PopupDialog
-        :refer="dialog.refer"
-        :state="dialog.state"
-        :state-check-all="dialog.render.stateCheckAll"
-        :error-validation="dialog.render.errorValidation"
-        @click-check-all="dialog.handle.clickCheckAll"
-      />
-      <PopupNotice :refer="notice.refer" :state="notice.state" />
+      <PopupDate :date="date" />
+      <PopupTime :time="time" />
+      <PopupDialog :dialog="dialog" />
+      <PopupNotice :notice="notice" />
     </Body>
   </Html>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import app from "@/stores/page/app";
+import app from "@/store/page/app";
 defineOptions({
   inheritAttrs: false,
 });
