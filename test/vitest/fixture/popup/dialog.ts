@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from "@vue/test-utils";
 import Base from "../base";
-import dialog from "@/stores/popup/dialog";
+import dialog from "@/store/popup/dialog";
 import PopupDialog from "@/components/popup/dialog.vue";
 
 export default class Dialog extends Base {
@@ -32,12 +32,7 @@ export default class Dialog extends Base {
       cancel: () => ``,
     };
     const wrapper = mount(PopupDialog, {
-      props: {
-        refer: dialog.refer,
-        state: dialog.state,
-        stateCheckAll: dialog.render.stateCheckAll,
-        errorValidation: dialog.render.errorValidation,
-      },
+      props: { dialog },
       global: {
         directives: {
           focus: () => ``,

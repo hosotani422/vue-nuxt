@@ -1,11 +1,11 @@
-import app from "@/stores/page/app";
-import list from "@/stores/page/list";
-import main from "@/stores/page/main";
-import sub from "@/stores/page/sub";
-import conf from "@/stores/page/conf";
+import app from "@/store/page/app";
+import list from "@/store/page/list";
+import main from "@/store/page/main";
+import sub from "@/store/page/sub";
+import conf from "@/store/page/conf";
 
-export default (): void => {
-  app.handle.init();
+export default async (): Promise<void> => {
+  await app.handle.init();
   list.state.data = {
     sort: [``, ...list.refer.init.sort],
     data: {

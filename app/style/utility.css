@@ -1,0 +1,30 @@
+@utility theme-color-font {
+  @apply theme-light:text-font-light;
+  @apply theme-dark:text-font-dark;
+}
+@utility theme-color-back {
+  @apply theme-light:bg-back-light;
+  @apply theme-dark:bg-back-dark;
+}
+@utility theme-color-border {
+  @apply theme-light:border-font-light;
+  @apply theme-dark:border-font-dark;
+}
+@utility theme-color-mask {
+  @apply theme-light:bg-mask-light;
+  @apply theme-dark:bg-mask-dark;
+}
+@utility theme-color-grad {
+  @apply theme-light:[background:var(--color-grad-light)];
+  @apply theme-dark:[background:var(--color-grad-dark)];
+  /* @apply theme-light:bg-grad-light;
+  @apply theme-dark:bg-grad-dark; */
+}
+@utility theme-shadow-inner {
+  @apply theme-light:shadow-inner-light;
+  @apply theme-dark:shadow-inner-dark;
+}
+@utility theme-shadow-outer {
+  @apply theme-light:shadow-outer-light;
+  @apply theme-dark:shadow-outer-dark;
+}

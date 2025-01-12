@@ -1,32 +1,12 @@
 <script setup lang="ts">
-import app from "@/stores/page/app";
-import list from "@/stores/page/list";
+import storeApp from "@/store/page/app";
+import storeList from "@/store/page/list";
 defineOptions({
   inheritAttrs: false,
 });
 defineProps<{
-  constant: typeof app.refer.constant;
-  stateList: typeof list.state;
-  selectId: typeof app.render.listId;
-  classStatus: typeof list.render.classStatus;
-  classLimit: typeof list.render.classLimit;
-  typeIcon: typeof list.render.typeIcon;
-  textCount: typeof list.render.textCount;
-}>();
-const emit = defineEmits<{
-  routerBack: [arg?: { listId: string }];
-  editItem: [arg?: { listId: string }];
-  entryItem: [];
-  copyItem: [arg: { listId: string }];
-  deleteItem: [arg: { listId: string }];
-  dragInit: [arg: { listId: string; y: number }];
-  dragStart: [];
-  dragMove: [arg: { y: number }];
-  dragEnd: [];
-  swipeInit: [arg: { x: number; y: number }];
-  swipeStart: [arg: { x: number; y: number }];
-  swipeMove: [arg: { x: number }];
-  swipeEnd: [arg: { x: number }];
+  app: typeof storeApp;
+  list: typeof storeList;
 }>();
 </script>
 
@@ -36,32 +16,34 @@ const emit = defineEmits<{
     data-testid="ListRoot"
     class="theme-color-mask anime-slide-list absolute inset-y-0 left-0 z-10 w-[200%]"
     @touchmove="
-      emit(`dragStart`);
-      emit(`dragMove`, { y: $event.changedTouches[0]!.clientY });
-      emit(`swipeStart`, { x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY });
-      emit(`swipeMove`, { x: $event.changedTouches[0]!.clientX });
+      list.handle.dragStart();
+      list.handle.dragMove({ y: $event.changedTouches[0]!.clientY });
+      list.handle.swipeStart({ x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY });
+      list.handle.swipeMove({ x: $event.changedTouches[0]!.clientX });
     "
     @mousemove="
-      emit(`dragStart`);
-      emit(`dragMove`, { y: $event.clientY });
-      emit(`swipeStart`, { x: $event.clientX, y: $event.clientY });
-      emit(`swipeMove`, { x: $event.clientX });
+      list.handle.dragStart();
+      list.handle.dragMove({ y: $event.clientY });
+      list.handle.swipeStart({ x: $event.clientX, y: $event.clientY });
+      list.handle.swipeMove({ x: $event.clientX });
     "
     @touchend="
-      emit(`dragEnd`);
-      emit(`swipeEnd`, { x: $event.changedTouches[0]!.clientX });
+      list.handle.dragEnd();
+      list.handle.swipeEnd({ x: $event.changedTouches[0]!.clientX });
     "
     @mouseup="
-      emit(`dragEnd`);
-      emit(`swipeEnd`, { x: $event.clientX });
+      list.handle.dragEnd();
+      list.handle.swipeEnd({ x: $event.clientX });
     "
-    @click="emit(`editItem`)"
+    @click="list.handle.editItem()"
   >
     <div
       data-testid="ListBack"
       class="absolute inset-y-0 right-0 z-[1] w-[57%]"
-      @touchstart="emit(`swipeInit`, { x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY })"
-      @mousedown="emit(`swipeInit`, { x: $event.clientX, y: $event.clientY })"
+      @touchstart="
+        list.handle.swipeInit({ x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY })
+      "
+      @mousedown="list.handle.swipeInit({ x: $event.clientX, y: $event.clientY })"
     />
     <div
       data-testid="ListHome"
@@ -71,49 +53,49 @@ const emit = defineEmits<{
         data-testid="ListHead"
         class="theme-color-grad theme-shadow-outer relative z-[9] flex flex-initial items-center gap-3 p-3"
       >
-        <IconPlus data-testid="ListPlus" class="flex-initial" @click="emit(`entryItem`)" />
-        <p data-testid="ListTitle" class="line-clamp-1 flex-1 text-xl">{{ constant.app.name }}</p>
-        <IconLeft data-testid="ListLeft" class="flex-initial" @click="emit(`routerBack`)" />
+        <IconPlus data-testid="ListPlus" class="flex-initial" @click="list.handle.entryItem()" />
+        <p data-testid="ListTitle" class="line-clamp-1 flex-1 text-xl">{{ app.refer.constant.app.name }}</p>
+        <IconArrow data-testid="ListLeft" class="flex-initial rotate-180" @click="app.handle.routerBack()" />
       </div>
       <ul data-id="ListBody" data-testid="ListBody" class="flex-1 select-none overflow-auto p-3">
         <transition-group>
           <li
-            v-for="listId of stateList.data.sort"
+            v-for="listId of list.state.data.sort"
             :key="listId"
             :data-id="`ListItem${listId}`"
             data-testid="ListItem"
             class="theme-color-border theme-color-back trans-select-label trans-edit-item anime-scale-item group relative flex h-16 items-center gap-3 overflow-hidden border-b-[0.1rem] border-solid p-3"
-            :class="`${classStatus({ listId })} ${classLimit({ listId })}`"
+            :class="{ ...list.render.classStatus({ listId }), ...list.render.classLimit({ listId }) }"
             @contextmenu.prevent
             @longtouch="
-              emit(`editItem`, { listId });
-              emit(`dragInit`, { listId, y: $event.detail.changedTouches[0]!.clientY });
+              list.handle.editItem({ listId });
+              list.handle.dragInit({ listId, y: $event.detail.changedTouches[0]!.clientY });
             "
             @longclick="
-              emit(`editItem`, { listId });
-              emit(`dragInit`, { listId, y: $event.detail.clientY });
+              list.handle.editItem({ listId });
+              list.handle.dragInit({ listId, y: $event.detail.clientY });
             "
-            @click="stateList.status[listId] !== `edit` && emit(`routerBack`, { listId })"
+            @click="list.state.status[listId] !== `edit` && app.handle.routerBack({ listId })"
           >
-            <component :is="typeIcon({ listId })" data-testid="ListIcon" class="flex-initial" />
+            <component :is="list.render.typeIcon({ listId })" data-testid="ListIcon" class="flex-initial" />
             <p data-testid="ListTask" class="line-clamp-1 flex-1">
-              {{ stateList.data.data[listId]!.title }}
+              {{ list.state.data.data[listId]!.title }}
             </p>
             <p data-testid="ListCount" class="flex-initial">
-              {{ textCount({ listId }) }}
+              {{ list.render.textCount({ listId }) }}
             </p>
-            <div class="theme-color-back trans-option-label absolute right-3 flex translate-x-[150%] gap-3">
+            <div class="theme-color-back trans-option-label absolute right-3 flex [transform:translateX(150%)] gap-3">
               <IconClone
-                v-if="listId !== constant.id.trash"
+                v-if="listId !== app.refer.constant.id.trash"
                 data-testid="ListClone"
                 class="flex-initial"
-                @click.stop="emit(`copyItem`, { listId })"
+                @click.stop="list.handle.copyItem({ listId })"
               />
               <IconTrash
-                v-if="listId !== selectId() && listId !== constant.id.trash"
+                v-if="listId !== app.render.listId() && listId !== app.refer.constant.id.trash"
                 data-testid="ListTrash"
                 class="flex-initial"
-                @click.stop="emit(`deleteItem`, { listId })"
+                @click.stop="list.handle.deleteItem({ listId })"
               />
             </div>
           </li>
