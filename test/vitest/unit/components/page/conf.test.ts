@@ -1,6 +1,8 @@
 import { describe, test, expect } from "vitest";
 import { VueWrapper } from "@vue/test-utils";
 import fixture from "../../../fixture/page/conf";
+import app from "@/store/page/app";
+import conf from "@/store/page/conf";
 
 const it = test.extend<{ wrapper: VueWrapper }>({
   wrapper: async ({}, use) => {
@@ -58,25 +60,20 @@ describe(`dom`, () => {
     expect(wrapper.findByTestIdAll(`ConfVibrateOn`)).toHaveLength(1);
     expect(wrapper.findByTestId<HTMLInputElement>(`ConfVibrateOn`).element.checked).toBe(true);
     expect(wrapper.findByTestId(`ConfVibrateOn`).element.parentElement?.textContent).toBe(`有`);
-    expect(wrapper.findByTestIdAll(`ConfSaveTitle`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`ConfSaveTitle`).text()).toBe(`自動保存`);
-    expect(wrapper.findByTestIdAll(`ConfSaveLocal`)).toHaveLength(1);
-    expect(wrapper.findByTestId<HTMLInputElement>(`ConfSaveLocal`).element.checked).toBe(true);
-    expect(wrapper.findByTestId(`ConfSaveLocal`).element.parentElement?.textContent).toBe(`LOCAL`);
-    expect(wrapper.findByTestIdAll(`ConfSaveRest`)).toHaveLength(1);
-    expect(wrapper.findByTestId<HTMLInputElement>(`ConfSaveRest`).element.checked).toBe(false);
-    expect(wrapper.findByTestId(`ConfSaveRest`).element.parentElement?.textContent).toBe(`REST`);
-    expect(wrapper.findByTestIdAll(`ConfSaveGql`)).toHaveLength(1);
-    expect(wrapper.findByTestId<HTMLInputElement>(`ConfSaveGql`).element.checked).toBe(false);
-    expect(wrapper.findByTestId(`ConfSaveGql`).element.parentElement?.textContent).toBe(`GQL`);
   });
   it(`button`, ({ wrapper }) => {
-    expect(wrapper.findByTestIdAll(`ConfBackupTitle`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`ConfBackupTitle`).text()).toBe(`保存ファイル`);
-    expect(wrapper.findByTestIdAll(`ConfBackupDownload`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`ConfBackupDownload`).text()).toBe(`保存`);
-    expect(wrapper.findByTestIdAll(`ConfBackupUpload`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`ConfBackupUpload`).element.parentElement?.textContent).toBe(`復元`);
+    expect(wrapper.findByTestIdAll(`ConfSaveTitle`)).toHaveLength(1);
+    expect(wrapper.findByTestId(`ConfSaveTitle`).text()).toBe(`ファイル保存`);
+    expect(wrapper.findByTestIdAll(`ConfSaveLocal`)).toHaveLength(1);
+    expect(wrapper.findByTestId(`ConfSaveLocal`).text()).toBe(`ローカル`);
+    expect(wrapper.findByTestIdAll(`ConfSaveServer`)).toHaveLength(1);
+    expect(wrapper.findByTestId(`ConfSaveServer`).text()).toBe(`サーバー`);
+    expect(wrapper.findByTestIdAll(`ConfLoadTitle`)).toHaveLength(1);
+    expect(wrapper.findByTestId(`ConfLoadTitle`).text()).toBe(`ファイル復元`);
+    expect(wrapper.findByTestIdAll(`ConfLoadLocal`)).toHaveLength(1);
+    expect(wrapper.findByTestId(`ConfLoadLocal`).element.parentElement?.textContent).toBe(`ローカル`);
+    expect(wrapper.findByTestIdAll(`ConfLoadServer`)).toHaveLength(1);
+    expect(wrapper.findByTestId(`ConfLoadServer`).text()).toBe(`サーバー`);
     expect(wrapper.findByTestIdAll(`ConfResetTitle`)).toHaveLength(1);
     expect(wrapper.findByTestId(`ConfResetTitle`).text()).toBe(`初期化`);
     expect(wrapper.findByTestIdAll(`ConfResetConf`)).toHaveLength(1);
@@ -88,36 +85,53 @@ describe(`dom`, () => {
 
 describe(`event`, () => {
   it(`root`, ({ wrapper }) => {
+    const swipeInitMock = vi.spyOn(conf.handle, `swipeInit`).mockReturnValue();
+    const swipeStartMock = vi.spyOn(conf.handle, `swipeStart`).mockReturnValue();
+    const swipeMoveMock = vi.spyOn(conf.handle, `swipeMove`).mockReturnValue();
+    const swipeEndMock = vi.spyOn(conf.handle, `swipeEnd`).mockReturnValue();
     wrapper.findByTestId(`ConfRoot`).trigger(`touchmove`, { changedTouches: [{ clientX: 1, clientY: 1 }] });
+    expect(swipeStartMock).toBeCalledTimes(1);
+    expect(swipeStartMock).toBeCalledWith({ x: 1, y: 1 });
+    expect(swipeMoveMock).toBeCalledTimes(1);
+    expect(swipeMoveMock).toBeCalledWith({ y: 1 });
     wrapper.findByTestId(`ConfRoot`).trigger(`mousemove`, { clientX: 2, clientY: 2 });
-    expect(wrapper.emitted(`swipeStart`)).toHaveLength(2);
-    expect(wrapper.emitted(`swipeStart`)).toEqual([[{ x: 1, y: 1 }], [{ x: 2, y: 2 }]]);
-    expect(wrapper.emitted(`swipeMove`)).toHaveLength(2);
-    expect(wrapper.emitted(`swipeMove`)).toEqual([[{ y: 1 }], [{ y: 2 }]]);
+    expect(swipeStartMock).toBeCalledTimes(2);
+    expect(swipeStartMock).toBeCalledWith({ x: 2, y: 2 });
+    expect(swipeMoveMock).toBeCalledTimes(2);
+    expect(swipeMoveMock).toBeCalledWith({ y: 2 });
     wrapper.findByTestId(`ConfRoot`).trigger(`touchend`, { changedTouches: [{ clientY: 1 }] });
+    expect(swipeEndMock).toBeCalledTimes(1);
+    expect(swipeEndMock).toBeCalledWith({ y: 1 });
     wrapper.findByTestId(`ConfRoot`).trigger(`mouseup`, { clientY: 2 });
-    expect(wrapper.emitted(`swipeEnd`)).toHaveLength(2);
-    expect(wrapper.emitted(`swipeEnd`)).toEqual([[{ y: 1 }], [{ y: 2 }]]);
+    expect(swipeEndMock).toBeCalledTimes(2);
+    expect(swipeEndMock).toBeCalledWith({ y: 2 });
     wrapper.findByTestId(`ConfBack`).trigger(`touchstart`, { changedTouches: [{ clientX: 1, clientY: 1 }] });
+    expect(swipeInitMock).toBeCalledTimes(1);
+    expect(swipeInitMock).toBeCalledWith({ x: 1, y: 1 });
     wrapper.findByTestId(`ConfBack`).trigger(`mousedown`, { clientX: 2, clientY: 2 });
-    expect(wrapper.emitted(`swipeInit`)).toHaveLength(2);
-    expect(wrapper.emitted(`swipeInit`)).toEqual([[{ x: 1, y: 1 }], [{ x: 2, y: 2 }]]);
+    expect(swipeInitMock).toBeCalledTimes(2);
+    expect(swipeInitMock).toBeCalledWith({ x: 2, y: 2 });
   });
   it(`header`, ({ wrapper }) => {
+    const routerBackMock = vi.spyOn(app.handle, `routerBack`).mockReturnValue();
     wrapper.findByTestId(`ConfDown`).trigger(`click`);
-    expect(wrapper.emitted(`routerBack`)).toHaveLength(1);
-    expect(wrapper.emitted(`routerBack`)).toEqual([[]]);
+    expect(routerBackMock).toBeCalledTimes(1);
+    expect(routerBackMock).toBeCalledWith();
   });
   it(`button`, ({ wrapper }) => {
-    wrapper.findByTestId(`ConfBackupDownload`).trigger(`click`);
-    expect(wrapper.emitted(`downloadBackup`)).toHaveLength(1);
-    wrapper.findByTestId(`ConfBackupUpload`).trigger(`change`);
-    expect(wrapper.emitted(`uploadBackup`)).toHaveLength(1);
+    const downloadBackupMock = vi.spyOn(conf.handle, `downloadBackup`).mockReturnValue();
+    const uploadBackupMock = vi.spyOn(conf.handle, `uploadBackup`).mockReturnValue();
+    const resetConfMock = vi.spyOn(conf.handle, `resetConf`).mockReturnValue();
+    const resetListMock = vi.spyOn(conf.handle, `resetList`).mockReturnValue();
+    wrapper.findByTestId(`ConfSaveLocal`).trigger(`click`);
+    expect(downloadBackupMock).toBeCalledTimes(1);
+    wrapper.findByTestId(`ConfLoadLocal`).trigger(`change`);
+    expect(uploadBackupMock).toBeCalledTimes(1);
     wrapper.findByTestId(`ConfResetConf`).trigger(`click`);
-    expect(wrapper.emitted(`resetConf`)).toHaveLength(1);
-    expect(wrapper.emitted(`resetConf`)).toEqual([[]]);
+    expect(resetConfMock).toBeCalledTimes(1);
+    expect(resetConfMock).toBeCalledWith();
     wrapper.findByTestId(`ConfResetList`).trigger(`click`);
-    expect(wrapper.emitted(`resetList`)).toHaveLength(1);
-    expect(wrapper.emitted(`resetList`)).toEqual([[]]);
+    expect(resetListMock).toBeCalledTimes(1);
+    expect(resetListMock).toBeCalledWith();
   });
 });

@@ -21,7 +21,7 @@
   [https://git-scm.com/downloads](https://git-scm.com/downloads)
 
 - VSCode - エディター\
-  各OSの最新バージョンを以下のサイトからダウンロードしてインストール
+  各OSの最新バージョンを以下のサイトからダウンロードしてインストール\
   [https://code.visualstudio.com/download](https://code.visualstudio.com/download)
 
 ## プラグイン

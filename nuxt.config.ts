@@ -1,11 +1,11 @@
 import path from "path";
-import postcss from "./postcss.config.js";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
   ssr: true,
   rootDir: `app`,
   buildDir: `../.nuxt`,
-  css: [`@/styles/tailwind.css`],
+  css: [`@/style/index.css`],
   components: {
     global: true,
     dirs: [`@/components`],
@@ -16,6 +16,7 @@ export default defineNuxtConfig({
         "@": path.resolve(__dirname, `app`),
       },
     },
+    plugins: [tailwindcss()],
   },
   typescript: {
     shim: false,
@@ -29,5 +30,4 @@ export default defineNuxtConfig({
       },
     ],
   },
-  postcss,
 });

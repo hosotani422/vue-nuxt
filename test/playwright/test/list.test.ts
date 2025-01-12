@@ -68,8 +68,8 @@ test.describe(`list`, () => {
   test(`item - limit`, async ({ page }) => {
     await page.getByTestId(`ListItem`).nth(0).click();
     await page.getByTestId(`MainItem`).nth(0).click();
-    await page.getByTestId(`SubCalendar`).click();
-    await page.getByTestId(`CalendarClear`).click();
+    await page.getByTestId(`SubDate`).click();
+    await page.getByTestId(`DateClear`).click();
     await page.getByTestId(`SubRight`).click();
     await page.getByTestId(`MainList`).click();
     await expect(page.getByTestId(`ListTask`).nth(0)).not.toHaveClass(/text-theme-warn/);

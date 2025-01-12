@@ -1,7 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { VueWrapper } from "@vue/test-utils";
 import fixture from "../../../fixture/popup/notice";
-import notice from "@/stores/popup/notice";
+import notice from "@/store/popup/notice";
 
 const it = test.extend<{ wrapper: VueWrapper }>({
   wrapper: async ({}, use) => {

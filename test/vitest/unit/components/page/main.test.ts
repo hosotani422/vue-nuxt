@@ -1,6 +1,8 @@
 import { describe, test, expect } from "vitest";
 import { VueWrapper } from "@vue/test-utils";
 import fixture from "../../../fixture/page/main";
+import app from "@/store/page/app";
+import main from "@/store/page/main";
 
 const it = test.extend<{ wrapper: VueWrapper }>({
   wrapper: async ({}, use) => {
@@ -45,54 +47,71 @@ describe(`dom`, () => {
 
 describe(`event`, () => {
   it(`root`, ({ wrapper }) => {
+    const dragStartMock = vi.spyOn(main.handle, `dragStart`).mockReturnValue();
+    const dragMoveMock = vi.spyOn(main.handle, `dragMove`).mockReturnValue();
+    const dragEndMock = vi.spyOn(main.handle, `dragEnd`).mockReturnValue();
     wrapper.findByTestId(`MainRoot`).trigger(`touchmove`, { changedTouches: [{ clientY: 1 }] });
+    expect(dragStartMock).toBeCalledTimes(1);
+    expect(dragStartMock).toBeCalledWith();
+    expect(dragMoveMock).toBeCalledTimes(1);
+    expect(dragMoveMock).toBeCalledWith({ y: 1 });
     wrapper.findByTestId(`MainRoot`).trigger(`mousemove`, { clientY: 2 });
-    expect(wrapper.emitted(`dragStart`)).toHaveLength(2);
-    expect(wrapper.emitted(`dragStart`)).toEqual([[], []]);
-    expect(wrapper.emitted(`dragMove`)).toHaveLength(2);
-    expect(wrapper.emitted(`dragMove`)).toEqual([[{ y: 1 }], [{ y: 2 }]]);
+    expect(dragStartMock).toBeCalledTimes(2);
+    expect(dragStartMock).toBeCalledWith();
+    expect(dragMoveMock).toBeCalledTimes(2);
+    expect(dragMoveMock).toBeCalledWith({ y: 2 });
     wrapper.findByTestId(`MainRoot`).trigger(`touchend`);
+    expect(dragEndMock).toBeCalledTimes(1);
+    expect(dragEndMock).toBeCalledWith();
     wrapper.findByTestId(`MainRoot`).trigger(`mouseup`);
-    expect(wrapper.emitted(`dragEnd`)).toHaveLength(2);
-    expect(wrapper.emitted(`dragEnd`)).toEqual([[], []]);
+    expect(dragEndMock).toBeCalledTimes(2);
+    expect(dragEndMock).toBeCalledWith();
   });
   it(`header`, ({ wrapper }) => {
+    const routerListMock = vi.spyOn(app.handle, `routerList`).mockReturnValue();
+    const routerConfMock = vi.spyOn(app.handle, `routerConf`).mockReturnValue();
+    const entryItemMock = vi.spyOn(main.handle, `entryItem`).mockReturnValue();
     wrapper.findByTestId(`MainList`).trigger(`click`);
-    expect(wrapper.emitted(`routerList`)).toHaveLength(1);
-    expect(wrapper.emitted(`routerList`)).toEqual([[]]);
+    expect(routerListMock).toBeCalledTimes(1);
+    expect(routerListMock).toBeCalledWith();
     wrapper.findByTestId(`MainConf`).trigger(`click`);
-    expect(wrapper.emitted(`routerConf`)).toHaveLength(1);
-    expect(wrapper.emitted(`routerConf`)).toEqual([[]]);
+    expect(routerConfMock).toBeCalledTimes(1);
+    expect(routerConfMock).toBeCalledWith();
     wrapper.findByTestId(`MainPlus`).trigger(`click`);
-    expect(wrapper.emitted(`entryItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`entryItem`)).toEqual([[]]);
+    expect(entryItemMock).toBeCalledTimes(1);
+    expect(entryItemMock).toBeCalledWith();
   });
   it(`contents`, ({ wrapper }) => {
+    const routerSubMock = vi.spyOn(app.handle, `routerSub`).mockReturnValue();
+    const editItemMock = vi.spyOn(main.handle, `editItem`).mockReturnValue();
+    const dragInitMock = vi.spyOn(main.handle, `dragInit`).mockReturnValue();
+    const copyItemMock = vi.spyOn(main.handle, `copyItem`).mockReturnValue();
+    const moveItemMock = vi.spyOn(main.handle, `moveItem`).mockReturnValue();
+    const deleteItemMock = vi.spyOn(main.handle, `deleteItem`).mockReturnValue();
     wrapper.findByTestId(`MainRoot`).trigger(`click`);
+    expect(editItemMock).toBeCalledTimes(1);
+    expect(editItemMock).toBeCalledWith();
     wrapper.findByTestIdAll(`MainItem`)[0]!.trigger(`longtouch`, { detail: { changedTouches: [{ clientY: 1 }] } });
+    expect(editItemMock).toBeCalledTimes(2);
+    expect(editItemMock).toBeCalledWith({ mainId: `main1111111111111` });
+    expect(dragInitMock).toBeCalledTimes(1);
+    expect(dragInitMock).toBeCalledWith({ mainId: `main1111111111111`, y: 1 });
     wrapper.findByTestIdAll(`MainItem`)[1]!.trigger(`longclick`, { detail: { clientY: 2 } });
-    expect(wrapper.emitted(`editItem`)).toHaveLength(3);
-    expect(wrapper.emitted(`editItem`)).toEqual([
-      [],
-      [{ mainId: `main1111111111111` }],
-      [{ mainId: `main2222222222222` }],
-    ]);
-    expect(wrapper.emitted(`dragInit`)).toHaveLength(2);
-    expect(wrapper.emitted(`dragInit`)).toEqual([
-      [{ mainId: `main1111111111111`, y: 1 }],
-      [{ mainId: `main2222222222222`, y: 2 }],
-    ]);
+    expect(editItemMock).toBeCalledTimes(3);
+    expect(editItemMock).toBeCalledWith({ mainId: `main2222222222222` });
+    expect(dragInitMock).toBeCalledTimes(2);
+    expect(dragInitMock).toBeCalledWith({ mainId: `main2222222222222`, y: 2 });
     wrapper.findByTestIdAll(`MainItem`)[0]!.trigger(`click`);
-    expect(wrapper.emitted(`routerSub`)).toHaveLength(1);
-    expect(wrapper.emitted(`routerSub`)).toEqual([[{ mainId: `main1111111111111` }]]);
+    expect(routerSubMock).toBeCalledTimes(1);
+    expect(routerSubMock).toBeCalledWith({ mainId: `main1111111111111` });
     wrapper.findByTestId(`MainClone`).trigger(`click`);
-    expect(wrapper.emitted(`copyItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`copyItem`)).toEqual([[{ mainId: `main1111111111111` }]]);
+    expect(copyItemMock).toBeCalledTimes(1);
+    expect(copyItemMock).toBeCalledWith({ mainId: `main1111111111111` });
     wrapper.findByTestId(`MainMove`).trigger(`click`);
-    expect(wrapper.emitted(`moveItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`moveItem`)).toEqual([[{ mainId: `main1111111111111` }]]);
+    expect(moveItemMock).toBeCalledTimes(1);
+    expect(moveItemMock).toBeCalledWith({ mainId: `main1111111111111` });
     wrapper.findByTestId(`MainTrash`).trigger(`click`);
-    expect(wrapper.emitted(`deleteItem`)).toHaveLength(1);
-    expect(wrapper.emitted(`deleteItem`)).toEqual([[{ mainId: `main1111111111111` }]]);
+    expect(deleteItemMock).toBeCalledTimes(1);
+    expect(deleteItemMock).toBeCalledWith({ mainId: `main1111111111111` });
   });
 });
