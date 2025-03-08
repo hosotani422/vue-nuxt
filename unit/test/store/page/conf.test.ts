@@ -73,10 +73,10 @@ describe(`handle`, () => {
     expect(updateMock).toBeCalledTimes(1);
     expect(updateMock).toBeCalledWith();
   });
-  it(`downloadBackup`, () => {
+  it(`saveLocal`, () => {
     const attributeMock = vi.fn();
     const elem = { setAttribute: attributeMock } as unknown as HTMLElement;
-    conf.handle.downloadBackup({ elem });
+    conf.handle.saveLocal({ elem });
     expect(attributeMock).toBeCalledTimes(2);
     expect(attributeMock).toBeCalledWith(`download`, `memosuku.bak`);
     expect(attributeMock).toBeCalledWith(
@@ -90,13 +90,13 @@ describe(`handle`, () => {
       )}`,
     );
   });
-  it(`uploadBackup`, async () => {
+  it(`loadLocal`, async () => {
     const readMock = vi.spyOn(FileReader.prototype, `readAsText`);
     const listenerMock = vi.spyOn(FileReader.prototype, `addEventListener`);
     const routerMock = vi.spyOn(app.handle, `routerBack`).mockReturnValue();
     const openMock = vi.spyOn(dialog.handle, `open`);
     const closeMock = vi.spyOn(dialog.handle, `close`).mockReturnValue();
-    conf.handle.uploadBackup({
+    conf.handle.loadLocal({
       files: [
         new File(
           [
@@ -131,7 +131,7 @@ describe(`handle`, () => {
     expect(sub.state.data).toEqual({ list0000000000000: { data: {} } });
     expect(routerMock).toBeCalledTimes(1);
     expect(routerMock).toBeCalledWith({ listId: `list0000000000000` });
-    conf.handle.uploadBackup({ files: [new File([``], ``)] as unknown as FileList });
+    conf.handle.loadLocal({ files: [new File([``], ``)] as unknown as FileList });
     await new Promise((resolve) => setTimeout(resolve, 100));
     expect(openMock).toBeCalledTimes(1);
     expect(openMock.mock.calls[0]![0]!.mode).toBe(`alert`);

@@ -13,7 +13,7 @@ export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
   testDir: `./test`,
   // Glob patterns or regular expressions that match test files.
-  testMatch: `*.test.ts`,
+  testMatch: `*.spec.ts`,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -124,7 +124,12 @@ export default defineConfig({
     // },
     {
       name: `Google Chrome`,
-      use: { ...devices[`Desktop Chrome`], channel: `chrome` },
+      use: {
+        ...devices[`Desktop Chrome`],
+        channel: `chrome`,
+        isMobile: true,
+        hasTouch: true,
+      },
     },
   ],
   /* Run your local dev server before starting the tests */

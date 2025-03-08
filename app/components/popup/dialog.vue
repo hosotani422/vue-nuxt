@@ -10,11 +10,11 @@ defineProps<{
 </script>
 
 <template>
-  <PopupBase data-testid="DialogRoot" :open="dialog.state.open">
-    <div v-if="dialog.state.title" data-testid="DialogTitle" class="flex-initial whitespace-pre-line">
+  <PopupBase aria-label="dialog" data-testid="DialogRoot" :open="dialog.state.open">
+    <header v-if="dialog.state.title" data-testid="DialogTitle" class="flex-initial whitespace-pre-line">
       {{ dialog.state.title }}
-    </div>
-    <div class="flex flex-1 flex-col gap-3 overflow-auto">
+    </header>
+    <main class="flex flex-1 flex-col gap-3 overflow-auto">
       <div v-if="dialog.state.message" data-testid="DialogMessage" class="flex-initial whitespace-pre-line break-all">
         {{ dialog.state.message }}
       </div>
@@ -65,7 +65,7 @@ defineProps<{
           >{{ dialog.state.radio!.data[radioId]!.title }}</InputRadio
         >
       </template>
-    </div>
+    </main>
     <div
       v-if="!dialog.state.init && dialog.render.errorValidation()"
       data-testid="DialogError"
@@ -73,7 +73,7 @@ defineProps<{
     >
       {{ dialog.render.errorValidation() }}
     </div>
-    <div class="flex flex-initial items-center justify-end gap-3">
+    <footer class="flex flex-initial items-center justify-end gap-3">
       <InputButton
         data-testid="DialogCancel"
         class="flex-initial text-theme-fine"
@@ -88,6 +88,6 @@ defineProps<{
         @click="dialog.refer.callback.ok!()"
         >{{ dialog.state.ok }}</InputButton
       >
-    </div>
+    </footer>
   </PopupBase>
 </template>

@@ -7,10 +7,10 @@ import Components from "unplugin-vue-components/vite";
 export default defineConfig(() => ({
   test: {
     globals: true,
-    include: [`test/vitest/unit/**/*.test.ts`],
+    include: [`unit/test/**/*.test.ts`],
     environment: `happy-dom`,
     alias: {
-      "@": path.join(__dirname, `../../app`),
+      "@": path.join(__dirname, `../app`),
     },
   },
   plugins: [
@@ -28,7 +28,7 @@ export default defineConfig(() => ({
       name: `findByTestId`,
       config: () => ({
         test: {
-          setupFiles: [`test/vitest/plugin/findByTestId.ts`],
+          setupFiles: [`unit/plugin/findByTestId.ts`],
         },
       }),
     },
