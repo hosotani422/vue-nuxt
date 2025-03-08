@@ -1,90 +1,93 @@
 <script setup lang="ts">
 import i18next from "i18next";
-import dialog from "@/stores/popup/dialog";
+import storeDialog from "@/store/popup/dialog";
 defineOptions({
   inheritAttrs: false,
 });
 defineProps<{
-  refer: typeof dialog.refer;
-  state: typeof dialog.state;
-  stateCheckAll: typeof dialog.render.stateCheckAll;
-  errorValidation: typeof dialog.render.errorValidation;
-}>();
-const emit = defineEmits<{
-  clickCheckAll: [arg: { check: boolean }];
+  dialog: typeof storeDialog;
 }>();
 </script>
 
 <template>
-  <BasePopup data-testid="DialogRoot" :open="state.open">
-    <div v-if="state.title" data-testid="DialogTitle" class="flex-initial whitespace-pre-line">{{ state.title }}</div>
+  <PopupBase data-testid="DialogRoot" :open="dialog.state.open">
+    <div v-if="dialog.state.title" data-testid="DialogTitle" class="flex-initial whitespace-pre-line">
+      {{ dialog.state.title }}
+    </div>
     <div class="flex flex-1 flex-col gap-3 overflow-auto">
-      <div v-if="state.message" data-testid="DialogMessage" class="flex-initial whitespace-pre-line break-all">
-        {{ state.message }}
+      <div v-if="dialog.state.message" data-testid="DialogMessage" class="flex-initial whitespace-pre-line break-all">
+        {{ dialog.state.message }}
       </div>
-      <template v-if="state.mode === `text`">
+      <template v-if="dialog.state.mode === `text`">
         <InputTextbox
-          v-model="state.text!.value"
+          v-model="dialog.state.text!.value"
           v-focus
           data-testid="DialogText"
           class="flex-initial border-b-[0.1rem] border-solid border-b-theme-fine"
-          :placeholder="state.text!.placeholder"
-          @input="state.init = false"
+          :placeholder="dialog.state.text!.placeholder"
+          @input="dialog.state.init = false"
         />
       </template>
-      <template v-else-if="state.mode === `check`">
+      <template v-else-if="dialog.state.mode === `check`">
         <InputCheck
-          v-if="state.check!.all"
-          :model-value="stateCheckAll()"
+          v-if="dialog.state.check!.all"
+          :model-value="dialog.render.stateCheckAll()"
           data-testid="DialogCheckAll"
           class="flex-initial"
-          @change="emit(`clickCheckAll`, { check: ($event.target as HTMLInputElement).checked })"
+          @change="dialog.handle.clickCheckAll({ check: ($event.target as HTMLInputElement).checked })"
           >{{ i18next.t(`dialog.select.all`) }}</InputCheck
         >
         <InputCheck
-          v-for="checkId of state.check!.sort"
+          v-for="checkId of dialog.state.check!.sort"
           :key="checkId"
-          v-model="state.check!.data[checkId]!.check"
+          v-model="dialog.state.check!.data[checkId]!.check"
           data-testid="DialogCheck"
           class="flex-initial"
-          >{{ state.check!.data[checkId]!.title }}</InputCheck
+          >{{ dialog.state.check!.data[checkId]!.title }}</InputCheck
         >
       </template>
-      <template v-else-if="state.mode === `radio`">
+      <template v-else-if="dialog.state.mode === `radio`">
         <InputRadio
-          v-if="state.radio!.none"
-          v-model="state.radio!.select"
+          v-if="dialog.state.radio!.none"
+          v-model="dialog.state.radio!.select"
           data-testid="DialogRadioNone"
           class="flex-initial"
           value=""
           >{{ i18next.t(`dialog.select.none`) }}</InputRadio
         >
         <InputRadio
-          v-for="radioId of state.radio!.sort"
+          v-for="radioId of dialog.state.radio!.sort"
           :key="radioId"
-          v-model="state.radio!.select"
+          v-model="dialog.state.radio!.select"
           data-testid="DialogRadio"
           class="flex-initial"
           :value="radioId"
-          >{{ state.radio!.data[radioId]!.title }}</InputRadio
+          >{{ dialog.state.radio!.data[radioId]!.title }}</InputRadio
         >
       </template>
     </div>
-    <div v-if="!state.init && errorValidation()" data-testid="DialogError" class="flex-initial text-theme-warn">
-      {{ errorValidation() }}
+    <div
+      v-if="!dialog.state.init && dialog.render.errorValidation()"
+      data-testid="DialogError"
+      class="flex-initial text-theme-warn"
+    >
+      {{ dialog.render.errorValidation() }}
     </div>
     <div class="flex flex-initial items-center justify-end gap-3">
-      <InputButton data-testid="DialogCancel" class="flex-initial text-theme-fine" @click="refer.callback.cancel!()">{{
-        state.cancel
-      }}</InputButton>
       <InputButton
-        v-if="state.mode !== `alert`"
+        data-testid="DialogCancel"
+        class="flex-initial text-theme-fine"
+        @click="dialog.refer.callback.cancel!()"
+        >{{ dialog.state.cancel }}</InputButton
+      >
+      <InputButton
+        v-if="dialog.state.mode !== `alert`"
         data-testid="DialogOk"
         class="flex-initial text-theme-warn"
-        :disabled="!!errorValidation()"
-        @click="refer.callback.ok!()"
-        >{{ state.ok }}</InputButton
+        :disabled="!!dialog.render.errorValidation()"
+        @click="dialog.refer.callback.ok!()"
+        >{{ dialog.state.ok }}</InputButton
       >
     </div>
-  </BasePopup>
+  </PopupBase>
 </template>

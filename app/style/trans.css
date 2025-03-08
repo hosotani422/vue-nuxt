@@ -1,0 +1,58 @@
+.trans-select-label {
+  @apply speed-fast:duration-200;
+  @apply speed-just:duration-500;
+  @apply speed-slow:duration-1000;
+  @apply transition-[opacity,box-shadow,transform];
+  @apply [&.select]:theme-shadow-inner;
+}
+.trans-select-text {
+  @apply speed-fast:duration-200;
+  @apply speed-just:duration-500;
+  @apply speed-slow:duration-1000;
+  @apply transition-[opacity,box-shadow,transform];
+  @apply has-[:focus]:theme-shadow-inner;
+}
+.trans-edit-item {
+  @apply speed-fast:duration-200;
+  @apply speed-just:duration-500;
+  @apply speed-slow:duration-1000;
+  @apply transition-[opacity,box-shadow,transform];
+  @apply [&.edit]:z-[1];
+  @apply [&.edit]:[transform:scale(1.03)];
+  /* @apply [&.edit]:scale-[1.03]; */
+  @apply [&.edit]:theme-shadow-outer;
+  @apply [&.hide]:invisible;
+}
+.trans-check-item {
+  @apply speed-fast:duration-200;
+  @apply speed-just:duration-500;
+  @apply speed-slow:duration-1000;
+  @apply transition-[opacity,box-shadow,transform];
+  @apply has-[:checked]:line-through;
+  @apply has-[:checked]:opacity-50;
+}
+.trans-option-label {
+  @apply speed-fast:duration-200;
+  @apply speed-just:duration-500;
+  @apply speed-slow:duration-1000;
+  @apply transition-[opacity,box-shadow,transform];
+  @apply group-[.edit]:[transform:translateX(0%)];
+  /* @apply group-[.edit]:translate-x-[0%]; */
+}
+.trans-option-text {
+  @apply speed-fast:duration-200;
+  @apply speed-just:duration-500;
+  @apply speed-slow:duration-1000;
+  @apply transition-[opacity,box-shadow,transform];
+  @apply group-[:not(:only-child)]:peer-[:focus]/text:[transform:translateX(0%)];
+  /* @apply group-[:not(:only-child)]:peer-[:focus]/text:translate-x-[0%]; */
+}
+.trans-slide-date {
+  @apply speed-fast:theme-current:duration-200;
+  @apply speed-just:theme-current:duration-500;
+  @apply speed-slow:theme-current:duration-1000;
+  @apply theme-current:transition-[transform];
+  @apply [&.back]:translate-x-[-33.333%];
+  @apply [&.next]:translate-x-[-66.666%];
+  @apply [&.prev]:translate-x-0;
+}
