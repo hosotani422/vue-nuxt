@@ -10,6 +10,7 @@ defineProps<{
 
 <template>
   <PopupBase
+    aria-label="date"
     data-id="DateRoot"
     data-testid="DateRoot"
     :open="date.state.open"
@@ -24,7 +25,7 @@ defineProps<{
     @touchend="date.handle.swipeEnd({ x: $event.changedTouches[0]!.clientX })"
     @mouseup="date.handle.swipeEnd({ x: $event.clientX })"
   >
-    <div class="flex flex-initial flex-col gap-3">
+    <header class="flex flex-initial flex-col gap-3">
       <div class="flex flex-initial items-center">
         <IconAngle
           data-testid="DatePrev"
@@ -39,8 +40,8 @@ defineProps<{
           {{ week }}
         </li>
       </ul>
-    </div>
-    <div data-id="DateBody" class="flex-initial overflow-x-hidden">
+    </header>
+    <main data-id="DateBody" class="flex-initial overflow-x-hidden">
       <div
         data-id="DateArea"
         data-testid="DateArea"
@@ -63,14 +64,14 @@ defineProps<{
           </li>
         </ul>
       </div>
-    </div>
-    <div class="flex flex-initial justify-end gap-3">
+    </main>
+    <footer class="flex flex-initial justify-end gap-3">
       <InputButton data-testid="DateCancel" class="flex-initial text-theme-fine" @click="date.handle.close()">{{
         date.state.cancel
       }}</InputButton>
       <InputButton data-testid="DateClear" class="flex-initial text-theme-warn" @click="date.refer.callback(``)">{{
         date.state.clear
       }}</InputButton>
-    </div>
+    </footer>
   </PopupBase>
 </template>

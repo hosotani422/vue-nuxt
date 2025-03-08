@@ -119,14 +119,14 @@ describe(`event`, () => {
     expect(routerBackMock).toBeCalledWith();
   });
   it(`button`, ({ wrapper }) => {
-    const downloadBackupMock = vi.spyOn(conf.handle, `downloadBackup`).mockReturnValue();
-    const uploadBackupMock = vi.spyOn(conf.handle, `uploadBackup`).mockReturnValue();
+    const saveLocalMock = vi.spyOn(conf.handle, `saveLocal`).mockReturnValue();
+    const loadLocalMock = vi.spyOn(conf.handle, `loadLocal`).mockReturnValue();
     const resetConfMock = vi.spyOn(conf.handle, `resetConf`).mockReturnValue();
     const resetListMock = vi.spyOn(conf.handle, `resetList`).mockReturnValue();
     wrapper.findByTestId(`ConfSaveLocal`).trigger(`click`);
-    expect(downloadBackupMock).toBeCalledTimes(1);
+    expect(saveLocalMock).toBeCalledTimes(1);
     wrapper.findByTestId(`ConfLoadLocal`).trigger(`change`);
-    expect(uploadBackupMock).toBeCalledTimes(1);
+    expect(loadLocalMock).toBeCalledTimes(1);
     wrapper.findByTestId(`ConfResetConf`).trigger(`click`);
     expect(resetConfMock).toBeCalledTimes(1);
     expect(resetConfMock).toBeCalledWith();

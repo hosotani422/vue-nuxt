@@ -41,8 +41,8 @@ jobs:
       - name: Lint Eslint
         run: pnpm lint:script
       - name: Test Storybook
-        run: pnpm test:ui.ci
+        run: pnpm test:uiux
       - name: Test Vitest
-        run: pnpm test:ut
+        run: pnpm test:unit
       - name: Test Playwright
-        run: pnpm test:it
+        run: pnpm test:e2e

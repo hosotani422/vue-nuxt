@@ -1,5 +1,5 @@
 <template>
-  <IconBase name="config" viewBox="0 0 20 20">
+  <IconBase name="conf" viewBox="0 0 20 20">
     <path fill="none" d="M0 0h20v20H0V0z" />
     <path
       fill="currentColor"

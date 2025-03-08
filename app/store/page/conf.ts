@@ -61,7 +61,7 @@ const useStore = defineStore(`conf`, () => {
       await i18next.changeLanguage(arg.lang);
       app.handle.forceUpdate();
     },
-    downloadBackup: (arg: { elem: HTMLElement }): void => {
+    saveLocal: (arg: { elem: HTMLElement }): void => {
       const fileName = app.refer.constant.app.backup;
       const fileData =
         `${app.render.listId()}\n` +
@@ -71,32 +71,6 @@ const useStore = defineStore(`conf`, () => {
         `${JSON.stringify(state.data)}`;
       arg.elem.setAttribute(`download`, fileName);
       arg.elem.setAttribute(`href`, `data:text/plain,${encodeURIComponent(fileData)}`);
-    },
-    uploadBackup: (arg: { files: FileList }): void => {
-      const reader = new FileReader();
-      reader.addEventListener(`load`, (event: ProgressEvent<FileReader>) => {
-        const files = typeof event.target?.result === `string` ? event.target.result.split(`\n`) : [];
-        if (files.length === 5 && app.refer.isJson(files[1], files[2], files[3], files[4])) {
-          state.data = JSON.parse(files[4]!);
-          list.state.data = JSON.parse(files[1]!);
-          main.state.data = JSON.parse(files[2]!);
-          sub.state.data = JSON.parse(files[3]!);
-          app.handle.routerBack({ listId: files[0]! });
-        } else {
-          dialog.handle.open({
-            mode: `alert`,
-            title: i18next.t(`dialog.title.error`),
-            message: ``,
-            cancel: i18next.t(`button.ok`),
-            callback: {
-              cancel: () => {
-                dialog.handle.close();
-              },
-            },
-          });
-        }
-      });
-      reader.readAsText(arg.files[0]!);
     },
     saveServer: async (): Promise<void> => {
       dialog.handle.open({
@@ -126,6 +100,32 @@ const useStore = defineStore(`conf`, () => {
           },
         },
       });
+    },
+    loadLocal: (arg: { files: FileList }): void => {
+      const reader = new FileReader();
+      reader.addEventListener(`load`, (event: ProgressEvent<FileReader>) => {
+        const files = typeof event.target?.result === `string` ? event.target.result.split(`\n`) : [];
+        if (files.length === 5 && app.refer.isJson(files[1], files[2], files[3], files[4])) {
+          state.data = JSON.parse(files[4]!);
+          list.state.data = JSON.parse(files[1]!);
+          main.state.data = JSON.parse(files[2]!);
+          sub.state.data = JSON.parse(files[3]!);
+          app.handle.routerBack({ listId: files[0]! });
+        } else {
+          dialog.handle.open({
+            mode: `alert`,
+            title: i18next.t(`dialog.title.error`),
+            message: ``,
+            cancel: i18next.t(`button.ok`),
+            callback: {
+              cancel: () => {
+                dialog.handle.close();
+              },
+            },
+          });
+        }
+      });
+      reader.readAsText(arg.files[0]!);
     },
     loadServer: async (): Promise<void> => {
       dialog.handle.open({

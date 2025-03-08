@@ -9,8 +9,8 @@ defineProps<{
 </script>
 
 <template>
-  <PopupBase data-testid="TimeRoot" :open="time.state.open" :max="true">
-    <div class="flex flex-1 flex-col items-center gap-3">
+  <PopupBase aria-label="time" data-testid="TimeRoot" :open="time.state.open" :max="true">
+    <main class="flex flex-1 flex-col items-center gap-3">
       <canvas
         data-id="TimeHour"
         data-testid="TimeHour"
@@ -31,8 +31,8 @@ defineProps<{
         @mousedown="time.handle.inputTime({ type: `minute`, x: $event.pageX, y: $event.pageY })"
         @mousemove="time.handle.inputTime({ type: `minute`, x: $event.pageX, y: $event.pageY })"
       />
-    </div>
-    <div class="flex flex-initial items-center justify-end gap-3">
+    </main>
+    <footer class="flex flex-initial items-center justify-end gap-3">
       <InputButton data-testid="TimeCancel" class="flex-initial text-theme-fine" @click="time.handle.close()">
         {{ time.state.cancel }}</InputButton
       >
@@ -46,6 +46,6 @@ defineProps<{
       >
         {{ time.state.ok }}</InputButton
       >
-    </div>
+    </footer>
   </PopupBase>
 </template>
