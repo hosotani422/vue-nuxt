@@ -12,10 +12,11 @@ defineProps<{
   <transition>
     <div
       v-show="notice.state.open"
+      aria-label="notice"
       data-testid="NoticeRoot"
       class="theme-color-back theme-shadow-outer anime-slide-notice absolute inset-x-3 bottom-3 z-[80] flex items-center rounded-sm p-3"
     >
-      <div data-testid="NoticeMessage" class="flex-1 text-xs">{{ notice.state.message }}</div>
+      <main data-testid="NoticeMessage" class="flex-1 text-xs">{{ notice.state.message }}</main>
       <InputButton data-testid="NoticeBack" class="flex-initial text-theme-fine" @click="notice.refer.callback()">{{
         notice.state.button
       }}</InputButton>

@@ -21,15 +21,15 @@ const config: StorybookConfig = {
             dts: false,
           }),
           Components({
-            dirs: [`../app/components`],
+            dirs: [`./app/components`],
             directoryAsNamespace: true,
             dts: false,
           }),
         ],
         resolve: {
           alias: {
-            "@": path.resolve(__dirname, `../../app`),
-            "~": path.resolve(__dirname, `../../app`),
+            "@": path.resolve(__dirname, `../app`),
+            "~": path.resolve(__dirname, `../app`),
           },
         },
       }),

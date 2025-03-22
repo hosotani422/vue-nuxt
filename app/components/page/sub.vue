@@ -15,6 +15,7 @@ defineProps<{
 
 <template>
   <div
+    aria-label="sub"
     data-id="SubRoot"
     data-testid="SubRoot"
     class="theme-color-mask anime-slide-sub absolute inset-y-0 right-0 z-10 w-[200%]"
@@ -39,7 +40,7 @@ defineProps<{
       sub.handle.swipeEnd({ x: $event.clientX });
     "
   >
-    <div
+    <aside
       data-testid="SubBack"
       class="absolute inset-y-0 left-0 z-[1] w-[57%]"
       @touchstart="sub.handle.swipeInit({ x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY })"
@@ -50,7 +51,7 @@ defineProps<{
       data-testid="SubHome"
       class="theme-color-grad theme-shadow-outer absolute inset-y-0 right-0 z-[1] flex w-[43%] flex-col"
     >
-      <div
+      <header
         data-testid="SubHead"
         class="theme-color-grad theme-shadow-outer relative z-[9] flex flex-initial items-center gap-3 p-3"
       >
@@ -62,8 +63,8 @@ defineProps<{
           :placeholder="i18next.t(`placeholder.main`)"
         />
         <IconMode data-testid="SubMode" class="flex-initial" @click="sub.handle.toggleMode()" />
-      </div>
-      <div data-testid="SubBody" class="flex-1 overflow-auto p-3">
+      </header>
+      <main data-testid="SubBody" class="flex-1 overflow-auto p-3">
         <transition mode="out-in">
           <InputTextarea
             v-if="!main.state.data[app.render.listId()]!.data[app.render.mainId()]!.task"
@@ -122,8 +123,8 @@ defineProps<{
             </transition-group>
           </ul>
         </transition>
-      </div>
-      <div
+      </main>
+      <footer
         data-testid="SubFoot"
         class="theme-color-grad theme-shadow-outer flex flex-initial items-center gap-3 p-3"
         :class="sub.render.classLimit()"
@@ -152,7 +153,7 @@ defineProps<{
           readonly
           @click="sub.handle.openAlarm()"
         />
-      </div>
+      </footer>
     </div>
   </div>
 </template>

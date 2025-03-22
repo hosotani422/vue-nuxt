@@ -13,6 +13,7 @@ defineProps<{
 
 <template>
   <div
+    aria-label="conf"
     data-id="ConfRoot"
     data-testid="ConfRoot"
     class="theme-color-mask anime-slide-conf absolute inset-x-0 bottom-0 z-10 h-[200%] select-none"
@@ -27,7 +28,7 @@ defineProps<{
     @touchend="conf.handle.swipeEnd({ y: $event.changedTouches[0]!.clientY })"
     @mouseup="conf.handle.swipeEnd({ y: $event.clientY })"
   >
-    <div
+    <aside
       data-testid="ConfBack"
       class="absolute inset-x-0 top-0 z-[1] h-[55%]"
       @touchstart="
@@ -40,143 +41,153 @@ defineProps<{
       data-testid="ConfHome"
       class="theme-color-grad theme-shadow-outer absolute inset-x-0 bottom-0 z-[1] flex h-[45%] flex-col"
     >
-      <div
+      <header
         data-testid="ConfHead"
         class="theme-color-grad theme-shadow-outer relative z-[9] flex flex-initial items-center gap-3 p-3"
       >
         <IconArrow data-testid="ConfDown" class="flex-initial rotate-90" @click="app.handle.routerBack()" />
-        <p data-testid="ConfTitle" class="flex-1 text-xl">{{ i18next.t(`conf.title`) }}</p>
+        <h2 data-testid="ConfTitle" class="flex-1 text-xl">{{ i18next.t(`conf.title`) }}</h2>
         <p data-testid="ConfName" class="flex-initial">
           {{ `${app.refer.constant.app.name} ${app.refer.constant.app.version}` }}
         </p>
-      </div>
-      <ul data-testid="ConfBody" class="flex-1 overflow-auto p-3">
-        <li
-          data-testid="ConfItem"
-          class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
-        >
-          <p data-testid="ConfSizeTitle" class="flex-[0_1_5rem]">{{ i18next.t(`conf.size.title`) }}</p>
-          <InputRange
-            v-model="conf.state.data.size"
-            data-testid="ConfSizeValue"
-            class="flex-1"
-            :min="1"
-            :max="3"
-            :step="1"
-          />
-          <p data-testid="ConfSizeName" class="flex-initial">
-            {{ i18next.t(`conf.size.value.${conf.state.data.size}`) }}
-          </p>
-        </li>
-        <li
-          data-testid="ConfItem"
-          class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
-        >
-          <p data-testid="ConfSpeedTitle" class="flex-[0_1_5rem]">{{ i18next.t(`conf.speed.title`) }}</p>
-          <InputRange
-            v-model="conf.state.data.speed"
-            data-testid="ConfSpeedValue"
-            class="flex-1"
-            :min="1"
-            :max="3"
-            :step="1"
-          />
-          <p data-testid="ConfSpeedName" class="flex-initial">
-            {{ i18next.t(`conf.speed.value.${conf.state.data.speed}`) }}
-          </p>
-        </li>
-        <li
-          data-testid="ConfItem"
-          class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
-        >
-          <p data-testid="ConfThemeTitle" class="flex-1">{{ i18next.t(`conf.theme.title`) }}</p>
-          <InputRadio v-model="conf.state.data.theme" data-testid="ConfThemeLight" class="flex-initial" value="light">{{
-            i18next.t(`conf.theme.value.light`)
-          }}</InputRadio>
-          <InputRadio v-model="conf.state.data.theme" data-testid="ConfThemeDark" class="flex-initial" value="dark">{{
-            i18next.t(`conf.theme.value.dark`)
-          }}</InputRadio>
-        </li>
-        <li
-          data-testid="ConfItem"
-          class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
-        >
-          <p data-testid="ConfLangTitle" class="flex-1">{{ i18next.t(`conf.lang.title`) }}</p>
-          <InputRadio v-model="conf.state.data.lang" data-testid="ConfLangEn" class="flex-initial" value="en">{{
-            i18next.t(`conf.lang.value.en`)
-          }}</InputRadio>
-          <InputRadio v-model="conf.state.data.lang" data-testid="ConfLangJa" class="flex-initial" value="ja">{{
-            i18next.t(`conf.lang.value.ja`)
-          }}</InputRadio>
-        </li>
-        <li
-          data-testid="ConfItem"
-          class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
-        >
-          <p data-testid="ConfVibrateTitle" class="flex-1">{{ i18next.t(`conf.vibrate.title`) }}</p>
-          <InputRadio v-model="conf.state.data.vibrate" data-testid="ConfVibrateOff" class="flex-initial" value="off">{{
-            i18next.t(`conf.vibrate.value.off`)
-          }}</InputRadio>
-          <InputRadio v-model="conf.state.data.vibrate" data-testid="ConfVibrateOn" class="flex-initial" value="on">{{
-            i18next.t(`conf.vibrate.value.on`)
-          }}</InputRadio>
-        </li>
-        <li
-          data-testid="ConfItem"
-          class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
-        >
-          <p data-testid="ConfSaveTitle" class="flex-1">{{ i18next.t(`conf.save.title`) }}</p>
-          <a
-            class="flex-[0_1_3rem] text-theme-fine"
-            data-testid="ConfSaveLocal"
-            @click="conf.handle.downloadBackup({ elem: $event.currentTarget as HTMLElement })"
+      </header>
+      <main class="flex-1 overflow-auto p-3">
+        <ul data-testid="ConfBody">
+          <li
+            data-testid="ConfItem"
+            class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
           >
-            <InputButton>{{ i18next.t(`conf.save.local`) }}</InputButton>
-          </a>
-          <InputButton
-            class="flex-[0_1_3rem] text-theme-warn"
-            data-testid="ConfSaveServer"
-            @click="conf.handle.saveServer()"
-            >{{ i18next.t(`conf.save.server`) }}</InputButton
+            <h3 data-testid="ConfSizeTitle" class="flex-[0_1_5rem]">{{ i18next.t(`conf.size.title`) }}</h3>
+            <InputRange
+              v-model="conf.state.data.size"
+              data-testid="ConfSizeValue"
+              class="flex-1"
+              :min="1"
+              :max="3"
+              :step="1"
+            />
+            <p data-testid="ConfSizeName" class="flex-initial">
+              {{ i18next.t(`conf.size.value.${conf.state.data.size}`) }}
+            </p>
+          </li>
+          <li
+            data-testid="ConfItem"
+            class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
           >
-        </li>
-        <li
-          data-testid="ConfItem"
-          class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
-        >
-          <p data-testid="ConfLoadTitle" class="flex-1">{{ i18next.t(`conf.load.title`) }}</p>
-          <InputFile
-            data-testid="ConfLoadLocal"
-            class="flex-[0_1_3rem] text-theme-fine"
-            @change="conf.handle.uploadBackup({ files: $event.target.files })"
-            >{{ i18next.t(`conf.load.local`) }}</InputFile
+            <h3 data-testid="ConfSpeedTitle" class="flex-[0_1_5rem]">{{ i18next.t(`conf.speed.title`) }}</h3>
+            <InputRange
+              v-model="conf.state.data.speed"
+              data-testid="ConfSpeedValue"
+              class="flex-1"
+              :min="1"
+              :max="3"
+              :step="1"
+            />
+            <p data-testid="ConfSpeedName" class="flex-initial">
+              {{ i18next.t(`conf.speed.value.${conf.state.data.speed}`) }}
+            </p>
+          </li>
+          <li
+            data-testid="ConfItem"
+            class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
           >
-          <InputButton
-            class="flex-[0_1_3rem] text-theme-warn"
-            data-testid="ConfLoadServer"
-            @click="conf.handle.loadServer()"
-            >{{ i18next.t(`conf.load.server`) }}</InputButton
+            <h3 data-testid="ConfThemeTitle" class="flex-1">{{ i18next.t(`conf.theme.title`) }}</h3>
+            <InputRadio
+              v-model="conf.state.data.theme"
+              data-testid="ConfThemeLight"
+              class="flex-initial"
+              value="light"
+              >{{ i18next.t(`conf.theme.value.light`) }}</InputRadio
+            >
+            <InputRadio v-model="conf.state.data.theme" data-testid="ConfThemeDark" class="flex-initial" value="dark">{{
+              i18next.t(`conf.theme.value.dark`)
+            }}</InputRadio>
+          </li>
+          <li
+            data-testid="ConfItem"
+            class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
           >
-        </li>
-        <li
-          data-testid="ConfItem"
-          class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
-        >
-          <p data-testid="ConfResetTitle" class="flex-1">{{ i18next.t(`conf.reset.title`) }}</p>
-          <InputButton
-            data-testid="ConfResetConf"
-            class="flex-[0_1_2rem] text-theme-fine"
-            @click="conf.handle.resetConf()"
-            >{{ i18next.t(`conf.reset.conf`) }}</InputButton
+            <h3 data-testid="ConfLangTitle" class="flex-1">{{ i18next.t(`conf.lang.title`) }}</h3>
+            <InputRadio v-model="conf.state.data.lang" data-testid="ConfLangEn" class="flex-initial" value="en">{{
+              i18next.t(`conf.lang.value.en`)
+            }}</InputRadio>
+            <InputRadio v-model="conf.state.data.lang" data-testid="ConfLangJa" class="flex-initial" value="ja">{{
+              i18next.t(`conf.lang.value.ja`)
+            }}</InputRadio>
+          </li>
+          <li
+            data-testid="ConfItem"
+            class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
           >
-          <InputButton
-            data-testid="ConfResetList"
-            class="flex-[0_1_2rem] text-theme-warn"
-            @click="conf.handle.resetList()"
-            >{{ i18next.t(`conf.reset.list`) }}</InputButton
+            <h3 data-testid="ConfVibrateTitle" class="flex-1">{{ i18next.t(`conf.vibrate.title`) }}</h3>
+            <InputRadio
+              v-model="conf.state.data.vibrate"
+              data-testid="ConfVibrateOff"
+              class="flex-initial"
+              value="off"
+              >{{ i18next.t(`conf.vibrate.value.off`) }}</InputRadio
+            >
+            <InputRadio v-model="conf.state.data.vibrate" data-testid="ConfVibrateOn" class="flex-initial" value="on">{{
+              i18next.t(`conf.vibrate.value.on`)
+            }}</InputRadio>
+          </li>
+          <li
+            data-testid="ConfItem"
+            class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
           >
-        </li>
-      </ul>
+            <h3 data-testid="ConfSaveTitle" class="flex-1">{{ i18next.t(`conf.save.title`) }}</h3>
+            <a
+              class="flex-[0_1_3rem] text-theme-fine"
+              data-testid="ConfSaveLocal"
+              @click="conf.handle.saveLocal({ elem: $event.currentTarget as HTMLElement })"
+            >
+              <InputButton>{{ i18next.t(`conf.save.local`) }}</InputButton>
+            </a>
+            <InputButton
+              class="flex-[0_1_3rem] text-theme-warn"
+              data-testid="ConfSaveServer"
+              @click="conf.handle.saveServer()"
+              >{{ i18next.t(`conf.save.server`) }}</InputButton
+            >
+          </li>
+          <li
+            data-testid="ConfItem"
+            class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
+          >
+            <h3 data-testid="ConfLoadTitle" class="flex-1">{{ i18next.t(`conf.load.title`) }}</h3>
+            <InputFile
+              data-testid="ConfLoadLocal"
+              class="flex-[0_1_3rem] text-theme-fine"
+              @change="conf.handle.loadLocal({ files: $event.target.files })"
+              >{{ i18next.t(`conf.load.local`) }}</InputFile
+            >
+            <InputButton
+              class="flex-[0_1_3rem] text-theme-warn"
+              data-testid="ConfLoadServer"
+              @click="conf.handle.loadServer()"
+              >{{ i18next.t(`conf.load.server`) }}</InputButton
+            >
+          </li>
+          <li
+            data-testid="ConfItem"
+            class="theme-color-border theme-color-back flex h-16 items-center gap-3 border-b-[0.1rem] border-solid p-3"
+          >
+            <h3 data-testid="ConfResetTitle" class="flex-1">{{ i18next.t(`conf.reset.title`) }}</h3>
+            <InputButton
+              data-testid="ConfResetConf"
+              class="flex-[0_1_2rem] text-theme-fine"
+              @click="conf.handle.resetConf()"
+              >{{ i18next.t(`conf.reset.conf`) }}</InputButton
+            >
+            <InputButton
+              data-testid="ConfResetList"
+              class="flex-[0_1_2rem] text-theme-warn"
+              @click="conf.handle.resetList()"
+              >{{ i18next.t(`conf.reset.list`) }}</InputButton
+            >
+          </li>
+        </ul>
+      </main>
     </div>
   </div>
 </template>

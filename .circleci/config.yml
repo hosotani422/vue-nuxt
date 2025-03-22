@@ -35,15 +35,15 @@ commands:
     steps:
       - run: |
           npx playwright install --with-deps
-          pnpm test:ui.ci
+          pnpm test:uiux
   test_ut:
     steps:
-      - run: pnpm test:ut
+      - run: pnpm test:unit
   test_it:
     steps:
       - run: |
           npx playwright install chrome
-          pnpm test:it
+          pnpm test:e2e
 
 jobs:
   setup:
