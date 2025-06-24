@@ -17,7 +17,6 @@ defineProps<{
   <div
     v-if="list.state.data.data[app.render.listId()]"
     aria-label="main"
-    data-testid="MainRoot"
     class="theme-color-grad absolute inset-0 z-[1] flex flex-col"
     @touchmove="
       main.handle.dragStart();
@@ -31,31 +30,26 @@ defineProps<{
     @mouseup="main.handle.dragEnd()"
     @click="main.handle.editItem()"
   >
-    <header
-      data-testid="MainHead"
-      class="theme-color-grad theme-shadow-outer relative z-[9] flex flex-initial items-center gap-3 p-3"
-    >
-      <IconList data-testid="MainList" class="flex-initial" @click="app.handle.routerList()" />
+    <header class="theme-color-grad theme-shadow-outer relative z-[9] flex flex-initial items-center gap-3 p-3">
+      <IconList class="flex-initial" @click="app.handle.routerList()" />
       <client-only>
         <InputTextbox
           v-model="list.state.data.data[app.render.listId()]!.title"
-          data-testid="MainTitle"
           class="flex-1 text-xl"
           :placeholder="i18next.t(`placeholder.list`)"
         />
       </client-only>
-      <IconConf data-testid="MainConf" class="flex-initial" @click="app.handle.routerConf()" />
-      <IconPlus data-testid="MainPlus" class="flex-initial" @click="main.handle.entryItem()" />
+      <IconConf class="flex-initial" @click="app.handle.routerConf()" />
+      <IconPlus class="flex-initial" @click="main.handle.entryItem()" />
     </header>
     <main class="flex-1 select-none overflow-auto p-3">
-      <ul data-id="MainBody" data-testid="MainBody">
+      <ul>
         <client-only>
           <transition-group appear>
             <li
               v-for="mainId of main.state.data[app.render.listId()]!.sort"
               :key="mainId"
               :data-id="`MainItem${mainId}`"
-              data-testid="MainItem"
               class="theme-color-border theme-color-back trans-select-label trans-edit-item trans-check-item anime-scale-item group relative flex h-16 items-center gap-3 overflow-hidden border-b-[0.1rem] border-solid p-3"
               :class="{ ...main.render.classStatus({ mainId }), ...main.render.classLimit({ mainId }) }"
               @contextmenu.prevent
@@ -71,28 +65,19 @@ defineProps<{
             >
               <InputCheck
                 v-model="main.state.data[app.render.listId()]!.data[mainId]!.check"
-                data-testid="MainCheck"
                 class="flex-initial"
                 @click.stop
               />
-              <h3 data-testid="MainTask" class="line-clamp-1 flex-1">
+              <h3 class="line-clamp-1 flex-1">
                 {{ main.state.data[app.render.listId()]!.data[mainId]!.title }}
               </h3>
-              <p data-testid="MainCount" class="flex-initial">
+              <p class="flex-initial">
                 {{ main.render.textCount({ mainId }) }}
               </p>
               <div class="theme-color-back trans-option-label absolute right-3 flex [transform:translateX(150%)] gap-3">
-                <IconClone
-                  data-testid="MainClone"
-                  class="flex-initial"
-                  @click.stop="main.handle.copyItem({ mainId })"
-                />
-                <IconMove data-testid="MainMove" class="flex-initial" @click.stop="main.handle.moveItem({ mainId })" />
-                <IconTrash
-                  data-testid="MainTrash"
-                  class="flex-initial"
-                  @click.stop="main.handle.deleteItem({ mainId })"
-                />
+                <IconClone class="flex-initial" @click.stop="main.handle.copyItem({ mainId })" />
+                <IconMove class="flex-initial" @click.stop="main.handle.moveItem({ mainId })" />
+                <IconTrash class="flex-initial" @click.stop="main.handle.deleteItem({ mainId })" />
               </div>
             </li>
           </transition-group>

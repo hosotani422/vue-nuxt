@@ -1,8 +1,8 @@
 import { describe, test, expect } from "vitest";
-import { VueWrapper } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import fixture from "../../../fixture/page/app";
 
-const it = test.extend<{ wrapper: VueWrapper }>({
+const it = test.extend<{ wrapper: ReturnType<typeof mount> }>({
   wrapper: async ({}, use) => {
     fixture.setRouter();
     await fixture.init();
@@ -11,28 +11,24 @@ const it = test.extend<{ wrapper: VueWrapper }>({
   },
 });
 
-describe(`dom`, () => {
-  it(`root`, ({ wrapper }) => {
-    expect(wrapper.findByTestIdAll(`AppRoot`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`AppRoot`).classes()).toContain(`dark`);
-    expect(wrapper.findByTestId(`AppRoot`).classes()).toContain(`just`);
-    expect(wrapper.findByTestId(`AppRoot`).classes()).toContain(`text-base`);
+describe(`view`, () => {
+  it(`root`, async ({ wrapper }) => {
+    expect(wrapper.findAll(`html`)).toHaveLength(1);
+    expect(wrapper.find(`html`).classes()).toContain(`dark`);
+    expect(wrapper.find(`html`).classes()).toContain(`just`);
+    expect(wrapper.find(`html`).classes()).toContain(`text-base`);
   });
   it(`header`, ({ wrapper }) => {
-    expect(wrapper.findByTestIdAll(`AppTitle`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`AppTitle`).text()).toBe(`Memosuku`);
-    expect(wrapper.findByTestIdAll(`AppCharset`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`AppCharset`).attributes(`charset`)).toBe(`utf-8`);
-    expect(wrapper.findByTestIdAll(`AppViewport`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`AppViewport`).attributes(`name`)).toBe(`viewport`);
-    expect(wrapper.findByTestId(`AppViewport`).attributes(`content`)).toBe(`width=device-width, initial-scale=1`);
-    expect(wrapper.findByTestIdAll(`AppDescription`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`AppDescription`).attributes(`name`)).toBe(`description`);
-    expect(wrapper.findByTestId(`AppDescription`).attributes(`content`)).toBe(`メモ帳、TODOアプリ`);
-    expect(wrapper.findByTestIdAll(`AppIcon`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`AppIcon`).attributes(`rel`)).toBe(`icon`);
-    expect(wrapper.findByTestId(`AppIcon`).attributes(`href`)).toBe(`/favicon.png`);
-    expect(wrapper.findByTestIdAll(`AppNoScript`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`AppNoScript`).text()).toBe(`JavaScript is required`);
+    expect(wrapper.findAll(`head title`)).toHaveLength(1);
+    expect(wrapper.find(`head title`).text()).toBe(`Memosuku`);
+    expect(wrapper.findAll(`[charset='utf-8']`)).toHaveLength(1);
+    expect(wrapper.findAll(`[name='viewport']`)).toHaveLength(1);
+    expect(wrapper.find(`[name='viewport']`).attributes(`content`)).toBe(`width=device-width, initial-scale=1`);
+    expect(wrapper.findAll(`[name='description']`)).toHaveLength(1);
+    expect(wrapper.find(`[name='description']`).attributes(`content`)).toBe(`メモ帳、TODOアプリ`);
+    expect(wrapper.findAll(`[rel='icon']`)).toHaveLength(1);
+    expect(wrapper.find(`[rel='icon']`).attributes(`href`)).toBe(`/favicon.png`);
+    expect(wrapper.findAll(`head noscript`)).toHaveLength(1);
+    expect(wrapper.find(`head noscript`).text()).toBe(`JavaScript is required`);
   });
 });

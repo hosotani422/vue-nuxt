@@ -87,7 +87,7 @@ export default defineConfig({
     // Run browser in headless mode.
     headless: true,
     // Change the default data-testid attribute.
-    testIdAttribute: `data-testid`,
+    // testIdAttribute: `data-testid`,
     // launchOptions: {
     //   slowMo: 50,
     // },

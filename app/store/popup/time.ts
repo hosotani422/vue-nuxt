@@ -1,5 +1,4 @@
 import * as datefns from "date-fns";
-import app from "@/store/page/app";
 import conf from "@/store/page/conf";
 
 const refer: {
@@ -50,7 +49,9 @@ const useStore = defineStore(`time`, () => {
       state.open = false;
     },
     inputTime: (arg: { type: `hour` | `minute`; x: number; y: number }): void => {
-      const elem = app.refer.getById<HTMLCanvasElement>(arg.type === `hour` ? `TimeHour` : `TimeMinute`);
+      const elem = document.querySelector<HTMLCanvasElement>(
+        `div[aria-label='time'] canvas:nth-of-type(${arg.type === `hour` ? `1` : `2`})`,
+      )!;
       const radius = elem.getBoundingClientRect().height / 2;
       const x = arg.x - elem.getBoundingClientRect().left;
       const y = arg.y - elem.getBoundingClientRect().top;
@@ -64,7 +65,9 @@ const useStore = defineStore(`time`, () => {
       handle.drawCanvas({ type: arg.type });
     },
     drawCanvas: (arg: { type: `hour` | `minute` }): void => {
-      const elem = app.refer.getById<HTMLCanvasElement>(arg.type === `hour` ? `TimeHour` : `TimeMinute`);
+      const elem = document.querySelector<HTMLCanvasElement>(
+        `div[aria-label='time'] canvas:nth-of-type(${arg.type === `hour` ? `1` : `2`})`,
+      )!;
       const radius = elem.getBoundingClientRect().height / 2;
       elem.setAttribute(`width`, `${radius * 2}px`);
       elem.setAttribute(`height`, `${radius * 2}px`);

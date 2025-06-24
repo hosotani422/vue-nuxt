@@ -134,7 +134,7 @@ const useStore = defineStore(`sub`, () => {
         title: title.slice(arg.caret),
       };
       await nextTick();
-      const elem = app.refer.getById<HTMLInputElement>(`SubTask${subId}`);
+      const elem = document.querySelector<HTMLInputElement>(`textarea[data-id='SubTask${subId}']`)!;
       elem.focus();
       elem.selectionStart = 0;
       elem.selectionEnd = 0;
@@ -154,7 +154,7 @@ const useStore = defineStore(`sub`, () => {
       delete state.data[app.render.listId()]!.data[app.render.mainId()]!.data[arg.subId];
       delete state.status[arg.subId];
       await nextTick();
-      const elem = app.refer.getById<HTMLInputElement>(`SubTask${subId}`);
+      const elem = document.querySelector<HTMLInputElement>(`textarea[data-id='SubTask${subId}']`)!;
       elem.focus();
       elem.selectionStart = caret;
       elem.selectionEnd = caret;
@@ -243,12 +243,12 @@ const useStore = defineStore(`sub`, () => {
     },
     dragInit: (arg: { subId: string; y: number }): void => {
       if (!refer.drag.status) {
-        const item = app.refer.getById(`SubItem${arg.subId}`).getBoundingClientRect();
+        const item = document.querySelector(`li[data-id='SubItem${arg.subId}']`)!.getBoundingClientRect();
         refer.drag.status = `start`;
         refer.drag.id = arg.subId;
         refer.drag.y = arg.y;
         refer.drag.top = item.top;
-        refer.drag.left = item.left - app.refer.getById(`SubHome`).getBoundingClientRect().left;
+        refer.drag.left = item.left - document.querySelector(`div[aria-label='sub'] div`)!.getBoundingClientRect().left;
         refer.drag.height = item.height;
         refer.drag.width = item.width;
         state.status[arg.subId] = `edit`;
@@ -258,7 +258,9 @@ const useStore = defineStore(`sub`, () => {
     dragStart: (): void => {
       if (refer.drag.status === `start`) {
         refer.drag.status = `move`;
-        refer.drag.clone = app.refer.getById(`SubItem${refer.drag.id}`).cloneNode(true) as HTMLElement;
+        refer.drag.clone = document
+          .querySelector(`li[data-id='SubItem${refer.drag.id}']`)!
+          .cloneNode(true) as HTMLElement;
         refer.drag.clone.removeAttribute(`data-id`);
         refer.drag.clone.style.position = `absolute`;
         refer.drag.clone.style.zIndex = `1`;
@@ -266,7 +268,7 @@ const useStore = defineStore(`sub`, () => {
         refer.drag.clone.style.left = `${refer.drag.left}px`;
         refer.drag.clone.style.height = `${refer.drag.height}px`;
         refer.drag.clone.style.width = `${refer.drag.width}px`;
-        app.refer.getById(`SubBody`).appendChild(refer.drag.clone);
+        document.querySelector(`div[aria-label='sub'] main ul`)!.appendChild(refer.drag.clone);
         state.status[refer.drag.id!] = `hide`;
       }
     },
@@ -275,15 +277,21 @@ const useStore = defineStore(`sub`, () => {
         refer.drag.clone!.style.top = `${refer.drag.top! + arg.y - refer.drag.y!}px`;
         const index = state.data[app.render.listId()]!.data[app.render.mainId()]!.sort.indexOf(refer.drag.id!);
         const clone = refer.drag.clone!.getBoundingClientRect();
-        const wrap = app.refer.getById(`SubBody`).getBoundingClientRect();
-        const prev = app.refer
-          .getById(`SubItem${state.data[app.render.listId()]!.data[app.render.mainId()]!.sort[index - 1]}`)
+        const wrap = document.querySelector(`div[aria-label='sub'] main ul`)!.getBoundingClientRect();
+        const prev = document
+          .querySelector(
+            `li[data-id='SubItem${state.data[app.render.listId()]!.data[app.render.mainId()]!.sort[index - 1]}']`,
+          )
           ?.getBoundingClientRect();
-        const current = app.refer
-          .getById(`SubItem${state.data[app.render.listId()]!.data[app.render.mainId()]!.sort[index]}`)
+        const current = document
+          .querySelector(
+            `li[data-id='SubItem${state.data[app.render.listId()]!.data[app.render.mainId()]!.sort[index]}']`,
+          )!
           .getBoundingClientRect();
-        const next = app.refer
-          .getById(`SubItem${state.data[app.render.listId()]!.data[app.render.mainId()]!.sort[index + 1]}`)
+        const next = document
+          .querySelector(
+            `li[data-id='SubItem${state.data[app.render.listId()]!.data[app.render.mainId()]!.sort[index + 1]}']`,
+          )
           ?.getBoundingClientRect();
         if (prev && clone.top + clone.height / 2 < (next?.top || wrap.bottom) - (prev.height + current.height) / 2) {
           state.data[app.render.listId()]!.data[app.render.mainId()]!.sort.splice(
@@ -307,7 +315,9 @@ const useStore = defineStore(`sub`, () => {
         refer.drag.clone!.classList.remove(`edit`);
         refer.drag
           .clone!.animate(
-            { top: `${app.refer.getById(`SubItem${refer.drag.id}`).getBoundingClientRect().top}px` },
+            {
+              top: `${document.querySelector(`li[data-id='SubItem${refer.drag.id}']`)!.getBoundingClientRect().top}px`,
+            },
             { duration: app.handle.getDuration(), easing: `ease-in-out` },
           )
           .addEventListener(`finish`, function listener() {
@@ -324,7 +334,7 @@ const useStore = defineStore(`sub`, () => {
     swipeInit: (arg: { x: number; y: number }): void => {
       if (!refer.swipe.status) {
         refer.swipe.status = `start`;
-        refer.swipe.elem = app.refer.getById<HTMLElement>(`SubRoot`);
+        refer.swipe.elem = document.querySelector<HTMLElement>(`div[aria-label='sub']`)!;
         refer.swipe.x = arg.x;
         refer.swipe.y = arg.y;
         refer.swipe.right =

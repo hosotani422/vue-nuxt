@@ -1,10 +1,10 @@
-import { mount, VueWrapper } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import Base from "../base";
 import notice from "@/store/popup/notice";
 import PopupNotice from "@/components/popup/notice.vue";
 
 export default class Notice extends Base {
-  public static getWrapper(): VueWrapper {
+  public static getWrapper(): ReturnType<typeof mount> {
     notice.state.open = true;
     notice.state.message = `message`;
     notice.state.button = `button`;

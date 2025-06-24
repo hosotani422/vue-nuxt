@@ -1,11 +1,11 @@
-import { mount, VueWrapper } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import Base from "../base";
 import app from "@/store/page/app";
 import list from "@/store/page/list";
 import PageList from "@/components/page/list.vue";
 
 export default class List extends Base {
-  public static getWrapper(): VueWrapper {
+  public static getWrapper(): ReturnType<typeof mount> {
     const wrapper = mount(PageList, {
       props: {
         app,

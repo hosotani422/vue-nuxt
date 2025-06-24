@@ -209,12 +209,12 @@ describe(`handle`, () => {
     expect(closeMock).toBeCalledWith();
   });
   it(`swipeInit`, () => {
-    const getByIdMock = vi
-      .spyOn(app.refer, `getById`)
+    const selectorMock = vi
+      .spyOn(document, `querySelector`)
       .mockReturnValue({ getBoundingClientRect: () => ({ top: 0, height: 0 }) } as HTMLElement);
     conf.handle.swipeInit({ x: 0, y: 0 });
-    expect(getByIdMock).toBeCalledTimes(1);
-    expect(getByIdMock).toBeCalledWith(`ConfRoot`);
+    expect(selectorMock).toBeCalledTimes(1);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='conf']`);
     expect(conf.refer.swipe.status).toBe(`start`);
     expect(conf.refer.swipe.x).toBe(0);
     expect(conf.refer.swipe.y).toBe(0);

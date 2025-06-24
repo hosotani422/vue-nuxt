@@ -74,7 +74,7 @@ describe(`handle`, () => {
     vi.setSystemTime(new Date(9465660000000));
     const focusMock = vi.fn();
     const elementMock = { focus: focusMock, selectionStart: 1, selectionEnd: 1 } as unknown as HTMLInputElement;
-    const getByIdMock = vi.spyOn(app.refer, `getById`).mockReturnValue(elementMock);
+    const selectorMock = vi.spyOn(document, `querySelector`).mockReturnValue(elementMock);
     await sub.handle.divideItem({ subId: `sub1111111111111`, caret: 3 });
     expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]).toEqual({
       sort: [`sub1111111111111`, `sub9465660000000`, `sub2222222222222`],
@@ -84,8 +84,8 @@ describe(`handle`, () => {
         sub2222222222222: { check: true, title: `sub2` },
       },
     });
-    expect(getByIdMock).toBeCalledTimes(1);
-    expect(getByIdMock).toBeCalledWith(`SubTasksub9465660000000`);
+    expect(selectorMock).toBeCalledTimes(1);
+    expect(selectorMock).toBeCalledWith(`textarea[data-id='SubTasksub9465660000000']`);
     expect(focusMock).toBeCalledTimes(1);
     expect(focusMock).toBeCalledWith();
     expect(elementMock.selectionStart).toBe(0);
@@ -95,15 +95,15 @@ describe(`handle`, () => {
     sub.state.status[`sub2222222222222`] = `edit`;
     const focusMock = vi.fn();
     const elementMock = { focus: focusMock, selectionStart: 1, selectionEnd: 1 } as unknown as HTMLInputElement;
-    const getByIdMock = vi.spyOn(app.refer, `getById`).mockReturnValue(elementMock);
+    const selectorMock = vi.spyOn(document, `querySelector`).mockReturnValue(elementMock);
     await sub.handle.connectItem({ subId: `sub2222222222222` });
     expect(sub.state.data[`list1111111111111`]!.data[`main1111111111111`]).toEqual({
       sort: [`sub1111111111111`],
       data: { sub1111111111111: { check: false, title: `sub1sub2` } },
     });
     expect(sub.state.status[`sub2222222222222`]).toBeUndefined();
-    expect(getByIdMock).toBeCalledTimes(1);
-    expect(getByIdMock).toBeCalledWith(`SubTasksub1111111111111`);
+    expect(selectorMock).toBeCalledTimes(1);
+    expect(selectorMock).toBeCalledWith(`textarea[data-id='SubTasksub1111111111111']`);
     expect(focusMock).toBeCalledTimes(1);
     expect(focusMock).toBeCalledWith();
     expect(elementMock.selectionStart).toBe(4);
@@ -200,15 +200,15 @@ describe(`handle`, () => {
     expect(closeMock).toBeCalledWith();
   });
   it(`dragInit`, () => {
-    const getByIdMock = vi.spyOn(app.refer, `getById`).mockReturnValue({
+    const selectorMock = vi.spyOn(document, `querySelector`).mockReturnValue({
       getBoundingClientRect: () => ({ top: 40, left: 60, height: 40, width: 120 }),
     } as HTMLElement);
     const vibrateMock = vi.fn();
     vi.stubGlobal(`navigator`, { vibrate: vibrateMock });
     sub.handle.dragInit({ subId: `sub1111111111111`, y: 0 });
-    expect(getByIdMock).toBeCalledTimes(2);
-    expect(getByIdMock).toBeCalledWith(`SubItemsub1111111111111`);
-    expect(getByIdMock).toBeCalledWith(`SubHome`);
+    expect(selectorMock).toBeCalledTimes(2);
+    expect(selectorMock).toBeCalledWith(`li[data-id='SubItemsub1111111111111']`);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='sub'] div`);
     expect(sub.refer.drag).toEqual({
       status: `start`,
       id: `sub1111111111111`,
@@ -226,14 +226,14 @@ describe(`handle`, () => {
     const removeMock = vi.fn();
     const cloneMock = vi.fn(() => ({ style: {}, removeAttribute: removeMock }));
     const appendMock = vi.fn();
-    const getByIdMock = vi
-      .spyOn(app.refer, `getById`)
+    const selectorMock = vi
+      .spyOn(document, `querySelector`)
       .mockReturnValue({ cloneNode: cloneMock, appendChild: appendMock } as unknown as HTMLElement);
     sub.handle.dragStart();
     expect(sub.refer.drag.status).toBe(`move`);
-    expect(getByIdMock).toBeCalledTimes(2);
-    expect(getByIdMock).toBeCalledWith(`SubItemsub1111111111111`);
-    expect(getByIdMock).toBeCalledWith(`SubBody`);
+    expect(selectorMock).toBeCalledTimes(2);
+    expect(selectorMock).toBeCalledWith(`li[data-id='SubItemsub1111111111111']`);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='sub'] main ul`);
     expect(cloneMock).toBeCalledTimes(1);
     expect(cloneMock).toBeCalledWith(true);
     expect(removeMock).toBeCalledTimes(1);
@@ -250,15 +250,15 @@ describe(`handle`, () => {
     expect(sub.state.status[`sub1111111111111`]).toBe(`hide`);
   });
   it(`dragMove`, () => {
-    const getByIdMock = vi.spyOn(app.refer, `getById`).mockImplementation(
+    const selectorMock = vi.spyOn(document, `querySelector`).mockImplementation(
       (id: string) =>
         ({
           getBoundingClientRect: () => {
-            if (id === `SubItemsub1111111111111`) {
+            if (id === `li[data-id='SubItemsub1111111111111']`) {
               return { height: 40 };
-            } else if (id === `SubItemsub2222222222222`) {
+            } else if (id === `li[data-id='SubItemsub2222222222222']`) {
               return { top: 80, height: 40 };
-            } else if (id === `SubBody`) {
+            } else if (id === `div[aria-label='sub'] main ul`) {
               return { top: 40, bottom: 160 };
             }
             return undefined;
@@ -268,11 +268,11 @@ describe(`handle`, () => {
     sub.refer.drag.clone!.getBoundingClientRect = () => ({ top: 80, height: 40 }) as DOMRect;
     sub.handle.dragMove({ y: 0 });
     expect(sub.refer.drag.clone!.style.top).toBe(`40px`);
-    expect(getByIdMock).toBeCalledTimes(4);
-    expect(getByIdMock).toBeCalledWith(`SubBody`);
-    expect(getByIdMock).toBeCalledWith(`SubItemundefined`);
-    expect(getByIdMock).toBeCalledWith(`SubItemsub1111111111111`);
-    expect(getByIdMock).toBeCalledWith(`SubItemsub2222222222222`);
+    expect(selectorMock).toBeCalledTimes(4);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='sub'] main ul`);
+    expect(selectorMock).toBeCalledWith(`li[data-id='SubItemundefined']`);
+    expect(selectorMock).toBeCalledWith(`li[data-id='SubItemsub1111111111111']`);
+    expect(selectorMock).toBeCalledWith(`li[data-id='SubItemsub2222222222222']`);
     expect(sub.state.data[app.render.listId()]!.data[app.render.mainId()]!.sort).toEqual([
       `sub2222222222222`,
       `sub1111111111111`,
@@ -285,8 +285,8 @@ describe(`handle`, () => {
     ]);
   });
   it(`dragEnd`, () => {
-    const getByIdMock = vi
-      .spyOn(app.refer, `getById`)
+    const selectorMock = vi
+      .spyOn(document, `querySelector`)
       .mockReturnValue({ getBoundingClientRect: () => ({ top: 40 }) } as HTMLElement);
     const removeClassMock = vi.fn();
     const removeCloneMock = vi.fn();
@@ -304,8 +304,8 @@ describe(`handle`, () => {
     expect(removeClassMock).toBeCalledWith(`edit`);
     expect(animateMock).toBeCalledTimes(1);
     expect(animateMock).toBeCalledWith({ top: `40px` }, { duration: 250, easing: `ease-in-out` });
-    expect(getByIdMock).toBeCalledTimes(1);
-    expect(getByIdMock).toBeCalledWith(`SubItemsub1111111111111`);
+    expect(selectorMock).toBeCalledTimes(1);
+    expect(selectorMock).toBeCalledWith(`li[data-id='SubItemsub1111111111111']`);
     expect(addListenerMock).toBeCalledTimes(1);
     expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(removeListenerMock).toBeCalledTimes(1);
@@ -323,12 +323,12 @@ describe(`handle`, () => {
     expect(sub.refer.drag).toEqual({});
   });
   it(`swipeInit`, () => {
-    const getByIdMock = vi
-      .spyOn(app.refer, `getById`)
+    const selectorMock = vi
+      .spyOn(document, `querySelector`)
       .mockReturnValue({ getBoundingClientRect: () => ({ left: 0, width: 0 }) } as HTMLElement);
     sub.handle.swipeInit({ x: 0, y: 0 });
-    expect(getByIdMock).toBeCalledTimes(1);
-    expect(getByIdMock).toBeCalledWith(`SubRoot`);
+    expect(selectorMock).toBeCalledTimes(1);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='sub']`);
     expect(sub.refer.swipe.status).toBe(`start`);
     expect(sub.refer.swipe.x).toBe(0);
     expect(sub.refer.swipe.y).toBe(0);

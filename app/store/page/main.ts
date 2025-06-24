@@ -209,7 +209,7 @@ const useStore = defineStore(`main`, () => {
     },
     dragInit: (arg: { mainId: string; y: number }): void => {
       if (!refer.drag.status) {
-        const item = app.refer.getById(`MainItem${arg.mainId}`).getBoundingClientRect();
+        const item = document.querySelector(`li[data-id='MainItem${arg.mainId}']`)!.getBoundingClientRect();
         refer.drag.status = `start`;
         refer.drag.id = arg.mainId;
         refer.drag.y = arg.y;
@@ -223,7 +223,9 @@ const useStore = defineStore(`main`, () => {
     dragStart: (): void => {
       if (refer.drag.status === `start`) {
         refer.drag.status = `move`;
-        refer.drag.clone = app.refer.getById(`MainItem${refer.drag.id}`).cloneNode(true) as HTMLElement;
+        refer.drag.clone = document
+          .querySelector(`li[data-id='MainItem${refer.drag.id}']`)
+          ?.cloneNode(true) as HTMLElement;
         refer.drag.clone.removeAttribute(`data-id`);
         refer.drag.clone.style.position = `absolute`;
         refer.drag.clone.style.zIndex = `1`;
@@ -231,7 +233,7 @@ const useStore = defineStore(`main`, () => {
         refer.drag.clone.style.left = `${refer.drag.left}px`;
         refer.drag.clone.style.height = `${refer.drag.height}px`;
         refer.drag.clone.style.width = `${refer.drag.width}px`;
-        app.refer.getById(`MainBody`).appendChild(refer.drag.clone);
+        document.querySelector(`div[aria-label='main'] main ul`)?.appendChild(refer.drag.clone);
         state.status[refer.drag.id!] = `hide`;
       }
     },
@@ -240,14 +242,14 @@ const useStore = defineStore(`main`, () => {
         refer.drag.clone!.style.top = `${refer.drag.top! + arg.y - refer.drag.y!}px`;
         const index = state.data[app.render.listId()]!.sort.indexOf(refer.drag.id!);
         const clone = refer.drag.clone!.getBoundingClientRect();
-        const prev = app.refer
-          .getById(`MainItem${state.data[app.render.listId()]!.sort[index - 1]}`)
+        const prev = document
+          .querySelector(`li[data-id='MainItem${state.data[app.render.listId()]!.sort[index - 1]}']`)
           ?.getBoundingClientRect();
-        const current = app.refer
-          .getById(`MainItem${state.data[app.render.listId()]!.sort[index]}`)
+        const current = document
+          .querySelector(`li[data-id='MainItem${state.data[app.render.listId()]!.sort[index]}']`)!
           .getBoundingClientRect();
-        const next = app.refer
-          .getById(`MainItem${state.data[app.render.listId()]!.sort[index + 1]}`)
+        const next = document
+          .querySelector(`li[data-id='MainItem${state.data[app.render.listId()]!.sort[index + 1]}']`)
           ?.getBoundingClientRect();
         if (prev && clone.top + clone.height / 2 < (next?.top || current.bottom) - (prev.height + current.height) / 2) {
           state.data[app.render.listId()]!.sort.splice(
@@ -271,7 +273,9 @@ const useStore = defineStore(`main`, () => {
         refer.drag.clone!.classList.remove(`edit`);
         refer.drag
           .clone!.animate(
-            { top: `${app.refer.getById(`MainItem${refer.drag.id}`).getBoundingClientRect().top}px` },
+            {
+              top: `${document.querySelector(`li[data-id='MainItem${refer.drag.id}']`)!.getBoundingClientRect().top}px`,
+            },
             { duration: app.handle.getDuration(), easing: `ease-in-out` },
           )
           .addEventListener(`finish`, function listener() {

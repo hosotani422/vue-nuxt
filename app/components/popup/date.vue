@@ -11,8 +11,6 @@ defineProps<{
 <template>
   <PopupBase
     aria-label="date"
-    data-id="DateRoot"
-    data-testid="DateRoot"
     :open="date.state.open"
     @touchmove="
       date.handle.swipeStart({ x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY });
@@ -27,35 +25,28 @@ defineProps<{
   >
     <header class="flex flex-initial flex-col gap-3">
       <div class="flex flex-initial items-center">
-        <IconAngle
-          data-testid="DatePrev"
-          class="flex-initial rotate-180"
-          @click="date.handle.pageMove({ mode: `prev` })"
-        />
-        <p data-testid="DateCurrent" class="flex-1 text-center">{{ date.state.current }}</p>
-        <IconAngle data-testid="DateNext" class="flex-initial" @click="date.handle.pageMove({ mode: `next` })" />
+        <IconAngle class="flex-initial rotate-180" @click="date.handle.pageMove({ mode: `prev` })" />
+        <p class="flex-1 text-center">{{ date.state.current }}</p>
+        <IconAngle class="flex-initial" @click="date.handle.pageMove({ mode: `next` })" />
       </div>
       <ul class="flex flex-initial">
-        <li v-for="week of date.render.getWeek()" :key="week" data-testid="DateWeek" class="flex-1 text-center text-xs">
+        <li v-for="week of date.render.getWeek()" :key="week" class="flex-1 text-center text-xs">
           {{ week }}
         </li>
       </ul>
     </header>
-    <main data-id="DateBody" class="flex-initial overflow-x-hidden">
+    <main class="flex-initial overflow-x-hidden">
       <div
-        data-id="DateArea"
-        data-testid="DateArea"
         class="trans-slide-date flex h-64 w-[300%] [transform:translateX(-33.33%)]"
         @touchstart="
           date.handle.swipeInit({ x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY })
         "
         @mousedown="date.handle.swipeInit({ x: $event.clientX, y: $event.clientY })"
       >
-        <ul v-for="month in date.render.getDay()" :key="month.id" data-testid="DateMonth" class="flex flex-1 flex-wrap">
+        <ul v-for="month in date.render.getDay()" :key="month.id" class="flex flex-1 flex-wrap">
           <li
             v-for="day in month.day"
             :key="day.id"
-            data-testid="DateDay"
             class="flex flex-[0_0_14.285%] items-center justify-center border-[0.1rem] border-solid border-transparent [&.hide]:invisible [&.select]:border-theme-fine! [&.today]:text-theme-fine"
             :class="date.render.classStatus({ month: month.id, day: day.id })"
             @click="date.refer.callback(day.id)"
@@ -66,10 +57,10 @@ defineProps<{
       </div>
     </main>
     <footer class="flex flex-initial justify-end gap-3">
-      <InputButton data-testid="DateCancel" class="flex-initial text-theme-fine" @click="date.handle.close()">{{
+      <InputButton class="flex-initial text-theme-fine" @click="date.handle.close()">{{
         date.state.cancel
       }}</InputButton>
-      <InputButton data-testid="DateClear" class="flex-initial text-theme-warn" @click="date.refer.callback(``)">{{
+      <InputButton class="flex-initial text-theme-warn" @click="date.refer.callback(``)">{{
         date.state.clear
       }}</InputButton>
     </footer>

@@ -1,9 +1,9 @@
-import { mount, flushPromises, VueWrapper } from "@vue/test-utils";
+import { mount, flushPromises } from "@vue/test-utils";
 import Base from "../base";
 import PageApp from "@/app.vue";
 
 export default class App extends Base {
-  public static async getWrapper(): Promise<VueWrapper> {
+  public static async getWrapper(): Promise<ReturnType<typeof mount>> {
     const wrapper = mount(
       {
         components: { PageApp },

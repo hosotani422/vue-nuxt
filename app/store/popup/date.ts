@@ -91,27 +91,28 @@ const useStore = defineStore(`date`, () => {
       state.open = false;
     },
     pageMove: (arg: { mode: `prev` | `next` }): void => {
-      app.refer
-        .getById(`DateArea`)
+      document
+        .querySelector(`div[aria-label='date'] main div`)!
         .animate(
           { transform: `translateX(${arg.mode === `prev` ? `0px` : `-66.666%`})` },
           { duration: app.handle.getDuration(), easing: `ease-in-out` },
         )
         .addEventListener(`finish`, function listener() {
-          app.refer.getById(`DateArea`).removeEventListener(`finish`, listener);
-          app.refer.getById<HTMLElement>(`DateArea`).style.transform = `translateX(-33.333%)`;
+          document.querySelector(`div[aria-label='date'] main div`)!.removeEventListener(`finish`, listener);
+          document.querySelector<HTMLElement>(`div[aria-label='date'] main div`)!.style.transform =
+            `translateX(-33.333%)`;
           state.current = datefns.format(datefns.addMonths(state.current, arg.mode === `prev` ? -1 : 1), `yyyy/MM`);
         });
     },
     swipeInit: (arg: { x: number; y: number }): void => {
       if (!refer.swipe.status) {
         refer.swipe.status = `start`;
-        refer.swipe.elem = app.refer.getById<HTMLElement>(`DateArea`);
+        refer.swipe.elem = document.querySelector<HTMLElement>(`div[aria-label='date'] main div`)!;
         refer.swipe.x = arg.x;
         refer.swipe.y = arg.y;
         refer.swipe.left =
           refer.swipe.elem.getBoundingClientRect().left -
-          app.refer.getById(`DateRoot`).children[0]!.getBoundingClientRect().left;
+          document.querySelector(`div[aria-label='date']`)!.children[0]!.getBoundingClientRect().left;
       }
     },
     swipeStart: (arg: { x: number; y: number }): void => {

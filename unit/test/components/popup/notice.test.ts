@@ -1,27 +1,27 @@
 import { describe, test, expect } from "vitest";
-import { VueWrapper } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import fixture from "../../../fixture/popup/notice";
 import notice from "@/store/popup/notice";
 
-const it = test.extend<{ wrapper: VueWrapper }>({
+const it = test.extend<{ wrapper: ReturnType<typeof mount> }>({
   wrapper: async ({}, use) => {
     await use(fixture.getWrapper());
   },
 });
 
-describe(`dom`, () => {
+describe(`view`, () => {
   it(`all`, ({ wrapper }) => {
-    expect(wrapper.findByTestIdAll(`NoticeMessage`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`NoticeMessage`).text()).toBe(`message`);
-    expect(wrapper.findByTestIdAll(`NoticeBack`)).toHaveLength(1);
-    expect(wrapper.findByTestId(`NoticeBack`).text()).toBe(`button`);
+    expect(wrapper.findAll(`main`)).toHaveLength(1);
+    expect(wrapper.find(`main`).text()).toBe(`message`);
+    expect(wrapper.findAll(`button`)).toHaveLength(1);
+    expect(wrapper.find(`button`).text()).toBe(`button`);
   });
 });
 
 describe(`event`, () => {
   it(`all`, ({ wrapper }) => {
     const callbackMock = vi.spyOn(notice.refer, `callback`).mockReturnValue();
-    wrapper.findByTestId(`NoticeBack`).trigger(`click`);
+    wrapper.find(`button`).trigger(`click`);
     expect(callbackMock).toBeCalledTimes(1);
     expect(callbackMock).toBeCalledWith();
   });

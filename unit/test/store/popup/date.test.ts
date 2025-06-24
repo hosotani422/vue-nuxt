@@ -1,5 +1,4 @@
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
-import app from "@/store/page/app";
 import date from "@/store/popup/date";
 import fixture from "../../../fixture/base";
 
@@ -41,14 +40,14 @@ describe(`handle`, () => {
     const removeListenerMock = vi.fn((_: string) => _);
     const animateMock = vi.fn(() => ({ addEventListener: addListenerMock }));
     const styleMock = { transform: `` };
-    const getByIdMock = vi.spyOn(app.refer, `getById`).mockReturnValue({
+    const selectorMock = vi.spyOn(document, `querySelector`).mockReturnValue({
       animate: animateMock,
       removeEventListener: removeListenerMock,
       style: styleMock,
     } as unknown as HTMLElement);
     date.handle.pageMove({ mode: `prev` });
-    expect(getByIdMock).toBeCalledTimes(3);
-    expect(getByIdMock).toBeCalledWith(`DateArea`);
+    expect(selectorMock).toBeCalledTimes(3);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='date'] main div`);
     expect(animateMock).toBeCalledTimes(1);
     expect(animateMock).toBeCalledWith({ transform: `translateX(0px)` }, { duration: 250, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(1);
@@ -58,8 +57,8 @@ describe(`handle`, () => {
     expect(styleMock.transform).toBe(`translateX(-33.333%)`);
     expect(date.state.current).toBe(`1999/11`);
     date.handle.pageMove({ mode: `next` });
-    expect(getByIdMock).toBeCalledTimes(6);
-    expect(getByIdMock).toBeCalledWith(`DateArea`);
+    expect(selectorMock).toBeCalledTimes(6);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='date'] main div`);
     expect(animateMock).toBeCalledTimes(2);
     expect(animateMock).toBeCalledWith({ transform: `translateX(-66.666%)` }, { duration: 250, easing: `ease-in-out` });
     expect(addListenerMock).toBeCalledTimes(2);
@@ -68,14 +67,14 @@ describe(`handle`, () => {
     expect(date.state.current).toBe(`1999/12`);
   });
   it(`swipeInit`, () => {
-    const getByIdMock = vi.spyOn(app.refer, `getById`).mockReturnValue({
+    const selectorMock = vi.spyOn(document, `querySelector`).mockReturnValue({
       getBoundingClientRect: () => ({ left: 60 }),
       children: [{ getBoundingClientRect: () => ({ left: 40 }) }],
     } as unknown as HTMLElement);
     date.handle.swipeInit({ x: 0, y: 0 });
-    expect(getByIdMock).toBeCalledTimes(2);
-    expect(getByIdMock).toBeCalledWith(`DateArea`);
-    expect(getByIdMock).toBeCalledWith(`DateRoot`);
+    expect(selectorMock).toBeCalledTimes(2);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='date'] main div`);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='date']`);
     expect(date.refer.swipe.status).toBe(`start`);
     expect(date.refer.swipe.x).toBe(0);
     expect(date.refer.swipe.y).toBe(0);

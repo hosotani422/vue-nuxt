@@ -7,6 +7,9 @@ import sub from "@/store/page/sub";
 import conf from "@/store/page/conf";
 import dialog from "@/store/popup/dialog";
 import notice from "@/store/popup/notice";
+import IconList from "@/components/icon/list.vue";
+import IconInbox from "@/components/icon/inbox.vue";
+import IconTrash from "@/components/icon/trash.vue";
 
 const refer: {
   init: typeof store.state.data;
@@ -74,13 +77,13 @@ const useStore = defineStore(`list`, () => {
       }
       return classLimit;
     }),
-    typeIcon: computed(() => (arg: { listId: string }): `IconInbox` | `IconTrash` | `IconList` => {
+    typeIcon: computed(() => (arg: { listId: string }): typeof IconInbox | typeof IconTrash | typeof IconList => {
       if (arg.listId === app.refer.constant.id.inbox) {
-        return `IconInbox`;
+        return IconInbox;
       } else if (arg.listId === app.refer.constant.id.trash) {
-        return `IconTrash`;
+        return IconTrash;
       }
-      return `IconList`;
+      return IconList;
     }),
     textCount: computed(() => (arg: { listId: string }): string => {
       const itemList = Object.values(main.state.data[arg.listId]!.data);
@@ -189,7 +192,7 @@ const useStore = defineStore(`list`, () => {
     },
     dragInit: (arg: { listId: string; y: number }): void => {
       if (!refer.drag.status) {
-        const item = app.refer.getById(`ListItem${arg.listId}`).getBoundingClientRect();
+        const item = document.querySelector(`li[data-id='ListItem${arg.listId}']`)!.getBoundingClientRect();
         refer.drag.status = `start`;
         refer.drag.id = arg.listId;
         refer.drag.y = arg.y;
@@ -203,7 +206,9 @@ const useStore = defineStore(`list`, () => {
     dragStart: (): void => {
       if (refer.drag.status === `start`) {
         refer.drag.status = `move`;
-        refer.drag.clone = app.refer.getById(`ListItem${refer.drag.id}`).cloneNode(true) as HTMLElement;
+        refer.drag.clone = document
+          .querySelector(`li[data-id='ListItem${refer.drag.id}']`)!
+          .cloneNode(true) as HTMLElement;
         refer.drag.clone.removeAttribute(`data-id`);
         refer.drag.clone.style.position = `absolute`;
         refer.drag.clone.style.zIndex = `1`;
@@ -211,7 +216,7 @@ const useStore = defineStore(`list`, () => {
         refer.drag.clone.style.left = `${refer.drag.left}px`;
         refer.drag.clone.style.height = `${refer.drag.height}px`;
         refer.drag.clone.style.width = `${refer.drag.width}px`;
-        app.refer.getById(`ListBody`).appendChild(refer.drag.clone);
+        document.querySelector(`div[aria-label='list'] main ul`)?.appendChild(refer.drag.clone);
         state.status[refer.drag.id!] = `hide`;
       }
     },
@@ -220,9 +225,15 @@ const useStore = defineStore(`list`, () => {
         refer.drag.clone!.style.top = `${refer.drag.top! + arg.y - refer.drag.y!}px`;
         const index = state.data.sort.indexOf(refer.drag.id!);
         const clone = refer.drag.clone!.getBoundingClientRect();
-        const prev = app.refer.getById(`ListItem${state.data.sort[index - 1]}`)?.getBoundingClientRect();
-        const current = app.refer.getById(`ListItem${state.data.sort[index]}`).getBoundingClientRect();
-        const next = app.refer.getById(`ListItem${state.data.sort[index + 1]}`)?.getBoundingClientRect();
+        const prev = document
+          .querySelector(`li[data-id='ListItem${state.data.sort[index - 1]}']`)
+          ?.getBoundingClientRect();
+        const current = document
+          .querySelector(`li[data-id='ListItem${state.data.sort[index]}']`)!
+          .getBoundingClientRect();
+        const next = document
+          .querySelector(`li[data-id='ListItem${state.data.sort[index + 1]}']`)
+          ?.getBoundingClientRect();
         if (prev && clone.top + clone.height / 2 < (next?.top || current.bottom) - (prev.height + current.height) / 2) {
           state.data.sort.splice(index - 1, 0, ...state.data.sort.splice(index, 1));
         }
@@ -237,7 +248,9 @@ const useStore = defineStore(`list`, () => {
         refer.drag.clone!.classList.remove(`edit`);
         refer.drag
           .clone!.animate(
-            { top: `${app.refer.getById(`ListItem${refer.drag.id}`).getBoundingClientRect().top}px` },
+            {
+              top: `${document.querySelector(`li[data-id='ListItem${refer.drag.id}']`)!.getBoundingClientRect().top}px`,
+            },
             { duration: app.handle.getDuration(), easing: `ease-in-out` },
           )
           .addEventListener(`finish`, function listener() {
@@ -253,7 +266,7 @@ const useStore = defineStore(`list`, () => {
     swipeInit: (arg: { x: number; y: number }): void => {
       if (!refer.swipe.status) {
         refer.swipe.status = `start`;
-        refer.swipe.elem = app.refer.getById<HTMLElement>(`ListRoot`);
+        refer.swipe.elem = document.querySelector<HTMLElement>(`div[aria-label='list']`)!;
         refer.swipe.x = arg.x;
         refer.swipe.y = arg.y;
         refer.swipe.left = refer.swipe.elem.getBoundingClientRect().left;

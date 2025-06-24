@@ -1,5 +1,4 @@
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
-import app from "@/store/page/app";
 import conf from "@/store/page/conf";
 import time from "@/store/popup/time";
 import fixture from "../../../fixture/base";
@@ -31,24 +30,24 @@ describe(`handle`, () => {
     expect(time.state.open).toBe(false);
   });
   it(`inputTime`, () => {
-    const getByIdMock = vi.spyOn(app.refer, `getById`).mockImplementation((id: string) => {
-      if (id === `TimeHour`) {
+    const selectorMock = vi.spyOn(document, `querySelector`).mockImplementation((id: string) => {
+      if (id === `div[aria-label='time'] canvas:nth-of-type(1)`) {
         return { getBoundingClientRect: () => ({ top: 80, left: 80, height: 240 }) } as HTMLElement;
-      } else if (id === `TimeMinute`) {
+      } else if (id === `div[aria-label='time'] canvas:nth-of-type(2)`) {
         return { getBoundingClientRect: () => ({ top: 330, left: 77, height: 233 }) } as HTMLElement;
       }
       return undefined as unknown as Element;
     });
     const canvasMock = vi.spyOn(time.handle, `drawCanvas`).mockReturnValue();
     time.handle.inputTime({ type: `hour`, x: 240, y: 120 });
-    expect(getByIdMock).toBeCalledTimes(1);
-    expect(getByIdMock).toBeCalledWith(`TimeHour`);
+    expect(selectorMock).toBeCalledTimes(1);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='time'] canvas:nth-of-type(1)`);
     expect(canvasMock).toBeCalledTimes(1);
     expect(canvasMock).toBeCalledWith({ type: `hour` });
     expect(time.state.hour).toBe(1);
     time.handle.inputTime({ type: `minute`, x: 240, y: 360 });
-    expect(getByIdMock).toBeCalledTimes(2);
-    expect(getByIdMock).toBeCalledWith(`TimeMinute`);
+    expect(selectorMock).toBeCalledTimes(2);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='time'] canvas:nth-of-type(2)`);
     expect(canvasMock).toBeCalledTimes(2);
     expect(canvasMock).toBeCalledWith({ type: `minute` });
     expect(time.state.minute).toBe(5);
@@ -57,7 +56,7 @@ describe(`handle`, () => {
     const attributeMock = vi.fn();
     const translateMock = vi.fn();
     const rotateMock = vi.fn();
-    const getByIdMock = vi.spyOn(app.refer, `getById`).mockReturnValue({
+    const selectorMock = vi.spyOn(document, `querySelector`).mockReturnValue({
       setAttribute: attributeMock,
       getBoundingClientRect: () => ({ height: 100 }),
       getContext: () => ({ translate: translateMock, rotate: rotateMock }),
@@ -66,8 +65,8 @@ describe(`handle`, () => {
     const lineMock = vi.spyOn(time.handle, `drawLine`).mockReturnValue();
     const charMock = vi.spyOn(time.handle, `drawChar`).mockReturnValue();
     time.handle.drawCanvas({ type: `hour` });
-    expect(getByIdMock).toBeCalledTimes(1);
-    expect(getByIdMock).toBeCalledWith(`TimeHour`);
+    expect(selectorMock).toBeCalledTimes(1);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='time'] canvas:nth-of-type(1)`);
     expect(attributeMock).toBeCalledTimes(2);
     expect(attributeMock).toBeCalledWith(`width`, `100px`);
     expect(attributeMock).toBeCalledWith(`height`, `100px`);
@@ -110,7 +109,7 @@ describe(`handle`, () => {
     const attributeMock = vi.fn();
     const translateMock = vi.fn();
     const rotateMock = vi.fn();
-    const getByIdMock = vi.spyOn(app.refer, `getById`).mockReturnValue({
+    const selectorMock = vi.spyOn(document, `querySelector`).mockReturnValue({
       setAttribute: attributeMock,
       getBoundingClientRect: () => ({ height: 100 }),
       getContext: () => ({ translate: translateMock, rotate: rotateMock }),
@@ -119,8 +118,8 @@ describe(`handle`, () => {
     const lineMock = vi.spyOn(time.handle, `drawLine`).mockReturnValue();
     const charMock = vi.spyOn(time.handle, `drawChar`).mockReturnValue();
     time.handle.drawCanvas({ type: `minute` });
-    expect(getByIdMock).toBeCalledTimes(1);
-    expect(getByIdMock).toBeCalledWith(`TimeMinute`);
+    expect(selectorMock).toBeCalledTimes(1);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='time'] canvas:nth-of-type(2)`);
     expect(attributeMock).toBeCalledTimes(2);
     expect(attributeMock).toBeCalledWith(`width`, `100px`);
     expect(attributeMock).toBeCalledWith(`height`, `100px`);

@@ -9,11 +9,9 @@ defineProps<{
 </script>
 
 <template>
-  <PopupBase aria-label="time" data-testid="TimeRoot" :open="time.state.open" :max="true">
+  <PopupBase aria-label="time" :open="time.state.open" :max="true">
     <main class="flex flex-1 flex-col items-center gap-3">
       <canvas
-        data-id="TimeHour"
-        data-testid="TimeHour"
         class="aspect-square flex-1"
         @touchstart="time.handle.inputTime({ type: `hour`, x: $event.touches[0]!.pageX, y: $event.touches[0]!.pageY })"
         @touchmove="time.handle.inputTime({ type: `hour`, x: $event.touches[0]!.pageX, y: $event.touches[0]!.pageY })"
@@ -21,8 +19,6 @@ defineProps<{
         @mousemove="time.handle.inputTime({ type: `hour`, x: $event.pageX, y: $event.pageY })"
       />
       <canvas
-        data-id="TimeMinute"
-        data-testid="TimeMinute"
         class="flex-1"
         @touchstart="
           time.handle.inputTime({ type: `minute`, x: $event.touches[0]!.pageX, y: $event.touches[0]!.pageY })
@@ -33,14 +29,13 @@ defineProps<{
       />
     </main>
     <footer class="flex flex-initial items-center justify-end gap-3">
-      <InputButton data-testid="TimeCancel" class="flex-initial text-theme-fine" @click="time.handle.close()">
+      <InputButton class="flex-initial text-theme-fine" @click="time.handle.close()">
         {{ time.state.cancel }}</InputButton
       >
-      <InputButton data-testid="TimeClear" class="flex-initial text-theme-warn" @click="time.refer.callback()">
+      <InputButton class="flex-initial text-theme-warn" @click="time.refer.callback()">
         {{ time.state.clear }}</InputButton
       >
       <InputButton
-        data-testid="TimeOk"
         class="flex-initial text-theme-warn"
         @click="time.refer.callback({ hour: time.state.hour, minute: time.state.minute })"
       >
