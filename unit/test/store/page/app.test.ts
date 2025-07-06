@@ -143,3 +143,11 @@ describe(`render`, () => {
     expect(app.render.classSpeed()).toEqual({ slow: false, just: false, fast: true });
   });
 });
+
+describe(`refer`, () => {
+  it(`isJson`, () => {
+    expect(app.refer.isJson(`{}`)).toBe(true);
+    expect(app.refer.isJson(``)).toBe(false);
+    expect(app.refer.isJson(false)).toBe(false);
+  });
+});

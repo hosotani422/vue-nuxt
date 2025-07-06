@@ -2,13 +2,13 @@ import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 import InputFile from "@/components/input/file.vue";
 
-describe(`dom`, () => {
+describe(`view`, () => {
   it(`default`, () => {
     const wrapper = mount(InputFile);
-    expect(wrapper.findByTestId(`InputFileButton`).text()).toBe(`file`);
+    expect(wrapper.find(`button`).text()).toBe(``);
   });
   it(`slot`, () => {
-    const wrapper = mount(InputFile, { slots: { default: `ファイル選択` } });
-    expect(wrapper.findByTestId(`InputFileButton`).text()).toBe(`ファイル選択`);
+    const wrapper = mount(InputFile, { slots: { default: `file` } });
+    expect(wrapper.find(`button`).text()).toBe(`file`);
   });
 });

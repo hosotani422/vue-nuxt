@@ -27,11 +27,11 @@ const render = reactive({
     };
   }),
 });
+defineExpose({ render });
 </script>
 
 <template>
   <input
-    data-testid="InputRange"
     type="range"
     class="h-[0.1rem] w-full appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-theme-fine"
     v-bind="$attrs"
@@ -40,6 +40,6 @@ const render = reactive({
     :max="prop.max"
     :step="prop.step"
     :value="prop.modelValue"
-    @change="emit(`update:modelValue`, Number(($event.target as HTMLInputElement).value))"
+    @input="emit(`update:modelValue`, Number(($event.target as HTMLInputElement).value))"
   />
 </template>

@@ -18,8 +18,6 @@ const refer: {
     app: { [K in `name` | `version` | `backup`]: string };
   };
   validation: { empty: () => ReturnType<ReturnType<(typeof Zod)[`string`]>[`refine`]> };
-  getById: <T extends Element>(id: string) => T;
-  getByIdAll: <T extends Element>(id: string) => T[];
   isJson: (...itemList: unknown[]) => boolean;
 } = {
   routeStart: true,
@@ -48,12 +46,6 @@ const refer: {
         },
       );
     },
-  },
-  getById: <T extends Element>(id: string): T => {
-    return document.querySelector(`[data-id='${id}']`) as T;
-  },
-  getByIdAll: <T extends Element>(id: string): T[] => {
-    return document.querySelectorAll(`[data-id='${id}']`) as unknown as T[];
   },
   isJson: (...itemList: unknown[]): boolean => {
     try {

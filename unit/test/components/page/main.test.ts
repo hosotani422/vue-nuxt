@@ -1,10 +1,10 @@
 import { describe, test, expect } from "vitest";
-import { VueWrapper } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import fixture from "../../../fixture/page/main";
 import app from "@/store/page/app";
 import main from "@/store/page/main";
 
-const it = test.extend<{ wrapper: VueWrapper }>({
+const it = test.extend<{ wrapper: ReturnType<typeof mount> }>({
   wrapper: async ({}, use) => {
     fixture.setRouter();
     await fixture.init();
@@ -13,35 +13,35 @@ const it = test.extend<{ wrapper: VueWrapper }>({
   },
 });
 
-describe(`dom`, () => {
+describe(`view`, () => {
   it(`header`, ({ wrapper }) => {
-    expect(wrapper.findByTestIdAll(`MainList`)).toHaveLength(1);
-    expect(wrapper.findByTestIdAll(`MainTitle`)).toHaveLength(1);
-    expect(wrapper.findByTestId<HTMLInputElement>(`MainTitle`).element.value).toBe(`list1`);
-    expect(wrapper.findByTestId(`MainTitle`).attributes(`placeholder`)).toBe(`リスト`);
-    expect(wrapper.findByTestIdAll(`MainConf`)).toHaveLength(1);
-    expect(wrapper.findByTestIdAll(`MainPlus`)).toHaveLength(1);
+    expect(wrapper.findAll(`header svg[aria-label='list']`)).toHaveLength(1);
+    expect(wrapper.findAll(`header svg[aria-label='conf']`)).toHaveLength(1);
+    expect(wrapper.findAll(`header svg[aria-label='plus']`)).toHaveLength(1);
+    expect(wrapper.findAll(`header input`)).toHaveLength(1);
+    expect(wrapper.find<HTMLInputElement>(`header input`).element.value).toBe(`list1`);
+    expect(wrapper.find(`header input`).attributes(`placeholder`)).toBe(`リスト`);
   });
   it(`contents`, ({ wrapper }) => {
-    expect(wrapper.findByTestIdAll(`MainItem`)).toHaveLength(2);
-    expect(wrapper.findByTestIdAll(`MainItem`)[0]!.classes()).toContain(`select`);
-    expect(wrapper.findByTestIdAll(`MainItem`)[0]!.classes()).not.toContain(`edit`);
-    expect(wrapper.findByTestIdAll(`MainItem`)[0]!.classes()).not.toContain(`hide`);
-    expect(wrapper.findByTestIdAll(`MainItem`)[1]!.classes()).not.toContain(`select`);
-    expect(wrapper.findByTestIdAll(`MainItem`)[1]!.classes()).toContain(`edit`);
-    expect(wrapper.findByTestIdAll(`MainItem`)[1]!.classes()).toContain(`hide`);
-    expect(wrapper.findByTestIdAll(`MainCheck`)).toHaveLength(2);
-    expect(wrapper.findByTestIdAll<HTMLInputElement>(`MainCheck`)[0]!.element.checked).toBe(false);
-    expect(wrapper.findByTestIdAll<HTMLInputElement>(`MainCheck`)[1]!.element.checked).toBe(true);
-    expect(wrapper.findByTestIdAll(`MainTask`)).toHaveLength(2);
-    expect(wrapper.findByTestIdAll(`MainTask`)[0]!.text()).toBe(`main1`);
-    expect(wrapper.findByTestIdAll(`MainTask`)[1]!.text()).toBe(`main2`);
-    expect(wrapper.findByTestIdAll(`MainCount`)).toHaveLength(2);
-    expect(wrapper.findByTestIdAll(`MainCount`)[0]!.text()).toBe(`1/1`);
-    expect(wrapper.findByTestIdAll(`MainCount`)[1]!.text()).toBe(`1/2`);
-    expect(wrapper.findByTestIdAll(`MainClone`)).toHaveLength(2);
-    expect(wrapper.findByTestIdAll(`MainMove`)).toHaveLength(2);
-    expect(wrapper.findByTestIdAll(`MainTrash`)).toHaveLength(2);
+    expect(wrapper.findAll(`main li`)).toHaveLength(2);
+    expect(wrapper.findAll(`main li`)[0]!.classes()).toContain(`select`);
+    expect(wrapper.findAll(`main li`)[0]!.classes()).not.toContain(`edit`);
+    expect(wrapper.findAll(`main li`)[0]!.classes()).not.toContain(`hide`);
+    expect(wrapper.findAll(`main li`)[1]!.classes()).not.toContain(`select`);
+    expect(wrapper.findAll(`main li`)[1]!.classes()).toContain(`edit`);
+    expect(wrapper.findAll(`main li`)[1]!.classes()).toContain(`hide`);
+    expect(wrapper.findAll(`main input`)).toHaveLength(2);
+    expect(wrapper.findAll<HTMLInputElement>(`main input`)[0]!.element.checked).toBe(false);
+    expect(wrapper.findAll<HTMLInputElement>(`main input`)[1]!.element.checked).toBe(true);
+    expect(wrapper.findAll(`main h3`)).toHaveLength(2);
+    expect(wrapper.findAll(`main h3`)[0]!.text()).toBe(`main1`);
+    expect(wrapper.findAll(`main h3`)[1]!.text()).toBe(`main2`);
+    expect(wrapper.findAll(`main p`)).toHaveLength(2);
+    expect(wrapper.findAll(`main p`)[0]!.text()).toBe(`1/1`);
+    expect(wrapper.findAll(`main p`)[1]!.text()).toBe(`1/2`);
+    expect(wrapper.findAll(`main svg[aria-label='clone']`)).toHaveLength(2);
+    expect(wrapper.findAll(`main svg[aria-label='move']`)).toHaveLength(2);
+    expect(wrapper.findAll(`main svg[aria-label='trash']`)).toHaveLength(2);
   });
 });
 
@@ -50,20 +50,20 @@ describe(`event`, () => {
     const dragStartMock = vi.spyOn(main.handle, `dragStart`).mockReturnValue();
     const dragMoveMock = vi.spyOn(main.handle, `dragMove`).mockReturnValue();
     const dragEndMock = vi.spyOn(main.handle, `dragEnd`).mockReturnValue();
-    wrapper.findByTestId(`MainRoot`).trigger(`touchmove`, { changedTouches: [{ clientY: 1 }] });
+    wrapper.find(`div[aria-label='main']`).trigger(`touchmove`, { changedTouches: [{ clientY: 1 }] });
     expect(dragStartMock).toBeCalledTimes(1);
     expect(dragStartMock).toBeCalledWith();
     expect(dragMoveMock).toBeCalledTimes(1);
     expect(dragMoveMock).toBeCalledWith({ y: 1 });
-    wrapper.findByTestId(`MainRoot`).trigger(`mousemove`, { clientY: 2 });
+    wrapper.find(`div[aria-label='main']`).trigger(`mousemove`, { clientY: 2 });
     expect(dragStartMock).toBeCalledTimes(2);
     expect(dragStartMock).toBeCalledWith();
     expect(dragMoveMock).toBeCalledTimes(2);
     expect(dragMoveMock).toBeCalledWith({ y: 2 });
-    wrapper.findByTestId(`MainRoot`).trigger(`touchend`);
+    wrapper.find(`div[aria-label='main']`).trigger(`touchend`);
     expect(dragEndMock).toBeCalledTimes(1);
     expect(dragEndMock).toBeCalledWith();
-    wrapper.findByTestId(`MainRoot`).trigger(`mouseup`);
+    wrapper.find(`div[aria-label='main']`).trigger(`mouseup`);
     expect(dragEndMock).toBeCalledTimes(2);
     expect(dragEndMock).toBeCalledWith();
   });
@@ -71,13 +71,13 @@ describe(`event`, () => {
     const routerListMock = vi.spyOn(app.handle, `routerList`).mockReturnValue();
     const routerConfMock = vi.spyOn(app.handle, `routerConf`).mockReturnValue();
     const entryItemMock = vi.spyOn(main.handle, `entryItem`).mockReturnValue();
-    wrapper.findByTestId(`MainList`).trigger(`click`);
+    wrapper.find(`header svg[aria-label='list']`).trigger(`click`);
     expect(routerListMock).toBeCalledTimes(1);
     expect(routerListMock).toBeCalledWith();
-    wrapper.findByTestId(`MainConf`).trigger(`click`);
+    wrapper.find(`header svg[aria-label='conf']`).trigger(`click`);
     expect(routerConfMock).toBeCalledTimes(1);
     expect(routerConfMock).toBeCalledWith();
-    wrapper.findByTestId(`MainPlus`).trigger(`click`);
+    wrapper.find(`header svg[aria-label='plus']`).trigger(`click`);
     expect(entryItemMock).toBeCalledTimes(1);
     expect(entryItemMock).toBeCalledWith();
   });
@@ -88,29 +88,29 @@ describe(`event`, () => {
     const copyItemMock = vi.spyOn(main.handle, `copyItem`).mockReturnValue();
     const moveItemMock = vi.spyOn(main.handle, `moveItem`).mockReturnValue();
     const deleteItemMock = vi.spyOn(main.handle, `deleteItem`).mockReturnValue();
-    wrapper.findByTestId(`MainRoot`).trigger(`click`);
+    wrapper.find(`div[aria-label='main']`).trigger(`click`);
     expect(editItemMock).toBeCalledTimes(1);
     expect(editItemMock).toBeCalledWith();
-    wrapper.findByTestIdAll(`MainItem`)[0]!.trigger(`longtouch`, { detail: { changedTouches: [{ clientY: 1 }] } });
+    wrapper.findAll(`main li`)[0]!.trigger(`longtouch`, { detail: { changedTouches: [{ clientY: 1 }] } });
     expect(editItemMock).toBeCalledTimes(2);
     expect(editItemMock).toBeCalledWith({ mainId: `main1111111111111` });
     expect(dragInitMock).toBeCalledTimes(1);
     expect(dragInitMock).toBeCalledWith({ mainId: `main1111111111111`, y: 1 });
-    wrapper.findByTestIdAll(`MainItem`)[1]!.trigger(`longclick`, { detail: { clientY: 2 } });
+    wrapper.findAll(`main li`)[1]!.trigger(`longclick`, { detail: { clientY: 2 } });
     expect(editItemMock).toBeCalledTimes(3);
     expect(editItemMock).toBeCalledWith({ mainId: `main2222222222222` });
     expect(dragInitMock).toBeCalledTimes(2);
     expect(dragInitMock).toBeCalledWith({ mainId: `main2222222222222`, y: 2 });
-    wrapper.findByTestIdAll(`MainItem`)[0]!.trigger(`click`);
+    wrapper.findAll(`main li`)[0]!.trigger(`click`);
     expect(routerSubMock).toBeCalledTimes(1);
     expect(routerSubMock).toBeCalledWith({ mainId: `main1111111111111` });
-    wrapper.findByTestId(`MainClone`).trigger(`click`);
+    wrapper.find(`main svg[aria-label='clone']`).trigger(`click`);
     expect(copyItemMock).toBeCalledTimes(1);
     expect(copyItemMock).toBeCalledWith({ mainId: `main1111111111111` });
-    wrapper.findByTestId(`MainMove`).trigger(`click`);
+    wrapper.find(`main svg[aria-label='move']`).trigger(`click`);
     expect(moveItemMock).toBeCalledTimes(1);
     expect(moveItemMock).toBeCalledWith({ mainId: `main1111111111111` });
-    wrapper.findByTestId(`MainTrash`).trigger(`click`);
+    wrapper.find(`main svg[aria-label='trash']`).trigger(`click`);
     expect(deleteItemMock).toBeCalledTimes(1);
     expect(deleteItemMock).toBeCalledWith({ mainId: `main1111111111111` });
   });

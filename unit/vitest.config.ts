@@ -4,7 +4,7 @@ import { defineConfig } from "vitest/config";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 
-export default defineConfig(() => ({
+export default defineConfig({
   test: {
     globals: true,
     include: [`unit/test/**/*.test.ts`],
@@ -24,13 +24,5 @@ export default defineConfig(() => ({
       directoryAsNamespace: true,
       dts: false,
     }),
-    {
-      name: `findByTestId`,
-      config: () => ({
-        test: {
-          setupFiles: [`unit/plugin/findByTestId.ts`],
-        },
-      }),
-    },
   ],
-}));
+});

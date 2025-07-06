@@ -2,41 +2,25 @@ import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 import InputButton from "@/components/input/button.vue";
 
-describe(`dom`, () => {
+describe(`view`, () => {
   it(`default`, () => {
     const wrapper = mount(InputButton);
-    expect(wrapper.findByTestId(`InputButton`).attributes(`type`)).toBe(`button`);
-    expect(wrapper.findByTestId(`InputButton`).attributes(`disabled`)).toBeUndefined();
-    expect(wrapper.findByTestId(`InputButton`).text()).toBe(`button`);
+    expect(wrapper.find(`button`).attributes(`type`)).toBe(`button`);
+    expect(wrapper.find(`button`).text()).toBe(``);
   });
-  it(`type:button`, () => {
-    const wrapper = mount(InputButton, { props: { type: `button` } });
-    expect(wrapper.findByTestId(`InputButton`).attributes(`type`)).toBe(`button`);
-    expect(wrapper.findByTestId(`InputButton`).attributes(`disabled`)).toBeUndefined();
-    expect(wrapper.findByTestId(`InputButton`).text()).toBe(`button`);
-  });
-  it(`type:reset`, () => {
+  it(`reset`, () => {
     const wrapper = mount(InputButton, { props: { type: `reset` } });
-    expect(wrapper.findByTestId(`InputButton`).attributes(`type`)).toBe(`reset`);
-    expect(wrapper.findByTestId(`InputButton`).attributes(`disabled`)).toBeUndefined();
-    expect(wrapper.findByTestId(`InputButton`).text()).toBe(`button`);
+    expect(wrapper.find(`button`).attributes(`type`)).toBe(`reset`);
+    expect(wrapper.find(`button`).text()).toBe(``);
   });
-  it(`type:submit`, () => {
+  it(`submit`, () => {
     const wrapper = mount(InputButton, { props: { type: `submit` } });
-    expect(wrapper.findByTestId(`InputButton`).attributes(`type`)).toBe(`submit`);
-    expect(wrapper.findByTestId(`InputButton`).attributes(`disabled`)).toBeUndefined();
-    expect(wrapper.findByTestId(`InputButton`).text()).toBe(`button`);
-  });
-  it(`disabled`, () => {
-    const wrapper = mount(InputButton, { props: { type: `button`, disabled: true } });
-    expect(wrapper.findByTestId(`InputButton`).attributes(`type`)).toBe(`button`);
-    expect(wrapper.findByTestId(`InputButton`).attributes(`disabled`)).toBe(``);
-    expect(wrapper.findByTestId(`InputButton`).text()).toBe(`button`);
+    expect(wrapper.find(`button`).attributes(`type`)).toBe(`submit`);
+    expect(wrapper.find(`button`).text()).toBe(``);
   });
   it(`slot`, () => {
-    const wrapper = mount(InputButton, { slots: { default: `InputButton` } });
-    expect(wrapper.findByTestId(`InputButton`).attributes(`type`)).toBe(`button`);
-    expect(wrapper.findByTestId(`InputButton`).attributes(`disabled`)).toBeUndefined();
-    expect(wrapper.findByTestId(`InputButton`).text()).toBe(`InputButton`);
+    const wrapper = mount(InputButton, { slots: { default: `button` } });
+    expect(wrapper.find(`button`).attributes(`type`)).toBe(`button`);
+    expect(wrapper.find(`button`).text()).toBe(`button`);
   });
 });

@@ -193,7 +193,7 @@ const useStore = defineStore(`conf`, () => {
     swipeInit: (arg: { x: number; y: number }): void => {
       if (!refer.swipe.status) {
         refer.swipe.status = `start`;
-        refer.swipe.elem = app.refer.getById<HTMLElement>(`ConfRoot`);
+        refer.swipe.elem = document.querySelector<HTMLElement>(`div[aria-label='conf']`)!;
         refer.swipe.x = arg.x;
         refer.swipe.y = arg.y;
         refer.swipe.top =

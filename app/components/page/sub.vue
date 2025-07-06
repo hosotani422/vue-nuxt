@@ -16,8 +16,6 @@ defineProps<{
 <template>
   <div
     aria-label="sub"
-    data-id="SubRoot"
-    data-testid="SubRoot"
     class="theme-color-mask anime-slide-sub absolute inset-y-0 right-0 z-10 w-[200%]"
     @touchmove="
       sub.handle.dragStart();
@@ -41,58 +39,45 @@ defineProps<{
     "
   >
     <aside
-      data-testid="SubBack"
       class="absolute inset-y-0 left-0 z-[1] w-[57%]"
       @touchstart="sub.handle.swipeInit({ x: $event.changedTouches[0]!.clientX, y: $event.changedTouches[0]!.clientY })"
       @mousedown="sub.handle.swipeInit({ x: $event.clientX, y: $event.clientY })"
     />
-    <div
-      data-id="SubHome"
-      data-testid="SubHome"
-      class="theme-color-grad theme-shadow-outer absolute inset-y-0 right-0 z-[1] flex w-[43%] flex-col"
-    >
-      <header
-        data-testid="SubHead"
-        class="theme-color-grad theme-shadow-outer relative z-[9] flex flex-initial items-center gap-3 p-3"
-      >
-        <IconArrow data-testid="SubRight" class="flex-initial" @click="app.handle.routerBack()" />
+    <div class="theme-color-grad theme-shadow-outer absolute inset-y-0 right-0 z-[1] flex w-[43%] flex-col">
+      <header class="theme-color-grad theme-shadow-outer relative z-[9] flex flex-initial items-center gap-3 p-3">
+        <IconArrow class="flex-initial" @click="app.handle.routerBack()" />
         <InputTextbox
           v-model="main.state.data[app.render.listId()]!.data[app.render.mainId()]!.title"
-          data-testid="SubTitle"
           class="flex-1 text-xl"
           :placeholder="i18next.t(`placeholder.main`)"
         />
-        <IconMode data-testid="SubMode" class="flex-initial" @click="sub.handle.toggleMode()" />
+        <IconMode class="flex-initial" @click="sub.handle.toggleMode()" />
       </header>
-      <main data-testid="SubBody" class="flex-1 overflow-auto p-3">
+      <main class="flex-1 overflow-auto p-3">
         <transition mode="out-in">
           <InputTextarea
             v-if="!main.state.data[app.render.listId()]!.data[app.render.mainId()]!.task"
-            data-testid="SubMemo"
             class="theme-color-back anime-fade-item size-full"
             :placeholder="i18next.t(`placeholder.memo`)"
             :model-value="sub.render.textMemo()"
             @input="sub.handle.convertItem({ text: ($event.target as HTMLInputElement).value })"
           />
-          <ul v-else data-id="SubBody" class="anime-fade-item">
+          <ul v-else class="anime-fade-item">
             <transition-group>
               <li
                 v-for="(subId, index) of sub.state.data[app.render.listId()]!.data[app.render.mainId()]!.sort"
                 :key="subId"
                 :data-id="`SubItem${subId}`"
-                data-testid="SubItem"
                 class="theme-color-border theme-color-back trans-select-text trans-edit-item trans-check-item anime-scale-item group relative flex items-start gap-3 overflow-hidden border-b-[0.1rem] border-solid p-3"
                 :class="sub.render.classStatus({ subId })"
               >
                 <InputCheck
                   v-model="sub.state.data[app.render.listId()]!.data[app.render.mainId()]!.data[subId]!.check"
-                  data-testid="SubCheck"
                   class="peer/check flex-initial"
                 />
                 <InputTextarea
                   v-model="sub.state.data[app.render.listId()]!.data[app.render.mainId()]!.data[subId]!.title"
                   :data-id="`SubTask${subId}`"
-                  data-testid="SubTask"
                   class="peer/text flex-1 p-0!"
                   :placeholder="i18next.t(`placeholder.sub`)"
                   :resize="true"
@@ -107,14 +92,12 @@ defineProps<{
                   "
                 />
                 <IconDrag
-                  data-testid="SubDrag"
                   class="flex-initial"
                   @touchstart="sub.handle.dragInit({ subId, y: $event.changedTouches[0]?.clientY })"
                   @mousedown="sub.handle.dragInit({ subId, y: $event.clientY })"
                 />
                 <transition>
                   <IconTrash
-                    data-testid="SubTrash"
                     class="theme-color-back trans-option-text absolute right-3 [transform:translateX(150%)]"
                     @click="sub.handle.deleteItem({ subId })"
                   />
@@ -125,12 +108,10 @@ defineProps<{
         </transition>
       </main>
       <footer
-        data-testid="SubFoot"
         class="theme-color-grad theme-shadow-outer flex flex-initial items-center gap-3 p-3"
         :class="sub.render.classLimit()"
       >
         <InputTextbox
-          data-testid="SubDate"
           class="w-full flex-1"
           :placeholder="i18next.t(`placeholder.date`)"
           :model-value="main.state.data[app.render.listId()]!.data[app.render.mainId()]!.date"
@@ -138,7 +119,6 @@ defineProps<{
           @click="sub.handle.openDate()"
         />
         <InputTextbox
-          data-testid="SubTime"
           class="w-full flex-1"
           :placeholder="i18next.t(`placeholder.time`)"
           :model-value="main.state.data[app.render.listId()]!.data[app.render.mainId()]!.time"
@@ -146,7 +126,6 @@ defineProps<{
           @click="sub.handle.openTime()"
         />
         <InputTextbox
-          data-testid="SubDialog"
           class="w-full flex-1"
           :placeholder="i18next.t(`placeholder.alarm`)"
           :model-value="sub.render.textAlarm()"

@@ -6,6 +6,9 @@ import sub from "@/store/page/sub";
 import dialog from "@/store/popup/dialog";
 import notice from "@/store/popup/notice";
 import fixture from "../../../fixture/base";
+import IconList from "@/components/icon/list.vue";
+import IconInbox from "@/components/icon/inbox.vue";
+import IconTrash from "@/components/icon/trash.vue";
 
 beforeEach(async () => {
   await fixture.init();
@@ -224,14 +227,14 @@ describe(`handle`, () => {
     expect(closeDialogMock).toBeCalledWith();
   });
   it(`dragInit`, () => {
-    const getByIdMock = vi.spyOn(app.refer, `getById`).mockReturnValue({
+    const selectorMock = vi.spyOn(document, `querySelector`).mockReturnValue({
       getBoundingClientRect: () => ({ top: 40, left: 60, height: 40, width: 120 }),
     } as HTMLElement);
     const vibrateMock = vi.fn();
     vi.stubGlobal(`navigator`, { vibrate: vibrateMock });
     list.handle.dragInit({ listId: `list1111111111111`, y: 0 });
-    expect(getByIdMock).toBeCalledTimes(1);
-    expect(getByIdMock).toBeCalledWith(`ListItemlist1111111111111`);
+    expect(selectorMock).toBeCalledTimes(1);
+    expect(selectorMock).toBeCalledWith(`li[data-id='ListItemlist1111111111111']`);
     expect(list.refer.drag).toEqual({
       status: `start`,
       id: `list1111111111111`,
@@ -248,14 +251,14 @@ describe(`handle`, () => {
     const removeMock = vi.fn();
     const cloneMock = vi.fn(() => ({ style: {}, removeAttribute: removeMock }));
     const appendMock = vi.fn();
-    const getByIdMock = vi
-      .spyOn(app.refer, `getById`)
+    const selectorMock = vi
+      .spyOn(document, `querySelector`)
       .mockReturnValue({ cloneNode: cloneMock, appendChild: appendMock } as unknown as HTMLElement);
     list.handle.dragStart();
     expect(list.refer.drag.status).toBe(`move`);
-    expect(getByIdMock).toBeCalledTimes(2);
-    expect(getByIdMock).toBeCalledWith(`ListItemlist1111111111111`);
-    expect(getByIdMock).toBeCalledWith(`ListBody`);
+    expect(selectorMock).toBeCalledTimes(2);
+    expect(selectorMock).toBeCalledWith(`li[data-id='ListItemlist1111111111111']`);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='list'] main ul`);
     expect(cloneMock).toBeCalledTimes(1);
     expect(cloneMock).toBeCalledWith(true);
     expect(appendMock).toBeCalledTimes(1);
@@ -270,15 +273,15 @@ describe(`handle`, () => {
     expect(list.state.status[`list1111111111111`]).toBe(`hide`);
   });
   it(`dragMove`, () => {
-    const getByIdMock = vi.spyOn(app.refer, `getById`).mockImplementation(
+    const selectorMock = vi.spyOn(document, `querySelector`).mockImplementation(
       (id: string) =>
         ({
           getBoundingClientRect: () => {
-            if (id === `ListItemlist1111111111111`) {
+            if (id === `li[data-id='ListItemlist1111111111111']`) {
               return { top: 40, height: 40, bottom: 80 };
-            } else if (id === `ListItemlist0000000000000`) {
+            } else if (id === `li[data-id='ListItemlist0000000000000']`) {
               return { top: 80, height: 40, bottom: 120 };
-            } else if (id === `ListItemlist9999999999999`) {
+            } else if (id === `li[data-id='ListItemlist9999999999999']`) {
               return { top: 120, height: 40, bottom: 160 };
             }
             return undefined;
@@ -288,18 +291,18 @@ describe(`handle`, () => {
     list.refer.drag.clone!.getBoundingClientRect = () => ({ top: 80, height: 40 }) as DOMRect;
     list.handle.dragMove({ y: 0 });
     expect(list.refer.drag.clone!.style.top).toBe(`40px`);
-    expect(getByIdMock).toBeCalledTimes(3);
-    expect(getByIdMock).toBeCalledWith(`ListItemundefined`);
-    expect(getByIdMock).toBeCalledWith(`ListItemlist1111111111111`);
-    expect(getByIdMock).toBeCalledWith(`ListItemlist0000000000000`);
+    expect(selectorMock).toBeCalledTimes(3);
+    expect(selectorMock).toBeCalledWith(`li[data-id='ListItemundefined']`);
+    expect(selectorMock).toBeCalledWith(`li[data-id='ListItemlist1111111111111']`);
+    expect(selectorMock).toBeCalledWith(`li[data-id='ListItemlist0000000000000']`);
     expect(list.state.data.sort).toEqual([`list0000000000000`, `list1111111111111`, `list9999999999999`]);
     list.refer.drag.clone!.getBoundingClientRect = () => ({ top: 40, height: 40 }) as DOMRect;
     list.handle.dragMove({ y: 0 });
     expect(list.state.data.sort).toEqual([`list1111111111111`, `list0000000000000`, `list9999999999999`]);
   });
   it(`dragEnd`, () => {
-    const getByIdMock = vi
-      .spyOn(app.refer, `getById`)
+    const selectorMock = vi
+      .spyOn(document, `querySelector`)
       .mockReturnValue({ getBoundingClientRect: () => ({ top: 40 }) } as HTMLElement);
     const removeClassMock = vi.fn();
     const removeCloneMock = vi.fn();
@@ -317,8 +320,8 @@ describe(`handle`, () => {
     expect(removeClassMock).toBeCalledWith(`edit`);
     expect(animateMock).toBeCalledTimes(1);
     expect(animateMock).toBeCalledWith({ top: `40px` }, { duration: 250, easing: `ease-in-out` });
-    expect(getByIdMock).toBeCalledTimes(1);
-    expect(getByIdMock).toBeCalledWith(`ListItemlist1111111111111`);
+    expect(selectorMock).toBeCalledTimes(1);
+    expect(selectorMock).toBeCalledWith(`li[data-id='ListItemlist1111111111111']`);
     expect(addListenerMock).toBeCalledTimes(1);
     expect(addListenerMock.mock.calls[0]![0]).toBe(`finish`);
     expect(removeListenerMock).toBeCalledTimes(1);
@@ -334,12 +337,12 @@ describe(`handle`, () => {
     expect(list.refer.drag).toEqual({});
   });
   it(`swipeInit`, () => {
-    const getByIdMock = vi
-      .spyOn(app.refer, `getById`)
+    const selectorMock = vi
+      .spyOn(document, `querySelector`)
       .mockReturnValue({ getBoundingClientRect: () => ({ left: 0 }) } as HTMLElement);
     list.handle.swipeInit({ x: 0, y: 0 });
-    expect(getByIdMock).toBeCalledTimes(1);
-    expect(getByIdMock).toBeCalledWith(`ListRoot`);
+    expect(selectorMock).toBeCalledTimes(1);
+    expect(selectorMock).toBeCalledWith(`div[aria-label='list']`);
     expect(list.refer.swipe.status).toBe(`start`);
     expect(list.refer.swipe.x).toBe(0);
     expect(list.refer.swipe.y).toBe(0);
@@ -418,9 +421,9 @@ describe(`render`, () => {
     });
   });
   it(`typeIcon`, () => {
-    expect(list.render.typeIcon({ listId: `list1111111111111` })).toBe(`IconList`);
-    expect(list.render.typeIcon({ listId: `list0000000000000` })).toBe(`IconInbox`);
-    expect(list.render.typeIcon({ listId: `list9999999999999` })).toBe(`IconTrash`);
+    expect(list.render.typeIcon({ listId: `list1111111111111` })).toBe(IconList);
+    expect(list.render.typeIcon({ listId: `list0000000000000` })).toBe(IconInbox);
+    expect(list.render.typeIcon({ listId: `list9999999999999` })).toBe(IconTrash);
   });
   it(`textCount`, () => {
     expect(list.render.textCount({ listId: `list1111111111111` })).toBe(`1/2`);

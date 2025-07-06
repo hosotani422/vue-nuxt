@@ -1,10 +1,10 @@
-import { mount, VueWrapper } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import Base from "../base";
 import dialog from "@/store/popup/dialog";
 import PopupDialog from "@/components/popup/dialog.vue";
 
 export default class Dialog extends Base {
-  public static getWrapper(): VueWrapper {
+  public static getWrapper(): ReturnType<typeof mount> {
     dialog.state.open = true;
     dialog.state.init = true;
     dialog.state.title = `title`;

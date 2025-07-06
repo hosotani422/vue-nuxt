@@ -2,22 +2,24 @@ import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 import InputRadio from "@/components/input/radio.vue";
 
-describe(`dom`, () => {
+describe(`view`, () => {
   it(`default`, () => {
     const wrapper = mount(InputRadio);
-    expect(wrapper.findByTestId<HTMLInputElement>(`InputRadio`).element.checked).toBe(false);
-    expect(wrapper.findByTestId(`InputRadioLabel`).text()).toBe(``);
+    expect(wrapper.find(`input`).element.checked).toBe(false);
+    expect(wrapper.find(`label`).text()).toBe(``);
   });
   it(`slot`, () => {
-    const wrapper = mount(InputRadio, { slots: { default: `InputRadio` } });
-    expect(wrapper.findByTestId<HTMLInputElement>(`InputRadio`).element.checked).toBe(false);
-    expect(wrapper.findByTestId(`InputRadioLabel`).text()).toBe(`InputRadio`);
+    const wrapper = mount(InputRadio, { slots: { default: `slot` } });
+    expect(wrapper.find(`input`).element.checked).toBe(false);
+    expect(wrapper.find(`label`).text()).toBe(`slot`);
   });
-  it(`value`, () => {
-    let wrapper = mount(InputRadio, { props: { value: `on`, modelValue: `on` } });
-    expect(wrapper.findByTestId<HTMLInputElement>(`InputRadio`).element.checked).toBe(true);
-    expect(wrapper.findByTestId(`InputRadioLabel`).text()).toBe(``);
-    wrapper = mount(InputRadio, { props: { value: `on`, modelValue: `off` } });
-    expect(wrapper.findByTestId<HTMLInputElement>(`InputRadio`).element.checked).toBe(false);
+  it(`value`, async () => {
+    const wrapper = mount(InputRadio, { props: { value: `on`, modelValue: `off` } });
+    expect(wrapper.find(`input`).element.checked).toBe(false);
+    expect(wrapper.find(`label`).text()).toBe(``);
+    wrapper.find(`input`).setValue(true);
+    expect(wrapper.emitted(`update:modelValue`)).toHaveLength(1);
+    expect(wrapper.emitted(`update:modelValue`)![0]![0]).toEqual(`on`);
+    expect(wrapper.find(`input`).element.checked).toBe(true);
   });
 });

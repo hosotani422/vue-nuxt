@@ -1,10 +1,10 @@
-import { mount, VueWrapper } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import Base from "../base";
 import time from "@/store/popup/time";
 import PopupTime from "@/components/popup/time.vue";
 
 export default class Time extends Base {
-  public static getWrapper(): VueWrapper {
+  public static getWrapper(): ReturnType<typeof mount> {
     time.state.open = true;
     time.state.hour = 0;
     time.state.minute = 0;

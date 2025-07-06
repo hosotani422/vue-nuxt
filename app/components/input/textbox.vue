@@ -19,7 +19,6 @@ const emit = defineEmits<{
 
 <template>
   <input
-    data-testid="InputTextbox"
     class="h-8 border-0 bg-transparent outline-0 placeholder:text-theme-half"
     v-bind="$attrs"
     :type="type"
