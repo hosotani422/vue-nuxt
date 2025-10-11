@@ -80,9 +80,9 @@ const useStore = defineStore(`dialog`, () => {
     }),
     errorValidation: computed(() => (): string => {
       if (state.mode === `text`) {
-        return app.refer.validation.empty().safeParse(state.text!.value).error?.errors[0]?.message || ``;
+        return app.refer.validation.empty().safeParse(state.text!.value).error?.issues[0]?.message || ``;
       } else if (state.mode === `radio`) {
-        return app.refer.validation.empty().safeParse(state.radio!.select).error?.errors[0]?.message || ``;
+        return app.refer.validation.empty().safeParse(state.radio!.select).error?.issues[0]?.message || ``;
       }
       return ``;
     }),

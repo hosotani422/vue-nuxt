@@ -15,5 +15,6 @@ export default {
         ignoreAtRules: [`extends`, `tailwind`, `apply`, `theme`, `variant`, `custom-variant`, `utility`],
       },
     ],
+    "nesting-selector-no-missing-scoping-root": null,
   },
 };

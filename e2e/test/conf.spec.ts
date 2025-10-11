@@ -261,7 +261,8 @@ test.describe(`conf`, () => {
         .getByLabel(`conf`)
         .getByRole(`listitem`)
         .nth(6)
-        .getByRole(`textbox`, { name: `ローカル` })
+        .getByRole(`button`)
+        .nth(1)
         .setInputFiles(`./e2e/memosuku.bak`);
       await expect(
         page.getByLabel(`conf`).getByRole(`listitem`).nth(2).getByRole(`radio`, { name: `明` }),

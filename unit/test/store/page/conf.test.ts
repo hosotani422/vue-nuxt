@@ -12,10 +12,11 @@ beforeEach(async () => {
   await fixture.init();
   vi.stubGlobal(`process`, { client: true });
   vi.mock(`vue-router`, () => ({
-    useRoute: () => ({
-      params: { listId: `list1111111111111`, mainId: `main1111111111111` },
+    useRouter: () => ({
+      push: () => {},
+      back: () => {},
+      currentRoute: { value: { params: { listId: `list1111111111111`, mainId: `main1111111111111` } } },
     }),
-    useRouter: () => ({ push: () => {}, replace: () => {}, back: () => {} }),
   }));
 });
 

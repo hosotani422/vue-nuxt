@@ -1,4 +1,4 @@
-import "@/../.nuxt/tailwind.css";
+import "@/style/index.css";
 
 export default {
   parameters: {

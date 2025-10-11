@@ -8,7 +8,6 @@ import path from "path";
 const config: StorybookConfig = {
   stories: [`./stories/**/*.stories.ts`],
   framework: `@storybook/vue3-vite`,
-  addons: [`@storybook/addon-essentials`],
   viteFinal: async (config) => {
     const { default: tailwindcss } = await import(`@tailwindcss/vite`);
     return {
