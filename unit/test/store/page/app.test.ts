@@ -9,13 +9,17 @@ import fixture from "../../../fixture/base";
 import { ja } from "@/locale/ja";
 import { en } from "@/locale/en";
 
+const routerPushMock = vi.fn();
+const routerBackMock = vi.fn();
+
 beforeEach(async () => {
   await fixture.loadData();
   vi.mock(`vue-router`, () => ({
-    useRoute: () => ({
-      params: { listId: `list1111111111111`, mainId: `main1111111111111` },
+    useRouter: () => ({
+      push: routerPushMock,
+      back: routerBackMock,
+      currentRoute: { value: { params: { listId: `list1111111111111`, mainId: `main1111111111111` } } },
     }),
-    useRouter: () => ({ push: () => {}, replace: () => {}, back: () => {} }),
   }));
 });
 
@@ -60,43 +64,38 @@ describe(`handle`, () => {
     expect(app.handle.getDuration()).toBe(100);
   });
   it(`routerList`, async () => {
-    const routerMock = vi.spyOn(app.refer.router!, `push`).mockReturnThis();
     app.handle.routerList();
-    expect(routerMock).toBeCalledTimes(1);
-    expect(routerMock).toBeCalledWith(`/list1111111111111/list`);
+    expect(routerPushMock).toBeCalledTimes(1);
+    expect(routerPushMock).toBeCalledWith(`/list1111111111111/list`);
   });
   it(`routerMain`, async () => {
-    const routerMock = vi.spyOn(app.refer.router!, `push`).mockReturnThis();
     app.handle.routerMain({ listId: `list1111111111111` });
-    expect(routerMock).toBeCalledTimes(1);
-    expect(routerMock).toBeCalledWith(`/list1111111111111`);
+    expect(routerPushMock).toBeCalledTimes(1);
+    expect(routerPushMock).toBeCalledWith(`/list1111111111111`);
   });
   it(`routerSub`, async () => {
-    const routerMock = vi.spyOn(app.refer.router!, `push`).mockReturnThis();
     app.handle.routerSub({ mainId: `main1111111111111` });
-    expect(routerMock).toBeCalledTimes(1);
-    expect(routerMock).toBeCalledWith(`/list1111111111111/main1111111111111`);
+    expect(routerPushMock).toBeCalledTimes(1);
+    expect(routerPushMock).toBeCalledWith(`/list1111111111111/main1111111111111`);
   });
   it(`routerConf`, async () => {
-    const routerMock = vi.spyOn(app.refer.router!, `push`).mockReturnThis();
     app.handle.routerConf();
-    expect(routerMock).toBeCalledTimes(1);
-    expect(routerMock).toBeCalledWith(`/list1111111111111/conf`);
+    expect(routerPushMock).toBeCalledTimes(1);
+    expect(routerPushMock).toBeCalledWith(`/list1111111111111/conf`);
   });
   it(`routerBack`, async () => {
-    const routerMock = vi.spyOn(app.refer.router!, `back`).mockReturnThis();
     const storageMock = vi.spyOn(localStorage, `setItem`).mockReturnValue();
     app.handle.routerBack();
     expect(app.refer.backId).toBe(``);
     expect(storageMock).toBeCalledTimes(0);
-    expect(routerMock).toBeCalledTimes(1);
-    expect(routerMock).toBeCalledWith();
+    expect(routerBackMock).toBeCalledTimes(1);
+    expect(routerBackMock).toBeCalledWith();
     app.handle.routerBack({ listId: `list0000000000000` });
     expect(app.refer.backId).toBe(`list0000000000000`);
     expect(storageMock).toBeCalledTimes(1);
     expect(storageMock).toBeCalledWith(`route`, `list0000000000000`);
-    expect(routerMock).toBeCalledTimes(2);
-    expect(routerMock).toBeCalledWith();
+    expect(routerBackMock).toBeCalledTimes(2);
+    expect(routerBackMock).toBeCalledWith();
   });
   it(`clearTrash`, () => {
     app.handle.clearTrash();

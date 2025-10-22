@@ -1,6 +1,6 @@
 import * as Vue from "vue";
 import i18next from "i18next";
-import Zod from "zod";
+import * as Zod from "zod";
 import list from "@/store/page/list";
 import main from "@/store/page/main";
 import sub from "@/store/page/sub";
@@ -11,13 +11,11 @@ import { en } from "@/locale/en";
 const refer: {
   routeStart: boolean;
   backId: string;
-  route?: ReturnType<typeof useRoute>;
-  router?: ReturnType<typeof useRouter>;
   constant: {
     id: { [K in `inbox` | `trash` | `main` | `sub`]: string };
     app: { [K in `name` | `version` | `backup`]: string };
   };
-  validation: { empty: () => ReturnType<ReturnType<(typeof Zod)[`string`]>[`refine`]> };
+  validation: { empty: () => Zod.ZodType };
   isJson: (...itemList: unknown[]) => boolean;
 } = {
   routeStart: true,
@@ -37,14 +35,7 @@ const refer: {
   },
   validation: {
     empty: () => {
-      return Zod.string().refine(
-        (value) => {
-          return value.trim().length > 0;
-        },
-        {
-          message: i18next.t(`validation.empty`),
-        },
-      );
+      return Zod.string().trim().min(1, i18next.t(`validation.empty`));
     },
   },
   isJson: (...itemList: unknown[]): boolean => {
@@ -72,10 +63,10 @@ const useStore = defineStore(`app`, () => {
 
   const render = reactive({
     listId: computed(() => (): string => {
-      return (refer.route?.params.listId as string) || ``;
+      return (useRouter()?.currentRoute.value.params.listId as string) || ``;
     }),
     mainId: computed(() => (): string => {
-      return (refer.route?.params.mainId as string) || ``;
+      return (useRouter()?.currentRoute.value.params.mainId as string) || ``;
     }),
     attrClass: computed(() => (arg: { attrs: Vue.SetupContext[`attrs`] }): Vue.SetupContext[`attrs`] => {
       return Object.fromEntries(Object.entries(arg.attrs).filter(([key]) => key === `class`));
@@ -107,8 +98,6 @@ const useStore = defineStore(`app`, () => {
 
   const handle = {
     init: async (): Promise<void> => {
-      refer.route = useRoute();
-      refer.router = useRouter();
       await i18next.init({
         lng: `ja`,
         resources: {
@@ -131,21 +120,21 @@ const useStore = defineStore(`app`, () => {
       return 250;
     },
     routerList: (): void => {
-      refer.router!.push(`/${render.listId()}/list`);
+      useRouter().push(`/${render.listId()}/list`);
     },
     routerMain: (arg: { listId: string }): void => {
-      refer.router!.push(`/${arg.listId}`);
+      useRouter().push(`/${arg.listId}`);
     },
     routerSub: (arg: { mainId: string }): void => {
-      refer.router!.push(`/${render.listId()}/${arg.mainId}`);
+      useRouter().push(`/${render.listId()}/${arg.mainId}`);
     },
     routerConf: (): void => {
-      refer.router!.push(`/${render.listId()}/conf`);
+      useRouter().push(`/${render.listId()}/conf`);
     },
     routerBack: (arg?: { listId: string }): void => {
       refer.backId = arg?.listId || ``;
       refer.backId && localStorage.setItem(`route`, refer.backId);
-      refer.router!.back();
+      useRouter().back();
     },
     clearTrash: (): void => {
       const trashId = refer.constant.id.trash;
