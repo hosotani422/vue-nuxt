@@ -106,7 +106,7 @@ export default eslintTs.config(
     files: [`**/*.{js,jsx,ts,tsx,vue}`],
   },
   {
-    ignores: [`.nuxt/`, `.output/`, `.storybook/`, `coverage/`],
+    ignores: [`.nuxt/`, `.output/`, `dist`, `.storybook/`, `coverage/`],
   },
   eslintJs.configs.recommended,
   ...eslintTs.configs.recommended,
