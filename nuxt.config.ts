@@ -2,9 +2,11 @@ import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
-  ssr: true,
-  rootDir: `app`,
-  buildDir: `../.nuxt`,
+  ssr: false,
+  rootDir: `./`,
+  app: {
+    baseURL: process.env.npm_lifecycle_event === `dev` ? `` : `/vue-nuxt/`,
+  },
   css: [`@/style/index.css`],
   components: {
     global: true,
