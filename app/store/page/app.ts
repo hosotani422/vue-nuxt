@@ -28,9 +28,9 @@ const refer: {
       sub: `sub0000000000000`,
     },
     app: {
-      name: `Memosuku`,
+      name: `Memotea`,
       version: `1.0.0`,
-      backup: `memosuku.bak`,
+      backup: `memotea.bak`,
     },
   },
   validation: {
