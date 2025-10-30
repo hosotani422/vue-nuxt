@@ -31,15 +31,15 @@ commands:
   lint_script:
     steps:
       - run: pnpm lint:script
-  test_ui:
+  test_uiux:
     steps:
       - run: |
           npx playwright install --with-deps
           pnpm test:uiux
-  test_ut:
+  test_unit:
     steps:
       - run: pnpm test:unit
-  test_it:
+  test_e2e:
     steps:
       - run: |
           npx playwright install chrome
@@ -61,24 +61,24 @@ jobs:
       - lint_format
       - lint_style
       - lint_script
-  test_ui:
+  test_uiux:
     executor: node_executor
     steps:
       - load_workspace
       - install_pnpm
-      - test_ui
-  test_ut:
+      - test_uiux
+  test_unit:
     executor: node_executor
     steps:
       - load_workspace
       - install_pnpm
-      - test_ut
-  test_it:
+      - test_unit
+  test_e2e:
     executor: node_executor
     steps:
       - load_workspace
       - install_pnpm
-      - test_it
+      - test_e2e
 
 workflows:
   ci:
@@ -87,12 +87,12 @@ workflows:
       - lint:
           requires:
             - setup
-      - test_ui:
+      - test_uiux:
           requires:
             - setup
-      - test_ut:
+      - test_unit:
           requires:
             - setup
-      - test_it:
+      - test_e2e:
           requires:
             - setup
