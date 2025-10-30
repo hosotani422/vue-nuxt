@@ -79,7 +79,7 @@ describe(`handle`, () => {
     const elem = { setAttribute: attributeMock } as unknown as HTMLElement;
     conf.handle.saveLocal({ elem });
     expect(attributeMock).toBeCalledTimes(2);
-    expect(attributeMock).toBeCalledWith(`download`, `memosuku.bak`);
+    expect(attributeMock).toBeCalledWith(`download`, `memotea.bak`);
     expect(attributeMock).toBeCalledWith(
       `href`,
       `data:text/plain,${encodeURIComponent(
@@ -107,7 +107,7 @@ describe(`handle`, () => {
               `{"list0000000000000":{"data":{}}}\n` +
               `{"size":2,"speed":2,"theme":"dark","lang":"ja","vibrate":"on","save":"local"}`,
           ],
-          `memosuku.bak`,
+          `memotea.bak`,
           { type: `text/plain` },
         ),
       ] as unknown as FileList,

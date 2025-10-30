@@ -28,7 +28,6 @@ export default class Main extends Base {
       },
       global: {
         stubs: {
-          ClientOnly: { template: `<div><slot /></div>` },
           NuxtPage: true,
         },
       },

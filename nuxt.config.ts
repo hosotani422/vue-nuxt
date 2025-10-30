@@ -1,10 +1,21 @@
 import path from "path";
+import { defineNuxtConfig } from "nuxt/config";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
-  ssr: true,
+  ssr: false,
   rootDir: `app`,
   buildDir: `../.nuxt`,
+  nitro: {
+    output: {
+      dir: `../.output`,
+      publicDir: `../dist`,
+    },
+  },
+  app: {
+    // GitHubPages反映時はリポジトリ名の追加が必要
+    baseURL: process.env.npm_lifecycle_event === `generate` ? `/vue-nuxt/` : `/`,
+  },
   css: [`@/style/index.css`],
   components: {
     global: true,
@@ -21,7 +32,15 @@ export default defineNuxtConfig({
   typescript: {
     shim: false,
   },
-  modules: [`@pinia/nuxt`],
+  modules: [
+    `@pinia/nuxt`,
+    `@vite-pwa/nuxt`,
+    (_, nuxt) => {
+      nuxt.hook("pwa:beforeBuildServiceWorker", (options) => {
+        console.log("pwa:beforeBuildServiceWorker: ", options.base);
+      });
+    },
+  ],
   imports: {
     presets: [
       {
@@ -29,5 +48,55 @@ export default defineNuxtConfig({
         imports: [`createPinia`],
       },
     ],
+  },
+  devtools: {
+    enabled: true,
+  },
+  pwa: {
+    registerType: `autoUpdate`,
+    manifest: {
+      id: `jp.memotea`,
+      name: `Memotea`,
+      short_name: `Memotea`,
+      description: `メモ帳、TODOアプリ`,
+      categories: [`productivity`],
+      lang: `ja`,
+      scope: process.env.npm_lifecycle_event === `generate` ? `/vue-nuxt/` : `/`,
+      start_url: process.env.npm_lifecycle_event === `generate` ? `/vue-nuxt/` : `/`,
+      display: `standalone`,
+      orientation: `any`,
+      theme_color: `#ffffff`,
+      background_color: `#ffffff`,
+      strategies: `injectManifest`,
+      srcDir: `service-worker`,
+      filename: `sw.ts`,
+      icons: [
+        {
+          src: `favicon.png`,
+          sizes: `256x256`,
+          type: `image/png`,
+        },
+      ],
+    },
+    workbox: {
+      globPatterns: [`**/*.{js,css,html,png,svg,ico}`],
+    },
+    injectManifest: {
+      globPatterns: [`**/*.{js,css,html,png,svg,ico}`],
+    },
+    client: {
+      installPrompt: true,
+      periodicSyncForUpdates: 20,
+    },
+    experimental: {
+      includeAllowlist: true,
+    },
+    devOptions: {
+      enabled: true,
+      suppressWarnings: true,
+      navigateFallback: `/`,
+      navigateFallbackAllowlist: [/^\/$/],
+      type: `module`,
+    },
   },
 });
