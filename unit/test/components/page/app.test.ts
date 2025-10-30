@@ -20,7 +20,7 @@ describe(`view`, () => {
   });
   it(`header`, ({ wrapper }) => {
     expect(wrapper.findAll(`head title`)).toHaveLength(1);
-    expect(wrapper.find(`head title`).text()).toBe(`Memosuku`);
+    expect(wrapper.find(`head title`).text()).toBe(`Memotea`);
     expect(wrapper.findAll(`[charset='utf-8']`)).toHaveLength(1);
     expect(wrapper.findAll(`[name='viewport']`)).toHaveLength(1);
     expect(wrapper.find(`[name='viewport']`).attributes(`content`)).toBe(`width=device-width, initial-scale=1`);
