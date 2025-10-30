@@ -15,10 +15,10 @@ export default {
       },
     },
     backgrounds: {
-      default: `memosuku`,
+      default: `memotea`,
       values: [
         {
-          name: `memosuku`,
+          name: `memotea`,
           value: `linear-gradient(145deg, #d0d0d0, #e7e7e7)`,
         },
       ],

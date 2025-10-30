@@ -15,14 +15,14 @@ test.describe(`conf`, () => {
   });
   test.describe(`init`, () => {
     test(`header`, async ({ page }) => {
-      await expect(page).toHaveTitle(`Memosuku`);
+      await expect(page).toHaveTitle(`Memotea`);
       await expect(page).toHaveURL(`/list1111111111111/conf`);
       await expect(page.getByLabel(`conf`).getByRole(`img`, { name: `arrow` })).toHaveCount(1);
       await expect(page.getByLabel(`conf`).getByRole(`img`, { name: `arrow` })).toBeVisible();
       await expect(page.getByLabel(`conf`).getByRole(`heading`, { name: `設定` })).toHaveCount(1);
       await expect(page.getByLabel(`conf`).getByRole(`heading`, { name: `設定` })).toBeVisible();
-      await expect(page.getByLabel(`conf`).getByText(/Memosuku/)).toHaveCount(1);
-      await expect(page.getByLabel(`conf`).getByText(/Memosuku/)).toBeVisible();
+      await expect(page.getByLabel(`conf`).getByText(/Memotea/)).toHaveCount(1);
+      await expect(page.getByLabel(`conf`).getByText(/Memotea/)).toBeVisible();
     });
     test(`main/range`, async ({ page }) => {
       await expect(page.getByLabel(`conf`).getByRole(`listitem`)).toHaveCount(8);
@@ -245,7 +245,7 @@ test.describe(`conf`, () => {
       for await (const chunk of stream) {
         download += chunk;
       }
-      const upload = fs.readFileSync(`./e2e/memosuku.bak`, `utf8`);
+      const upload = fs.readFileSync(`./e2e/memotea.bak`, `utf8`);
       await expect(download).toBe(upload);
     });
     test(`save/server`, async ({ page }) => {
@@ -263,7 +263,7 @@ test.describe(`conf`, () => {
         .nth(6)
         .getByRole(`button`)
         .nth(1)
-        .setInputFiles(`./e2e/memosuku.bak`);
+        .setInputFiles(`./e2e/memotea.bak`);
       await expect(
         page.getByLabel(`conf`).getByRole(`listitem`).nth(2).getByRole(`radio`, { name: `明` }),
       ).not.toBeChecked();
@@ -273,7 +273,7 @@ test.describe(`conf`, () => {
     });
     test(`load/server`, async ({ page }) => {
       await page.route(`/api/backup`, async (route) => {
-        await route.fulfill({ body: fs.readFileSync(`./e2e/memosuku.bak`, `utf8`) });
+        await route.fulfill({ body: fs.readFileSync(`./e2e/memotea.bak`, `utf8`) });
       });
       await page.getByLabel(`conf`).getByRole(`listitem`).nth(2).getByRole(`radio`, { name: `明` }).check();
       await page.getByLabel(`conf`).getByRole(`listitem`).nth(6).getByRole(`button`, { name: `サーバー` }).click();
