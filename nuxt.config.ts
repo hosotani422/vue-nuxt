@@ -2,9 +2,14 @@ import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
-  ssr: true,
-  rootDir: `app`,
-  buildDir: `../.nuxt`,
+  ssr: false,
+  rootDir: `./`,
+  buildDir: `.nuxt`,
+  nitro: {
+    output: {
+      publicDir: `.spa`,
+    },
+  },
   css: [`@/style/index.css`],
   components: {
     global: true,
