@@ -14,12 +14,12 @@ test.describe(`list`, () => {
   });
   test.describe(`init`, () => {
     test(`header`, async ({ page }) => {
-      await expect(page).toHaveTitle(`Memosuku`);
+      await expect(page).toHaveTitle(`Memotea`);
       await expect(page).toHaveURL(`/list1111111111111/list`);
       await expect(page.getByLabel(`list`).getByRole(`img`, { name: `plus` })).toHaveCount(1);
       await expect(page.getByLabel(`list`).getByRole(`img`, { name: `plus` })).toBeVisible();
-      await expect(page.getByLabel(`list`).getByRole(`heading`, { name: `Memosuku` })).toHaveCount(1);
-      await expect(page.getByLabel(`list`).getByRole(`heading`, { name: `Memosuku` })).toBeVisible();
+      await expect(page.getByLabel(`list`).getByRole(`heading`, { name: `Memotea` })).toHaveCount(1);
+      await expect(page.getByLabel(`list`).getByRole(`heading`, { name: `Memotea` })).toBeVisible();
       await expect(page.getByLabel(`list`).getByRole(`img`, { name: `arrow` })).toHaveCount(1);
       await expect(page.getByLabel(`list`).getByRole(`img`, { name: `arrow` })).toBeVisible();
     });
@@ -111,7 +111,7 @@ test.describe(`list`, () => {
       await expect(page.getByLabel(`list`).getByRole(`listitem`).nth(1)).not.toHaveClass(/ edit/);
       await fixture.longClick(page.getByLabel(`list`).getByRole(`listitem`).nth(1));
       await expect(page.getByLabel(`list`).getByRole(`listitem`).nth(1)).toHaveClass(/ edit/);
-      await page.getByLabel(`list`).getByRole(`heading`, { name: `Memosuku` }).click();
+      await page.getByLabel(`list`).getByRole(`heading`, { name: `Memotea` }).click();
       await expect(page.getByLabel(`list`).getByRole(`listitem`).nth(1)).not.toHaveClass(/ edit/);
     });
     test(`edit/current`, async ({ page, fixture }) => {

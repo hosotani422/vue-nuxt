@@ -13,11 +13,12 @@ await app.handle.init();
     :class="{ ...app.render.classTheme(), ...app.render.classSize(), ...app.render.classSpeed() }"
   >
     <Head>
-      <Title>Memosuku</Title>
+      <Title>Memotea</Title>
       <Meta charset="utf-8" />
       <Meta name="viewport" content="width=device-width, initial-scale=1" />
       <Meta name="description" content="メモ帳、TODOアプリ" />
       <Link rel="icon" href="/favicon.png" />
+      <NuxtPwaManifest />
       <NoScript>JavaScript is required</NoScript>
     </Head>
     <Body class="fixed inset-0 z-[1]">
