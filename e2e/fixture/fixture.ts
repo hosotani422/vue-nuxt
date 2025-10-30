@@ -7,7 +7,7 @@ export default class Fixture {
     private readonly contest: BrowserContext,
   ) {}
   public async init(): Promise<void> {
-    const backup = await fs.readFileSync(`./e2e/memosuku.bak`, `utf8`).split(`\n`);
+    const backup = await fs.readFileSync(`./e2e/memotea.bak`, `utf8`).split(`\n`);
     await this.contest.addInitScript((backup) => {
       window.localStorage.setItem(`route`, backup[0]!);
       window.localStorage.setItem(`list`, backup[1]!);

@@ -11,7 +11,7 @@ export default class Base {
     await app.handle.init();
   }
   public static async loadData(): Promise<void> {
-    const backup = fs.readFileSync(`./unit/memosuku.bak`, `utf-8`).split(`\n`);
+    const backup = fs.readFileSync(`./unit/memotea.bak`, `utf-8`).split(`\n`);
     app.refer.backId = backup[0]!;
     list.state.data = JSON.parse(backup[1]!);
     main.state.data = JSON.parse(backup[2]!);

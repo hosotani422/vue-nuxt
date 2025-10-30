@@ -18,7 +18,7 @@ describe(`view`, () => {
     expect(wrapper.findAll(`header svg[aria-label='plus']`)).toHaveLength(1);
     expect(wrapper.findAll(`header svg[aria-label='arrow']`)).toHaveLength(1);
     expect(wrapper.findAll(`header h1`)).toHaveLength(1);
-    expect(wrapper.find(`header h1`).text()).toBe(`Memosuku`);
+    expect(wrapper.find(`header h1`).text()).toBe(`Memotea`);
   });
   it(`contents`, ({ wrapper }) => {
     expect(wrapper.findAll(`main li`)).toHaveLength(3);
