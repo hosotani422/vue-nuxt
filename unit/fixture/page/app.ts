@@ -14,7 +14,7 @@ export default class App extends Base {
           stubs: {
             Html: { template: `<html><slot /></html>` },
             Head: { template: `<head><slot /></head>` },
-            Title: { template: `<title>Memosuku</title>` },
+            Title: { template: `<title>Memotea</title>` },
             Meta: true,
             Link: true,
             NoScript: { template: `<noscript>JavaScript is required</noscript>` },
