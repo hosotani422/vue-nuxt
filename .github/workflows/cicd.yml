@@ -26,13 +26,13 @@ jobs:
           version: 10.18.2
       - name: Install Dependency
         run: pnpm install
-      - name: Build Storybook
-        run: pnpm build:uiux
-      - name: Upload Storybook
+      - name: Build App
+        run: pnpm generate
+      - name: Upload App
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./.storybook
-      - name: Deploy Storybook
+          path: ./dist
+      - name: Deploy App
         uses: actions/deploy-pages@v4
       - name: Lint Prettier
         run: pnpm lint:format
