@@ -13,7 +13,7 @@ test.describe(`main`, () => {
   });
   test.describe(`init`, () => {
     test(`header`, async ({ page }) => {
-      await expect(page).toHaveTitle(`Memosuku`);
+      await expect(page).toHaveTitle(`Memotea`);
       await expect(page).toHaveURL(`/list1111111111111`);
       await expect(page.getByLabel(`main`).getByRole(`img`, { name: `list` })).toHaveCount(1);
       await expect(page.getByLabel(`main`).getByRole(`img`, { name: `list` })).toBeVisible();

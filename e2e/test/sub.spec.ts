@@ -14,7 +14,7 @@ test.describe(`sub`, () => {
   });
   test.describe(`init`, () => {
     test(`header`, async ({ page }) => {
-      await expect(page).toHaveTitle(`Memosuku`);
+      await expect(page).toHaveTitle(`Memotea`);
       await expect(page).toHaveURL(`/list1111111111111/main1111111111111`);
       await expect(page.getByLabel(`sub`).getByRole(`img`, { name: `arrow` })).toHaveCount(1);
       await expect(page.getByLabel(`sub`).getByRole(`img`, { name: `arrow` })).toBeVisible();

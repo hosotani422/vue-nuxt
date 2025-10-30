@@ -19,7 +19,7 @@ describe(`view`, () => {
     expect(wrapper.findAll(`header h2`)).toHaveLength(1);
     expect(wrapper.find(`header h2`).text()).toBe(`設定`);
     expect(wrapper.findAll(`header p`)).toHaveLength(1);
-    expect(wrapper.find(`header p`).text()).toBe(`Memosuku 1.0.0`);
+    expect(wrapper.find(`header p`).text()).toBe(`Memotea 1.0.0`);
   });
   it(`range`, ({ wrapper }) => {
     expect(wrapper.findAll(`main li:nth-of-type(1) h3`)).toHaveLength(1);
