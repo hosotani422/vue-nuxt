@@ -59,7 +59,7 @@ export default defineNuxtConfig({
       background_color: `#ffffff`,
       icons: [
         {
-          src: `favicon.png`,
+          src: `/vue-nuxt/favicon.png`,
           sizes: `512x512`,
           type: `image/png`,
         },
