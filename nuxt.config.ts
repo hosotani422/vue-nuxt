@@ -32,7 +32,15 @@ export default defineNuxtConfig({
   typescript: {
     shim: false,
   },
-  modules: [`@pinia/nuxt`, `@vite-pwa/nuxt`],
+  modules: [
+    `@pinia/nuxt`,
+    `@vite-pwa/nuxt`,
+    (_, nuxt) => {
+      nuxt.hook("pwa:beforeBuildServiceWorker", (options) => {
+        console.log("pwa:beforeBuildServiceWorker: ", options.base);
+      });
+    },
+  ],
   imports: {
     presets: [
       {
@@ -56,6 +64,9 @@ export default defineNuxtConfig({
       display: `standalone`,
       theme_color: `#ffffff`,
       background_color: `#ffffff`,
+      strategies: `injectManifest`,
+      srcDir: `service-worker`,
+      filename: `sw.ts`,
       icons: [
         {
           src: `favicon.png`,
@@ -66,15 +77,21 @@ export default defineNuxtConfig({
     },
     workbox: {
       globPatterns: [`**/*.{js,css,html,png,svg,ico}`],
-      navigateFallback: `/`,
+    },
+    injectManifest: {
+      globPatterns: [`**/*.{js,css,html,png,svg,ico}`],
     },
     client: {
       installPrompt: true,
-      periodicSyncForUpdates: 3600,
+      periodicSyncForUpdates: 20,
+    },
+    experimental: {
+      includeAllowlist: true,
     },
     devOptions: {
       enabled: true,
       suppressWarnings: true,
+      navigateFallback: `/`,
       navigateFallbackAllowlist: [/^\/$/],
       type: `module`,
     },
