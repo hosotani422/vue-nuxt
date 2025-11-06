@@ -15,6 +15,7 @@ export default defineNuxtConfig({
   app: {
     // GitHubPages反映時はリポジトリ名の追加が必要
     baseURL: process.env.npm_lifecycle_event === `generate` ? `/vue-nuxt/` : `/`,
+    cdnURL: process.env.npm_lifecycle_event === `generate` ? `/vue-nuxt/` : `/`,
   },
   css: [`@/style/index.css`],
   components: {
