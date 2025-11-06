@@ -56,13 +56,16 @@ export default defineNuxtConfig({
   pwa: {
     registerType: `autoUpdate`,
     manifest: {
+      id: `https://hosotani422.github.io/vue-nuxt/`,
       name: `Memotea`,
       short_name: `Memotea`,
       description: `メモ帳、TODOアプリ`,
+      categories: [`productivity`],
       lang: `ja`,
       scope: process.env.npm_lifecycle_event === `generate` ? `/vue-nuxt/` : `/`,
       start_url: process.env.npm_lifecycle_event === `generate` ? `/vue-nuxt/` : `/`,
       display: `standalone`,
+      orientation: `any`,
       theme_color: `#ffffff`,
       background_color: `#ffffff`,
       strategies: `injectManifest`,
@@ -83,6 +86,21 @@ export default defineNuxtConfig({
           src: `pwa512.png`,
           sizes: `512x512`,
           type: `image/png`,
+        },
+      ],
+      screenshots: [
+        {
+          src: `pwa32.png`,
+          sizes: `32x32`,
+          type: `image/png`,
+          form_factor: `wide`,
+          label: `label`,
+        },
+      ],
+      shortcuts: [
+        {
+          name: `name`,
+          url: `/`,
         },
       ],
     },
