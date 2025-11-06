@@ -18,10 +18,10 @@ await app.handle.init();
       <Meta name="viewport" content="width=device-width, initial-scale=1" />
       <Meta name="description" content="メモ帳、TODOアプリ" />
       <Link rel="icon" href="/favicon.png" />
-      <NuxtPwaManifest />
       <NoScript>JavaScript is required</NoScript>
     </Head>
     <Body class="fixed inset-0 z-[1]">
+      <NuxtPwaManifest />
       <NuxtPage page-key="pageKey" />
       <PopupDate :date="date" />
       <PopupTime :time="time" />
