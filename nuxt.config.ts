@@ -56,7 +56,7 @@ export default defineNuxtConfig({
   pwa: {
     registerType: `autoUpdate`,
     manifest: {
-      id: `https://hosotani422.github.io/vue-nuxt/`,
+      id: `jp.memotea`,
       name: `Memotea`,
       short_name: `Memotea`,
       description: `メモ帳、TODOアプリ`,
@@ -90,17 +90,18 @@ export default defineNuxtConfig({
       ],
       screenshots: [
         {
-          src: `pwa32.png`,
-          sizes: `32x32`,
-          type: `image/png`,
+          src: `pc01.jpg`,
+          sizes: `1536x2048`,
+          type: `image/jpg`,
           form_factor: `wide`,
           label: `label`,
         },
-      ],
-      shortcuts: [
         {
-          name: `name`,
-          url: `/`,
+          src: `sp01.png`,
+          sizes: `720x1280`,
+          type: `image/png`,
+          form_factor: `narrow`,
+          label: `label`,
         },
       ],
     },
