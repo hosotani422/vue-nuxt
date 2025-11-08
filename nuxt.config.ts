@@ -1,10 +1,21 @@
 import path from "path";
+import { defineNuxtConfig } from "nuxt/config";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
-  ssr: true,
+  ssr: process.env.npm_lifecycle_event !== `generate`,
   rootDir: `app`,
   buildDir: `../.nuxt`,
+  nitro: {
+    output: {
+      dir: `../.output`,
+      publicDir: `../dist`,
+    },
+  },
+  app: {
+    // GitHubPages反映時はリポジトリ名の追加が必要
+    baseURL: process.env.npm_lifecycle_event === `generate` ? `/vue-nuxt/` : `/`,
+  },
   css: [`@/style/index.css`],
   components: {
     global: true,
@@ -21,7 +32,7 @@ export default defineNuxtConfig({
   typescript: {
     shim: false,
   },
-  modules: [`@pinia/nuxt`],
+  modules: [`@pinia/nuxt`, `@vite-pwa/nuxt`],
   imports: {
     presets: [
       {
@@ -29,5 +40,35 @@ export default defineNuxtConfig({
         imports: [`createPinia`],
       },
     ],
+  },
+  devtools: {
+    enabled: true,
+  },
+  pwa: {
+    registerType: `autoUpdate`,
+    manifest: {
+      id: `jp.memotea`,
+      name: `Memotea`,
+      short_name: `Memotea`,
+      description: `メモ帳、TODOアプリ`,
+      display: `standalone`,
+      orientation: `any`,
+      theme_color: `#000000`,
+      background_color: `#000000`,
+      start_url: process.env.npm_lifecycle_event === `generate` ? `/vue-nuxt/` : `/`,
+      icons: [
+        {
+          src: `favicon.png`,
+          sizes: `256x256`,
+          type: `image/png`,
+        },
+      ],
+    },
+    devOptions: {
+      enabled: true,
+      suppressWarnings: true,
+      navigateFallbackAllowlist: [/^\/$/],
+      type: `module`,
+    },
   },
 });
